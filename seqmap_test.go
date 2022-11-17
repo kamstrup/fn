@@ -20,6 +20,14 @@ func TestMapSeqTake(t *testing.T) {
 	SeqTest[int](t, tail).Is(6)
 }
 
+func TestMapSeqSkip(t *testing.T) {
+	tail := SeqMap[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
+		return i * 2
+	}).Skip(1)
+
+	SeqTest[int](t, tail).Is(4, 6)
+}
+
 func TestMapSeqFirst(t *testing.T) {
 	arr := SeqMap[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
 		return i * 2

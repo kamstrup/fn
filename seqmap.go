@@ -51,6 +51,11 @@ func (m mappedSeq[S, T]) Take(n int) (Seq[T], Seq[T]) {
 	return SeqMap(head, m.f), SeqMap(tail, m.f)
 }
 
+func (m mappedSeq[S, T]) Skip(n int) Seq[T] {
+	tail := m.seq.Skip(n)
+	return SeqMap(tail, m.f)
+}
+
 func (m mappedSeq[S, T]) First() (Opt[T], Seq[T]) {
 	s, tail := m.seq.First()
 	return OptMap(s, m.f), SeqMap(tail, m.f)

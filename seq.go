@@ -8,6 +8,8 @@ type Seq[T comparable] interface {
 	Len() int
 	Array() Array[T]
 	Take(int) (Seq[T], Seq[T])
+	Skip(int) Seq[T]
+	// Where(Predicate[T]) Seq[T]
 	First() (Opt[T], Seq[T])
 }
 

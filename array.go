@@ -43,6 +43,13 @@ func (a Array[T]) Take(n int) (Seq[T], Seq[T]) {
 	return Array[T]{vals: a.vals[:n]}, Array[T]{vals: a.vals[n:]}
 }
 
+func (a Array[T]) Skip(n int) Seq[T] {
+	if a.Len() <= n {
+		return SeqEmpty[T]()
+	}
+	return Array[T]{vals: a.vals[n:]}
+}
+
 func (a Array[T]) First() (Opt[T], Seq[T]) {
 	if len(a.vals) == 0 {
 		return OptEmpty[T](), a

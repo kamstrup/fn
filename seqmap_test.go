@@ -8,7 +8,7 @@ func TestMapSeq(t *testing.T) {
 	arr := SeqMap[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
 		return i * 2
 	})
-	SeqTest[int](t, arr).IsExactly(2, 4, 6)
+	SeqTest[int](t, arr).Is(2, 4, 6)
 }
 
 func TestMapSeqTake(t *testing.T) {
@@ -16,6 +16,29 @@ func TestMapSeqTake(t *testing.T) {
 		return i * 2
 	}).Take(2)
 
-	SeqTest[int](t, head).IsExactly(2, 4)
-	SeqTest[int](t, tail).IsExactly(6)
+	SeqTest[int](t, head).Is(2, 4)
+	SeqTest[int](t, tail).Is(6)
+}
+
+func TestMapSeqFirst(t *testing.T) {
+	arr := SeqMap[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
+		return i * 2
+	})
+
+	var first Opt[int]
+	first, arr = arr.First()
+	SeqTest[int](t, arr).Is(4, 6)
+	OptTest[int](t, first).Is(2)
+
+	first, arr = arr.First()
+	SeqTest[int](t, arr).Is(6)
+	OptTest[int](t, first).Is(4)
+
+	first, arr = arr.First()
+	SeqTest[int](t, arr).IsEmpty()
+	OptTest[int](t, first).Is(6)
+
+	first, arr = arr.First()
+	SeqTest[int](t, arr).IsEmpty()
+	OptTest[int](t, first).IsEmpty()
 }

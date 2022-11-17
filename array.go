@@ -1,20 +1,18 @@
 package fn
 
-var _ Seq[any] = Array[any]{}
-
-type Array[T any] struct {
+type Array[T comparable] struct {
 	vals []T
 }
 
-func SeqEmpty[T any]() Seq[T] {
+func SeqEmpty[T comparable]() Seq[T] {
 	return Array[T]{}
 }
 
-func ArrayOf[T any](tt []T) Array[T] {
+func ArrayOf[T comparable](tt []T) Array[T] {
 	return Array[T]{tt}
 }
 
-func ArrayOfArgs[T any](tt ...T) Array[T] {
+func ArrayOfArgs[T comparable](tt ...T) Array[T] {
 	return Array[T]{tt}
 }
 
@@ -43,4 +41,11 @@ func (a Array[T]) Take(n int) (Seq[T], Seq[T]) {
 		return a, SeqEmpty[T]()
 	}
 	return Array[T]{vals: a.vals[:n]}, Array[T]{vals: a.vals[n:]}
+}
+
+func (a Array[T]) First() (Opt[T], Seq[T]) {
+	if len(a.vals) == 0 {
+		return OptEmpty[T](), a
+	}
+	return OptOf(a.vals[0]), ArrayOf(a.vals[1:])
 }

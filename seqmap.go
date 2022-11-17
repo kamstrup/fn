@@ -1,13 +1,13 @@
 package fn
 
-func SeqMap[S, T any](seq Seq[S], fm FuncMap[S, T]) Seq[T] {
+func SeqMap[S, T comparable](seq Seq[S], fm FuncMap[S, T]) Seq[T] {
 	return mappedSeq[S, T]{
 		f:   fm,
 		seq: seq,
 	}
 }
 
-type mappedSeq[S, T any] struct {
+type mappedSeq[S, T comparable] struct {
 	f   FuncMap[S, T]
 	seq Seq[S]
 }
@@ -49,4 +49,9 @@ func (m mappedSeq[S, T]) Array() Array[T] {
 func (m mappedSeq[S, T]) Take(n int) (Seq[T], Seq[T]) {
 	head, tail := m.seq.Take(n)
 	return SeqMap(head, m.f), SeqMap(tail, m.f)
+}
+
+func (m mappedSeq[S, T]) First() (Opt[T], Seq[T]) {
+	s, tail := m.seq.First()
+	return OptMap(s, m.f), SeqMap(tail, m.f)
 }

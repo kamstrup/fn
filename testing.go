@@ -56,7 +56,7 @@ func (ts TestSeq[S]) IsEmpty() {
 func (to TestOpt[S]) Is(s S) {
 	val, err := to.opt.Return()
 	if err != nil {
-		to.t.Errorf("option is empty: %s", err)
+		to.t.Errorf("Option mismatch: %s", err)
 	} else if val != s {
 		to.t.Errorf("Option value mismatch. Expected %v, found %v", s, val)
 	}

@@ -2,7 +2,7 @@ package fn
 
 import "errors"
 
-var errEmpty = errors.New("opt is empty")
+var ErrEmpty = errors.New("empty")
 
 type Opt[T comparable] struct {
 	val T
@@ -25,7 +25,7 @@ func OptErr[T comparable](err error) Opt[T] {
 }
 
 func OptEmpty[T comparable]() Opt[T] {
-	return Opt[T]{err: errEmpty}
+	return Opt[T]{err: ErrEmpty}
 }
 
 func TryOf[T comparable](t T, err error) Opt[T] {
@@ -76,7 +76,7 @@ func (o Opt[T]) Must() T {
 }
 
 func (o Opt[T]) OnErr(errFn func(err error) T) T {
-	if o.err != nil && o.err != errEmpty {
+	if o.err != nil && o.err != ErrEmpty {
 		return errFn(o.err)
 	}
 	return o.val

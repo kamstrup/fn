@@ -12,21 +12,18 @@ type Seq[T comparable] interface {
 }
 
 // TODO:
-// seq.First() (t T, rest Seq[T])
-// seq.Take(int) (Array[T], rest Seq[T])
 // seq.TakeWhile(pred) (head Array[T], rest Seq[T])
-// Where() or Collect() ?? (not Select! use for chan)
+// seq.Where(pred)
 // Zip
-// Assoc
-// Concat
-// Opt[T] // Value, Or, Return() -> T??
-// Tuple (as Seq)
+// Assoc(map[K]V)
+// Concat(Seq[T], Seq[T])
 // seq.Any(pred)/All(pred)
 // seq.Split(pred) Seq[Seq[T]]
 // Error handling: fn.Must()
-// lib name: "fn"
 // Seq over a channel
-// Select on Channel
+// Select on channel
 // ctor SeqSlice, SeqChan, SeqSource, SeqRange(int, int), SeqAssoc(map[S]T) Tuple[S,T], AssocBy(seq, FuncMap), SeqOf(tt ... T) Seq[T]
 // Reverse?
 // testing utils assert/require?
+// sorting
+// seq.Go(n, f) (n goroutines). Auto-wait, or SeqGo.Wait()?

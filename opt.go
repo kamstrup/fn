@@ -5,16 +5,24 @@ type Opt[T comparable] struct {
 	err error
 }
 
-func Try[T comparable](t T, err error) Opt[T] {
+func OptOf[T comparable](t T) Opt[T] {
+	return Opt[T]{val: t}
+}
+
+func OptErr[T comparable](err error) Opt[T] {
+	return Opt[T]{err: err}
+}
+
+func TryOf[T comparable](t T, err error) Opt[T] {
 	return Opt[T]{t, err}
 }
 
-func TryDo[T comparable](f FuncSourceErr[T]) Opt[T] {
+func Try[T comparable](f FuncSourceErr[T]) Opt[T] {
 	t, err := f()
 	return Opt[T]{t, err}
 }
 
-func TryDoRecover[T comparable](f FuncSourceErr[T]) (opt Opt[T]) {
+func TryRecover[T comparable](f FuncSourceErr[T]) (opt Opt[T]) {
 	defer func() {
 		if r := recover(); r != nil {
 			opt.err = ErrPanic{V: r}
@@ -52,14 +60,7 @@ func (o Opt[T]) Must() T {
 	return o.val
 }
 
-func (o Opt[T]) OnErr(t T) T {
-	if o.err != nil {
-		return t
-	}
-	return o.val
-}
-
-func (o Opt[T]) OnErrFn(errFn func(err error) T) T {
+func (o Opt[T]) OnErr(errFn func(err error) T) T {
 	if o.err != nil {
 		return errFn(o.err)
 	}

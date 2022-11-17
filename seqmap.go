@@ -45,3 +45,8 @@ func (m mappedSeq[S, T]) Array() Array[T] {
 		return ArrayOf(arr)
 	}
 }
+
+func (m mappedSeq[S, T]) Take(n int) (Seq[T], Seq[T]) {
+	head, tail := m.seq.Take(n)
+	return SeqMap(head, m.f), SeqMap(tail, m.f)
+}

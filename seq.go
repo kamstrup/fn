@@ -7,6 +7,7 @@ type Seq[T any] interface {
 	ForEachIndex(f Func2[int, T])
 	Len() int
 	Array() Array[T]
+	Take(int) (Seq[T], Seq[T])
 }
 
 // TODO:

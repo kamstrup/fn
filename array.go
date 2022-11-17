@@ -6,6 +6,10 @@ type Array[T any] struct {
 	vals []T
 }
 
+func SeqEmpty[T any]() Seq[T] {
+	return Array[T]{}
+}
+
 func ArrayOf[T any](tt []T) Array[T] {
 	return Array[T]{tt}
 }
@@ -32,4 +36,11 @@ func (a Array[T]) Len() int {
 
 func (a Array[T]) Array() Array[T] {
 	return a
+}
+
+func (a Array[T]) Take(n int) (Seq[T], Seq[T]) {
+	if a.Len() <= n {
+		return a, SeqEmpty[T]()
+	}
+	return Array[T]{vals: a.vals[:n]}, Array[T]{vals: a.vals[n:]}
 }

@@ -32,8 +32,17 @@ func Sum[T Arithmetic](into, t T) T {
 	return into + t
 }
 
+func Count[T Arithmetic](into, t T) T {
+	return into + 1
+}
+
 func Append[T any](into []T, t T) []T {
 	return append(into, t)
+}
+
+func Assoc[K, V comparable](into map[K]V, t Tuple[K, V]) map[K]V {
+	into[t.Key()] = t.Value()
+	return into
 }
 
 func Collect[S comparable, T any](seq Seq[S], collector FuncCollect[S, T], into T) T {

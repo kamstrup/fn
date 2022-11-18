@@ -65,6 +65,17 @@ func TestCollectAssoc(t *testing.T) {
 	}
 }
 
+func TestCollectSet(t *testing.T) {
+	nums := ArrayOfArgs(1, 2, 2, 3, 1).Seq()
+	res := Into(nil, Set[int], nums)
+	exp := map[int]struct{}{
+		1: {}, 2: {}, 3: {},
+	}
+	if !reflect.DeepEqual(res, exp) {
+		t.Errorf("expected %v, got %v", exp, res)
+	}
+}
+
 func TestCollectErr(t *testing.T) {
 	expErr := errors.New("the error")
 	var nums Seq[int]

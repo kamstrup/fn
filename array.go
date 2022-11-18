@@ -83,7 +83,7 @@ func (a Array[T]) First() (Opt[T], Seq[T]) {
 // Sort is special for Array Seqs since it is done in place.
 // Generally functions and methods in the fn() library leaves all data structures immutable,
 // but this is an exception. Caveat Emptor!
-func (a Array[T]) Sort(less FuncLess[T]) Seq[T] {
+func (a Array[T]) Sort(less FuncLess[T]) Array[T] {
 	sort.Slice(a.vals, func(i, j int) bool {
 		return less(a.vals[i], a.vals[j])
 	})

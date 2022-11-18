@@ -16,9 +16,7 @@ func TestSeqAssoc(t *testing.T) {
 		t.Errorf("Expected %v, found %v", m, m2)
 	}
 
-	as = as.Array().Sort(func(t1, t2 Tuple[string, int]) bool {
-		return t1.Key() < t2.Key()
-	})
+	as = as.Array().Sort(OrderTupleAsc[string, int])
 
 	SeqTest(t, as).Is(
 		TupleOf("one", 1),

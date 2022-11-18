@@ -6,6 +6,8 @@ type sourceSeq[T any] struct {
 
 // SourceOf creates a new Seq yielding the return value of the FuncSource for every element.
 // You can for example use it NumbersFrom or Constant.
+// Beware when using SourceOf since it often produces a stateful Seq, so order of operations
+// may matter.
 func SourceOf[T any](f FuncSource[T]) Seq[T] {
 	return sourceSeq[T]{f}
 }

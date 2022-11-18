@@ -20,8 +20,7 @@ Philosophy
 TODO
 ---
 ```
-// Zip(s1 Seq[S], s2 Seq[T]) Seq[Tuple[S,T]]
-// Concat(Seq[T], Seq[T]) Seq[T]
+// ConcatOf(seqs Seq[Seq[T]]) Seq[T], and ConcatOfArgs(seqs ... Seq[T]) Seq[T]
 // seq.Any(pred)/All(pred)
 // seq.Split(pred) Seq[Seq[T]]
 // Seq over a channel
@@ -32,6 +31,7 @@ TODO
 // seq.Go(n, f) (n goroutines) and seq.GoErr(, f). Auto-wait, or SeqGo.Wait()? Control chan? 
 // MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
 // Seq.Last()
+// Better testing for Zip
 ```
 
 DONE
@@ -45,4 +45,5 @@ Opt with Try() and Must()
 Some simple helpers to write testing.T tests using Seqs.
 Sorting with some pre-declared generic helpers
 Infinite Seqs from source functions
-``` 
+Zip 2 Seqs into a Seq of Tuples
+```

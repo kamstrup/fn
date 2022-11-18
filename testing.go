@@ -39,18 +39,26 @@ func (ts TestSeq[S]) LenIs(n int) {
 func (ts TestSeq[S]) Is(ss ...S) {
 	ts.t.Helper()
 
-	if sz := ts.seq.Len(); sz != LenUnknown {
+	sz := ts.seq.Len()
+	if sz != LenUnknown {
 		if sz != len(ss) {
 			ts.t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
 		}
 	}
 
+	count := 0
 	ts.seq.ForEachIndex(func(i int, s S) {
+		count++
 		if ss[i] != s {
 			ts.t.Errorf("Seq element mismatch at index %d. Expected %v, found %v",
 				i, ss[i], s)
 		}
 	})
+
+	if sz != LenUnknown && sz != count {
+		ts.t.Errorf("Number of elements in ForEachIndex incorrect. Expected %d, found %d",
+			sz, count)
+	}
 }
 
 func (ts TestSeq[S]) IsEmpty() {

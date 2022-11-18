@@ -90,6 +90,18 @@ func (a Array[T]) Sort(less FuncLess[T]) Seq[T] {
 	return a
 }
 
+// Reverse is special for Array Seqs since it is done in place.
+// Generally functions and methods in the fn() library leaves all data structures immutable,
+// but this is an exception. Caveat Emptor!
+func (a Array[T]) Reverse() Seq[T] {
+	end := len(a.vals) / 2
+	for i := 0; i < end; i++ {
+		swapIdx := len(a.vals) - 1 - i
+		a.vals[i], a.vals[swapIdx] = a.vals[swapIdx], a.vals[i]
+	}
+	return a
+}
+
 // Slice provides raw access to the underlying data of this Array
 func (a Array[T]) Slice() []T {
 	return a.vals

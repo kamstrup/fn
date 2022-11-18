@@ -29,9 +29,9 @@ TODO
 // Seq over a Set, and a Collector func for creating a Set
 // Select on channel
 // Source(FuncSource), Range(int, int), Tuple[S,T] as Seq?
-// Reverse?
 // testing utils assert/require?
-// seq.Go(n, f) (n goroutines). Auto-wait, or SeqGo.Wait()?
+// seq.Go(n, f) (n goroutines) and seq.GoErr(, f). Auto-wait, or SeqGo.Wait()? Control chan? 
+// MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
 ```
 
 DONE

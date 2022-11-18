@@ -35,3 +35,18 @@ func TestArraySeqTakeWhile(t *testing.T) {
 	SeqTest(t, head.Seq()).Is(1, 2, 3)
 	SeqTest(t, tail).IsEmpty()
 }
+
+func TestArrayReverse(t *testing.T) {
+
+	arr := ArrayOfArgs(1, 2, 3, 4).Reverse()
+	SeqTest(t, arr).Is(4, 3, 2, 1)
+
+	arr = ArrayOfArgs(1, 2, 3).Reverse()
+	SeqTest(t, arr).Is(3, 2, 1)
+
+	arr = ArrayOfArgs(1).Reverse()
+	SeqTest(t, arr).Is(1)
+
+	arr = ArrayOfArgs[int]().Reverse()
+	SeqTest(t, arr).IsEmpty()
+}

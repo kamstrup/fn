@@ -32,7 +32,7 @@ func Sum[T Arithmetic](into, t T) T {
 	return into + t
 }
 
-func Count[T Arithmetic](into, t T) T {
+func Count[T Arithmetic](into, _ T) T {
 	return into + 1
 }
 

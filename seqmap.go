@@ -1,6 +1,6 @@
 package fn
 
-func SeqMap[S, T any](seq Seq[S], fm FuncMap[S, T]) Seq[T] {
+func Map[S, T any](seq Seq[S], fm FuncMap[S, T]) Seq[T] {
 	return mappedSeq[S, T]{
 		f:   fm,
 		seq: seq,
@@ -52,7 +52,7 @@ func (m mappedSeq[S, T]) Take(n int) (Array[T], Seq[T]) {
 		tail Seq[S]
 	)
 	head, tail = m.seq.Take(n)
-	return SeqMap[S, T](head, m.f).Array(), SeqMap(tail, m.f)
+	return Map[S, T](head, m.f).Array(), Map(tail, m.f)
 }
 
 func (m mappedSeq[S, T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
@@ -66,12 +66,12 @@ func (m mappedSeq[S, T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 		}
 		return false
 	})
-	return ArrayOf(arr), SeqMap(tail, m.f)
+	return ArrayOf(arr), Map(tail, m.f)
 }
 
 func (m mappedSeq[S, T]) Skip(n int) Seq[T] {
 	tail := m.seq.Skip(n)
-	return SeqMap(tail, m.f)
+	return Map(tail, m.f)
 }
 func (m mappedSeq[S, T]) Where(pred Predicate[T]) Seq[T] {
 	return whereSeq[T]{
@@ -82,5 +82,5 @@ func (m mappedSeq[S, T]) Where(pred Predicate[T]) Seq[T] {
 
 func (m mappedSeq[S, T]) First() (Opt[T], Seq[T]) {
 	s, tail := m.seq.First()
-	return OptMap(s, m.f), SeqMap(tail, m.f)
+	return OptMap(s, m.f), Map(tail, m.f)
 }

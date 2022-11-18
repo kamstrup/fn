@@ -46,12 +46,16 @@ func (m mappedSeq[S, T]) Array() Array[T] {
 	}
 }
 
-func (m mappedSeq[S, T]) Take(n int) (Seq[T], Seq[T]) {
-	head, tail := m.seq.Take(n)
-	return SeqMap(head, m.f), SeqMap(tail, m.f)
+func (m mappedSeq[S, T]) Take(n int) (Array[T], Seq[T]) {
+	var (
+		head Array[S]
+		tail Seq[S]
+	)
+	head, tail = m.seq.Take(n)
+	return SeqMap[S, T](head, m.f).Array(), SeqMap(tail, m.f)
 }
 
-func (m mappedSeq[S, T]) TakeWhile(pred Predicate[T]) (Seq[T], Seq[T]) {
+func (m mappedSeq[S, T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 	// TODO: does not really to alloc a slice, if we had a "pulling seq"
 	var arr []T
 	_, tail := m.seq.TakeWhile(func(s S) bool {

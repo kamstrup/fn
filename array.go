@@ -16,6 +16,11 @@ func ArrayOfArgs[T comparable](tt ...T) Array[T] {
 	return Array[T]{tt}
 }
 
+// Seq is a helper function for letting the Go compiler understand that Array[T] implements Seq[T]
+func (a Array[T]) Seq() Seq[T] {
+	return a
+}
+
 func (a Array[T]) ForEach(f Func1[T]) {
 	for _, v := range a.vals {
 		f(v)
@@ -36,14 +41,14 @@ func (a Array[T]) Array() Array[T] {
 	return a
 }
 
-func (a Array[T]) Take(n int) (Seq[T], Seq[T]) {
+func (a Array[T]) Take(n int) (Array[T], Seq[T]) {
 	if a.Len() <= n {
 		return a, SeqEmpty[T]()
 	}
 	return Array[T]{vals: a.vals[:n]}, Array[T]{vals: a.vals[n:]}
 }
 
-func (a Array[T]) TakeWhile(pred Predicate[T]) (Seq[T], Seq[T]) {
+func (a Array[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 	for i, v := range a.vals {
 		if !pred(v) {
 			return ArrayOf(a.vals[:i]), ArrayOf(a.vals[i:])

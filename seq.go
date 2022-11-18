@@ -7,8 +7,8 @@ type Seq[T comparable] interface {
 	ForEachIndex(f Func2[int, T])
 	Len() int
 	Array() Array[T]
-	Take(int) (Seq[T], Seq[T])
-	TakeWhile(predicate Predicate[T]) (Seq[T], Seq[T])
+	Take(int) (Array[T], Seq[T])
+	TakeWhile(predicate Predicate[T]) (Array[T], Seq[T])
 	Skip(int) Seq[T]
 	Where(Predicate[T]) Seq[T]
 	First() (Opt[T], Seq[T])

@@ -45,9 +45,9 @@ func (ws whereSeq[T]) Array() Array[T] {
 	return ArrayOf(arr)
 }
 
-func (ws whereSeq[T]) Take(n int) (Seq[T], Seq[T]) {
+func (ws whereSeq[T]) Take(n int) (Array[T], Seq[T]) {
 	if ws.Len() == 0 || n == 0 {
-		return SeqEmpty[T](), SeqEmpty[T]()
+		return ArrayOf[T](nil), SeqEmpty[T]()
 	}
 
 	// TODO: does not really to alloc a slice, if we had a "pulling seq"
@@ -67,12 +67,11 @@ func (ws whereSeq[T]) Take(n int) (Seq[T], Seq[T]) {
 	return ArrayOf[T](arr), tail
 }
 
-func (ws whereSeq[T]) TakeWhile(pred Predicate[T]) (Seq[T], Seq[T]) {
+func (ws whereSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 	if ws.Len() == 0 {
-		return SeqEmpty[T](), SeqEmpty[T]()
+		return ArrayOf[T](nil), SeqEmpty[T]()
 	}
 
-	// TODO: does not really to alloc a slice, if we had a "pulling seq"
 	var arr []T
 	_, tail := ws.seq.TakeWhile(func(t T) bool {
 		if !ws.pred(t) {

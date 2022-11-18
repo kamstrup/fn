@@ -5,7 +5,7 @@ import (
 )
 
 func TestMapSeq(t *testing.T) {
-	arr := SeqMap[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
+	var arr Seq[int] = SeqMap(ArrayOfArgs(1, 2, 3).Seq(), func(i int) int {
 		return i * 2
 	})
 	SeqTest(t, arr).Is(2, 4, 6)
@@ -16,7 +16,7 @@ func TestMapSeqTake(t *testing.T) {
 		return i * 2
 	}).Take(2)
 
-	SeqTest(t, head).Is(2, 4)
+	SeqTest(t, head.Seq()).Is(2, 4)
 	SeqTest(t, tail).Is(6)
 }
 
@@ -25,7 +25,7 @@ func TestMapSeqTakeWhile(t *testing.T) {
 		return i * 2
 	}).TakeWhile(func(i int) bool { return i <= 4 })
 
-	SeqTest(t, head).Is(2, 4)
+	SeqTest(t, head.Seq()).Is(2, 4)
 	SeqTest(t, tail).Is(6)
 }
 

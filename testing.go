@@ -28,7 +28,17 @@ func OptTest[S comparable](t *testing.T, opt Opt[S]) TestOpt[S] {
 	}
 }
 
+func (ts TestSeq[S]) LenIs(n int) {
+	ts.t.Helper()
+
+	if sz := ts.seq.Len(); sz != n {
+		ts.t.Errorf("Seq len mismatch. Expected %d, found %d", n, sz)
+	}
+}
+
 func (ts TestSeq[S]) Is(ss ...S) {
+	ts.t.Helper()
+
 	if sz := ts.seq.Len(); sz != LenUnknown {
 		if sz != len(ss) {
 			ts.t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
@@ -44,6 +54,8 @@ func (ts TestSeq[S]) Is(ss ...S) {
 }
 
 func (ts TestSeq[S]) IsEmpty() {
+	ts.t.Helper()
+
 	count := 0
 	ts.seq.ForEach(func(s S) {
 		count++
@@ -54,6 +66,8 @@ func (ts TestSeq[S]) IsEmpty() {
 }
 
 func (to TestOpt[S]) Is(s S) {
+	to.t.Helper()
+
 	val, err := to.opt.Return()
 	if err != nil {
 		to.t.Errorf("Option mismatch: %s", err)
@@ -63,6 +77,8 @@ func (to TestOpt[S]) Is(s S) {
 }
 
 func (to TestOpt[S]) IsEmpty() {
+	to.t.Helper()
+
 	val, err := to.opt.Return()
 	if err == nil {
 		to.t.Errorf("option is not empty: %v", val)

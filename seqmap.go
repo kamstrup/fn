@@ -51,9 +51,29 @@ func (m mappedSeq[S, T]) Take(n int) (Seq[T], Seq[T]) {
 	return SeqMap(head, m.f), SeqMap(tail, m.f)
 }
 
+func (m mappedSeq[S, T]) TakeWhile(pred Predicate[T]) (Seq[T], Seq[T]) {
+	// TODO: does not really to alloc a slice, if we had a "pulling seq"
+	var arr []T
+	_, tail := m.seq.TakeWhile(func(s S) bool {
+		t := m.f(s)
+		if pred(t) {
+			arr = append(arr, t)
+			return true
+		}
+		return false
+	})
+	return ArrayOf(arr), SeqMap(tail, m.f)
+}
+
 func (m mappedSeq[S, T]) Skip(n int) Seq[T] {
 	tail := m.seq.Skip(n)
 	return SeqMap(tail, m.f)
+}
+func (m mappedSeq[S, T]) Where(pred Predicate[T]) Seq[T] {
+	return whereSeq[T]{
+		seq:  m,
+		pred: pred,
+	}
 }
 
 func (m mappedSeq[S, T]) First() (Opt[T], Seq[T]) {

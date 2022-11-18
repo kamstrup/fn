@@ -20,6 +20,15 @@ func TestMapSeqTake(t *testing.T) {
 	SeqTest[int](t, tail).Is(6)
 }
 
+func TestMapSeqTakeWhile(t *testing.T) {
+	head, tail := SeqMap[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
+		return i * 2
+	}).TakeWhile(func(i int) bool { return i <= 4 })
+
+	SeqTest[int](t, head).Is(2, 4)
+	SeqTest[int](t, tail).Is(6)
+}
+
 func TestMapSeqSkip(t *testing.T) {
 	tail := SeqMap[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
 		return i * 2

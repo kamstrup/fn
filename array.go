@@ -43,11 +43,27 @@ func (a Array[T]) Take(n int) (Seq[T], Seq[T]) {
 	return Array[T]{vals: a.vals[:n]}, Array[T]{vals: a.vals[n:]}
 }
 
+func (a Array[T]) TakeWhile(pred Predicate[T]) (Seq[T], Seq[T]) {
+	for i, v := range a.vals {
+		if !pred(v) {
+			return ArrayOf(a.vals[:i]), ArrayOf(a.vals[i:])
+		}
+	}
+	return a, SeqEmpty[T]()
+}
+
 func (a Array[T]) Skip(n int) Seq[T] {
 	if a.Len() <= n {
 		return SeqEmpty[T]()
 	}
 	return Array[T]{vals: a.vals[n:]}
+}
+
+func (a Array[T]) Where(pred Predicate[T]) Seq[T] {
+	return whereSeq[T]{
+		seq:  a,
+		pred: pred,
+	}
 }
 
 func (a Array[T]) First() (Opt[T], Seq[T]) {

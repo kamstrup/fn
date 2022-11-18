@@ -2,7 +2,7 @@ package fn
 
 var _ Seq[int] = whereSeq[int]{}
 
-type whereSeq[T comparable] struct {
+type whereSeq[T any] struct {
 	seq  Seq[T]
 	pred Predicate[T]
 }

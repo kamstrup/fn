@@ -1,18 +1,18 @@
 package fn
 
-type Array[T comparable] struct {
+type Array[T any] struct {
 	vals []T
 }
 
-func SeqEmpty[T comparable]() Seq[T] {
+func SeqEmpty[T any]() Seq[T] {
 	return Array[T]{}
 }
 
-func ArrayOf[T comparable](tt []T) Array[T] {
+func ArrayOf[T any](tt []T) Array[T] {
 	return Array[T]{tt}
 }
 
-func ArrayOfArgs[T comparable](tt ...T) Array[T] {
+func ArrayOfArgs[T any](tt ...T) Array[T] {
 	return Array[T]{tt}
 }
 

@@ -45,14 +45,14 @@ func Assoc[K, V comparable](into map[K]V, t Tuple[K, V]) map[K]V {
 	return into
 }
 
-func Collect[S comparable, T any](seq Seq[S], collector FuncCollect[S, T], into T) T {
+func Collect[S any, T any](seq Seq[S], collector FuncCollect[S, T], into T) T {
 	seq.ForEach(func(s S) {
 		into = collector(into, s)
 	})
 	return into
 }
 
-func CollectErr[S comparable, T comparable](seq Seq[S], collector FuncCollectErr[S, T], into T) (T, error) {
+func CollectErr[S any, T any](seq Seq[S], collector FuncCollectErr[S, T], into T) (T, error) {
 	var err error
 	seq.TakeWhile(func(s S) bool {
 		into, err = collector(into, s)

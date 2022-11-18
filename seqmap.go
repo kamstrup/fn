@@ -1,13 +1,13 @@
 package fn
 
-func SeqMap[S, T comparable](seq Seq[S], fm FuncMap[S, T]) Seq[T] {
+func SeqMap[S, T any](seq Seq[S], fm FuncMap[S, T]) Seq[T] {
 	return mappedSeq[S, T]{
 		f:   fm,
 		seq: seq,
 	}
 }
 
-type mappedSeq[S, T comparable] struct {
+type mappedSeq[S, T any] struct {
 	f   FuncMap[S, T]
 	seq Seq[S]
 }

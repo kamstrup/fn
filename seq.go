@@ -2,7 +2,7 @@ package fn
 
 const LenUnknown = -1
 
-type Seq[T comparable] interface {
+type Seq[T any] interface {
 	ForEach(f Func1[T])
 	ForEachIndex(f Func2[int, T])
 	Len() int

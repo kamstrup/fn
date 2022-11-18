@@ -88,6 +88,24 @@ func OrderTupleDesc[K Ordered, V any](t1, t2 Tuple[K, V]) bool {
 	return t1.Key() > t2.Key()
 }
 
+// NumbersFrom returns a FuncSource that starts from n and count one up on every invocation.
+// You can for example use it with SourceOf()
+func NumbersFrom(n int) FuncSource[int] {
+	counter := n - 1
+	return func() int {
+		counter += 1
+		return counter
+	}
+}
+
+// Constant returns a FuncSource that produces the same value on every invocation.
+// You can for example use it with SourceOf()
+func Constant[T any](t T) FuncSource[T] {
+	return func() T {
+		return t
+	}
+}
+
 // Into executes a Seq, collecting the results via a collection function.
 // The method signature follows append() and copy() conventions,
 // having the destination to put data into first.

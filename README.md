@@ -24,13 +24,14 @@ TODO
 // Concat(Seq[T], Seq[T]) Seq[T]
 // seq.Any(pred)/All(pred)
 // seq.Split(pred) Seq[Seq[T]]
-// Error handling: fn.Must()
 // Seq over a channel
 // Select on channel
-// Source(FuncSource), Range(int, int), Tuple[S,T] as Seq?
-// testing utils assert/require?
+// Source(FuncSource), Range(int, int)
+// Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
+// Improve testing utils assert/require? Move to own package?
 // seq.Go(n, f) (n goroutines) and seq.GoErr(, f). Auto-wait, or SeqGo.Wait()? Control chan? 
 // MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
+// Seq.Last()
 ```
 
 DONE
@@ -43,4 +44,5 @@ Lazily evaluated Where() and Map()
 Opt with Try() and Must()
 Some simple helpers to write testing.T tests using Seqs.
 Sorting with some pre-declared generic helpers
+Infinite Seqs from source functions
 ``` 

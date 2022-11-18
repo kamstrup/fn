@@ -25,7 +25,7 @@ TODO
 // seq.Split(pred) Seq[Seq[T]]
 // Seq over a channel
 // Select on channel
-// Source(FuncSource), Range(int, int)
+// Range(int, int)
 // Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
 // Improve testing utils assert/require? Move to own package?
 // seq.Go(n, f) (n goroutines) and seq.GoErr(, f). Auto-wait, or SeqGo.Wait()? Control chan? 

@@ -76,6 +76,15 @@ func TestCollectSet(t *testing.T) {
 	}
 }
 
+func TestCollectString(t *testing.T) {
+	strs := ArrayOfArgs("one", "two").Seq()
+	res := Into(nil, StringBuffer, strs)
+	exp := "onetwo"
+	if exp != res.String() {
+		t.Errorf("expected %v, got %v", exp, res)
+	}
+}
+
 func TestCollectErr(t *testing.T) {
 	expErr := errors.New("the error")
 	var nums Seq[int]

@@ -1,5 +1,7 @@
 package fn
 
+import "bytes"
+
 type Func0 func()
 
 type Func0Err func() error
@@ -38,16 +40,37 @@ type Predicate[T any] func(T) bool
 
 type PredicateErr[T any] func(T) (bool, error)
 
+// Sum is a FuncCollect for use with Into, that sums up the elements it sees
 func Sum[T Arithmetic](into, t T) T {
 	return into + t
 }
 
-func Count[T Arithmetic](into, _ T) T {
+// Count is a FuncCollect for use with Into, that counts the number of elements it sees
+func Count[T any](into int, _ T) int {
 	return into + 1
 }
 
+// Append is a FuncCollect for use with Into, that uses the standard Go append() function
 func Append[T any](into []T, t T) []T {
 	return append(into, t)
+}
+
+// StringBuffer is a FuncCollect for use with Into that writes strings into a bytes.Buffer
+func StringBuffer(into *bytes.Buffer, s string) *bytes.Buffer {
+	if into == nil {
+		into = &bytes.Buffer{}
+	}
+	_, _ = into.WriteString(s)
+	return into
+}
+
+// ByteBuffer is a FuncCollect for use with Into that writes bytes into a bytes.Buffer
+func ByteBuffer(into *bytes.Buffer, b []byte) *bytes.Buffer {
+	if into == nil {
+		into = &bytes.Buffer{}
+	}
+	_, _ = into.Write(b)
+	return into
 }
 
 // Assoc is a FuncCollect that can take a Seq of Tuple elements and store them in a standard Go map.
@@ -103,6 +126,24 @@ func NumbersFrom(n int) FuncSource[int] {
 func Constant[T any](t T) FuncSource[T] {
 	return func() T {
 		return t
+	}
+}
+
+func Curry[X, Z any](f func(X) Z, x X) func() Z {
+	return func() Z {
+		return f(x)
+	}
+}
+
+func CurryX[X, Y, Z any](f func(X, Y) Z, x X) func(Y) Z {
+	return func(y Y) Z {
+		return f(x, y)
+	}
+}
+
+func CurryY[X, Y, Z any](f func(X, Y) Z, y Y) func(X) Z {
+	return func(x X) Z {
+		return f(x, y)
 	}
 }
 

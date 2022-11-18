@@ -9,27 +9,26 @@ import (
 
 func TestCollectSum(t *testing.T) {
 	var arr Seq[int] = ArrayOfArgs(1, 2, 3)
-	sum := Collect(arr, Sum[int], 0)
+	sum := Into(0, Sum[int], arr)
 	if sum != 6 {
 		t.Errorf("expected sum 6: %d", sum)
 	}
 
-	sum = Collect(SeqEmpty[int](), Sum[int], 27)
+	sum = Into(27, Sum[int], SeqEmpty[int]())
 	if sum != 27 {
 		t.Errorf("expected sum 6: %d", sum)
 	}
 }
 
 func TestCollectCount(t *testing.T) {
-	var arr Seq[int]
-	arr = ArrayOfArgs[int](1, 2, 3)
+	arr := ArrayOfArgs[int](1, 2, 3).Seq()
 
-	count := Collect(arr, Count[int], 0)
+	count := Into(0, Count[int], arr)
 	if count != 3 {
 		t.Errorf("expected count 3: %d", count)
 	}
 
-	count = Collect(SeqEmpty[int](), Count[int], 0)
+	count = Into(0, Count[int], SeqEmpty[int]())
 	if count != 0 {
 		t.Errorf("expected count 0: %d", count)
 	}
@@ -37,13 +36,13 @@ func TestCollectCount(t *testing.T) {
 
 func TestCollectAppend(t *testing.T) {
 	arr := ArrayOfArgs[int](1, 2, 3)
-	cpy := Collect[int](arr, Append[int], nil)
+	cpy := Into[int](nil, Append[int], arr)
 	exp := []int{1, 2, 3}
 	if !reflect.DeepEqual(cpy, exp) {
 		t.Errorf("expected %v, got %v", exp, cpy)
 	}
 
-	cpy = Collect(SeqEmpty[int](), Append[int], []int{27})
+	cpy = Into([]int{27}, Append[int], SeqEmpty[int]())
 	exp = []int{27}
 	if !reflect.DeepEqual(cpy, exp) {
 		t.Errorf("expected %v, got %v", exp, cpy)
@@ -57,7 +56,7 @@ func TestCollectAssoc(t *testing.T) {
 	arr := Map(oddNums, func(i int) Tuple[string, int] {
 		return TupleOf(strconv.FormatInt(int64(i), 10), i)
 	})
-	res := Collect(arr, Assoc[string, int], map[string]int{})
+	res := Into(nil, Assoc[string, int], arr)
 	exp := map[string]int{
 		"1": 1, "3": 3,
 	}
@@ -70,13 +69,12 @@ func TestCollectErr(t *testing.T) {
 	expErr := errors.New("the error")
 	var nums Seq[int]
 	nums = ArrayOfArgs(1, 2, 3)
-	res, err := CollectErr(nums,
-		func(into, n int) (int, error) {
-			if into >= 2 {
-				return 27, expErr
-			}
-			return into + 1, nil
-		}, 0)
+	res, err := IntoErr(0, func(into, n int) (int, error) {
+		if into >= 2 {
+			return 27, expErr
+		}
+		return into + 1, nil
+	}, nums)
 
 	if res != 27 {
 		t.Errorf("expected 27, got %d", res)

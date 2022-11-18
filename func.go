@@ -32,6 +32,8 @@ type FuncSource[T any] func() T
 
 type FuncSourceErr[T any] func() (T, error)
 
+type FuncLess[T any] func(T, T) bool
+
 type Predicate[T any] func(T) bool
 
 type PredicateErr[T any] func(T) (bool, error)

@@ -6,15 +6,24 @@ import (
 )
 
 func TestSeqAssoc(t *testing.T) {
-	m := map[string]int{"one": 1, "two": 2}
+	m := map[string]int{"one": 1, "two": 2, "three": 3}
 	as := AssocOf(m)
 
-	SeqTest(t, as).LenIs(2)
+	SeqTest(t, as).LenIs(3)
 	m2 := Into(nil, Assoc[string, int], as)
 
 	if !reflect.DeepEqual(m, m2) {
 		t.Errorf("Expected %v, found %v", m, m2)
 	}
+
+	as = as.Array().Sort(func(t1, t2 Tuple[string, int]) bool {
+		return t1.Key() < t2.Key()
+	})
+
+	SeqTest(t, as).Is(
+		TupleOf("one", 1),
+		TupleOf("three", 3),
+		TupleOf("two", 2))
 }
 
 func TestSeqAssocWhere(t *testing.T) {

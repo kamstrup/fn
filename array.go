@@ -1,5 +1,7 @@
 package fn
 
+import "sort"
+
 type Array[T any] struct {
 	vals []T
 }
@@ -76,4 +78,19 @@ func (a Array[T]) First() (Opt[T], Seq[T]) {
 		return OptEmpty[T](), a
 	}
 	return OptOf(a.vals[0]), ArrayOf(a.vals[1:])
+}
+
+// Sort is special for Array Seqs since it is done in place.
+// Generally functions and methods in the fn() library leaves all data structures immutable,
+// but this is an exception. Caveat Emptor!
+func (a Array[T]) Sort(less FuncLess[T]) Seq[T] {
+	sort.Slice(a.vals, func(i, j int) bool {
+		return less(a.vals[i], a.vals[j])
+	})
+	return a
+}
+
+// Slice provides raw access to the underlying data of this Array
+func (a Array[T]) Slice() []T {
+	return a.vals
 }

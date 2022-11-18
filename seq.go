@@ -25,5 +25,4 @@ type Seq[T any] interface {
 // ctor SeqSlice, SeqChan, SeqSource, SeqRange(int, int), SeqAssoc(map[S]T) Tuple[S,T], AssocBy(seq, FuncMap), SeqOf(tt ... T) Seq[T]
 // Reverse?
 // testing utils assert/require?
-// sorting
 // seq.Go(n, f) (n goroutines). Auto-wait, or SeqGo.Wait()?

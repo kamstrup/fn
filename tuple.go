@@ -1,6 +1,6 @@
 package fn
 
-type Tuple[X, Y comparable] struct {
+type Tuple[X comparable, Y any] struct {
 	x X
 	y Y
 }

@@ -16,7 +16,6 @@ type Seq[T any] interface {
 
 // TODO:
 // Zip
-// Assoc(map[K]V)
 // Concat(Seq[T], Seq[T])
 // seq.Any(pred)/All(pred)
 // seq.Split(pred) Seq[Seq[T]]

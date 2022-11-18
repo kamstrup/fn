@@ -1,15 +1,15 @@
 package fn
 
 import (
+	"errors"
 	"reflect"
 	"strconv"
 	"testing"
 )
 
 func TestCollectSum(t *testing.T) {
-	arr := ArrayOfArgs(1, 2, 3)
-
-	sum := Collect[int](arr, Sum[int], 0)
+	var arr Seq[int] = ArrayOfArgs(1, 2, 3)
+	sum := Collect(arr, Sum[int], 0)
 	if sum != 6 {
 		t.Errorf("expected sum 6: %d", sum)
 	}
@@ -21,9 +21,10 @@ func TestCollectSum(t *testing.T) {
 }
 
 func TestCollectCount(t *testing.T) {
-	arr := ArrayOfArgs[int](1, 2, 3)
+	var arr Seq[int]
+	arr = ArrayOfArgs[int](1, 2, 3)
 
-	count := Collect[int](arr, Count[int], 0)
+	count := Collect(arr, Count[int], 0)
 	if count != 3 {
 		t.Errorf("expected count 3: %d", count)
 	}
@@ -62,5 +63,26 @@ func TestCollectAssoc(t *testing.T) {
 	}
 	if !reflect.DeepEqual(res, exp) {
 		t.Errorf("expected %v, got %v", exp, res)
+	}
+}
+
+func TestCollectErr(t *testing.T) {
+	expErr := errors.New("the error")
+	var nums Seq[int]
+	nums = ArrayOfArgs(1, 2, 3)
+	res, err := CollectErr(nums,
+		func(into, n int) (int, error) {
+			if into >= 2 {
+				return 27, expErr
+			}
+			return into + 1, nil
+		}, 0)
+
+	if res != 27 {
+		t.Errorf("expected 27, got %d", res)
+	}
+
+	if err != expErr {
+		t.Errorf("did not get expected error: %v", expErr)
 	}
 }

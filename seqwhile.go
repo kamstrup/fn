@@ -31,6 +31,10 @@ func (w whileSeq[T]) Array() Array[T] {
 }
 
 func (w whileSeq[T]) Take(n int) (Array[T], Seq[T]) {
+	if n == 0 {
+		return []T{}, w
+	}
+
 	i := 0
 	var arr []T
 	for fst, tail := w.First(); !fst.Empty() && i < n; fst, tail = tail.First() {
@@ -83,5 +87,8 @@ func (w whileSeq[T]) First() (Opt[T], Seq[T]) {
 	if fst.Empty() || !w.pred(fst.val) {
 		return OptEmpty[T](), SeqEmpty[T]()
 	}
-	return fst, tail
+	return fst, whileSeq[T]{
+		seq:  tail,
+		pred: w.pred,
+	}
 }

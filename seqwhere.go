@@ -87,9 +87,20 @@ func (ws whereSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 	return ArrayOf[T](arr), tail
 }
 
-func (ws whereSeq[T]) Skip(i int) Seq[T] {
-	// TODO implement me
-	panic("implement me")
+func (ws whereSeq[T]) Skip(n int) Seq[T] {
+	if n == 0 {
+		return ws
+	}
+
+	var (
+		fst  Opt[T]
+		tail Seq[T]
+		i    = 0
+	)
+	for fst, tail = ws.First(); !fst.Empty() && i < n; fst, tail = tail.First() {
+		i++
+	}
+	return tail
 }
 
 func (ws whereSeq[T]) Where(pred Predicate[T]) Seq[T] {
@@ -107,6 +118,17 @@ func (ws whereSeq[T]) While(pred Predicate[T]) Seq[T] {
 }
 
 func (ws whereSeq[T]) First() (Opt[T], Seq[T]) {
-	// TODO implement me
-	panic("implement me")
+	var (
+		fst  Opt[T]
+		tail Seq[T]
+	)
+	for fst, tail = ws.seq.First(); ; fst, tail = tail.First() {
+		// seek until we find a First element that is true for ws.pred()
+		if fst.Empty() {
+			return fst, SeqEmpty[T]()
+		}
+		if ws.pred(fst.val) {
+			return fst, whereSeq[T]{tail, ws.pred}
+		}
+	}
 }

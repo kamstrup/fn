@@ -49,7 +49,10 @@ func (ts TestSeq[S]) Is(ss ...S) {
 	count := 0
 	ts.seq.ForEachIndex(func(i int, s S) {
 		count++
-		if ss[i] != s {
+		if i >= len(ss) {
+			ts.t.Fatalf("Seq element index out of bounds. Expected max index %d, but got index %d with value %v",
+				len(ss)-1, i, s)
+		} else if ss[i] != s {
 			ts.t.Errorf("Seq element mismatch at index %d. Expected %v, found %v",
 				i, ss[i], s)
 		}

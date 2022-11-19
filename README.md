@@ -21,6 +21,10 @@ Philosophy
  * No dependencies. Only the Go standard library.
  * Include simple affordances to interop with constructs from the Go standard
    library, but no big new frameworking for doing IO or other stuff.
+ * If we start talking about "monoids", "transducers", and even simpler terms
+   like "fold", and "reduce", 75% of developers will start to zone out or just walk away.
+   We prioritize simple, well-known, terms that produce readable code that most
+   developers will have a chance of understanding and enjoying.
 
 [1]: Some of the more advanced functional data types, like the ones mentioned,
 are definitely super useful and would fit well in some extension library for Fn().
@@ -29,14 +33,12 @@ are definitely super useful and would fit well in some extension library for Fn(
 TODO
 ---
 ```
-// seqwhere.go needs some method impls
 // Compare func helpers LessThan, GreaterThan, Is, IsNot
 // ConcatOf(seqs Seq[Seq[T]]) Seq[T], and ConcatOfArgs(seqs ... Seq[T]) Seq[T]
 // seq.Any(pred)/All(pred) (should any return a tail Seq, or just bool)?
 // seq.Split(pred) Seq[Seq[T]]
-// Seq over a channel
-// Select on channel
-// Range(int, int)
+// Seq over a channel (maybe some special prupose helpers for Select on channel?)
+// RangeOf(int, int)
 // Do we need a special string Seq? StringOf(string)
 // Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
 // Improve testing utils assert/require? Move to own package?
@@ -45,8 +47,10 @@ TODO
 // Seq.Last()
 // Better testing for Zip
 // Seq of single element
-// EmptySeq impl. (currently just wraps an empty slice)
-// Maybe a "Random Access"[K,V] interface that Array, AssocOf, and SetOf can implement 
+// EmptySeq impl. (currently just wraps an empty slice), but an empty struct{} would do even better
+// Maybe a "Random Access"[K,V] interface that Array, AssocOf, and SetOf can implement
+//         (although Array is just a []T, Assoc just a map[K]V, and Set a map[K]struct{},
+            so support random access via subscripts directly.) 
 // Should Len() return (int, ok) instead? DO we want a special LenInfinite?
            (ZipOf() would benefit in pre-allocs by knowing if one of the seqs were infinite)
 ```
@@ -56,8 +60,8 @@ DONE
 ```
 Seqs of slices (Array) and maps (Assoc and Set).
 Into() and various Collector funcs for it to aggregate Seqs into numbers or new collections
-Tuples for help with building maps (and Zip in the future)
-Lazily evaluated Where() and Map()
+Tuples for help with building maps
+Lazily evaluated Where(), While(), and MapOf()
 Opt with Try() and Must()
 Some simple helpers to write testing.T tests using Seqs.
 Sorting with some pre-declared generic helpers

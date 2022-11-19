@@ -84,6 +84,13 @@ func (m mappedSeq[S, T]) Where(pred Predicate[T]) Seq[T] {
 	}
 }
 
+func (a mappedSeq[S, T]) While(pred Predicate[T]) Seq[T] {
+	return whileSeq[T]{
+		seq:  a,
+		pred: pred,
+	}
+}
+
 func (m mappedSeq[S, T]) First() (Opt[T], Seq[T]) {
 	s, tail := m.seq.First()
 	return OptMap(s, m.f), MapOf(tail, m.f)

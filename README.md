@@ -29,6 +29,8 @@ are definitely super useful and would fit well in some extension library for Fn(
 TODO
 ---
 ```
+// seqwhere.go needs some method impls
+// Compare func helpers LessThan, GreaterThan, Is, IsNot
 // ConcatOf(seqs Seq[Seq[T]]) Seq[T], and ConcatOfArgs(seqs ... Seq[T]) Seq[T]
 // seq.Any(pred)/All(pred) (should any return a tail Seq, or just bool)?
 // seq.Split(pred) Seq[Seq[T]]

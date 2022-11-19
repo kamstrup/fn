@@ -135,6 +135,13 @@ func (s setSeq[K]) Where(p Predicate[K]) Seq[K] {
 	}
 }
 
+func (s setSeq[T]) While(pred Predicate[T]) Seq[T] {
+	return whileSeq[T]{
+		seq:  s,
+		pred: pred,
+	}
+}
+
 func (s setSeq[K]) First() (Opt[K], Seq[K]) {
 	head, tail := s.Take(1)
 	first, _ := head.First()

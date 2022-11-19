@@ -159,6 +159,13 @@ func (z zipSeq[X, Y]) Where(p Predicate[Tuple[X, Y]]) Seq[Tuple[X, Y]] {
 	}
 }
 
+func (z zipSeq[X, Y]) While(p Predicate[Tuple[X, Y]]) Seq[Tuple[X, Y]] {
+	return whileSeq[Tuple[X, Y]]{
+		seq:  z,
+		pred: p,
+	}
+}
+
 func (z zipSeq[X, Y]) First() (Opt[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 	fx, tx := z.sx.First()
 	fy, ty := z.sy.First()

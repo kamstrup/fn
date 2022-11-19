@@ -71,6 +71,13 @@ func (a Array[T]) Where(pred Predicate[T]) Seq[T] {
 	}
 }
 
+func (a Array[T]) While(pred Predicate[T]) Seq[T] {
+	return whileSeq[T]{
+		seq:  a,
+		pred: pred,
+	}
+}
+
 func (a Array[T]) First() (Opt[T], Seq[T]) {
 	if len(a) == 0 {
 		return OptEmpty[T](), a

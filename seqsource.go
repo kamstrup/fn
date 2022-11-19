@@ -64,6 +64,13 @@ func (s sourceSeq[T]) Where(p Predicate[T]) Seq[T] {
 	}
 }
 
+func (s sourceSeq[T]) While(pred Predicate[T]) Seq[T] {
+	return whileSeq[T]{
+		seq:  s,
+		pred: pred,
+	}
+}
+
 func (s sourceSeq[T]) First() (Opt[T], Seq[T]) {
 	return OptOf(s.f()), s
 }

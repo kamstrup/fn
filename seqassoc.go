@@ -138,6 +138,13 @@ func (a assocSeq[K, V]) Where(p Predicate[Tuple[K, V]]) Seq[Tuple[K, V]] {
 	}
 }
 
+func (a assocSeq[K, V]) While(pred Predicate[Tuple[K, V]]) Seq[Tuple[K, V]] {
+	return whileSeq[Tuple[K, V]]{
+		seq:  a,
+		pred: pred,
+	}
+}
+
 func (a assocSeq[K, V]) First() (Opt[Tuple[K, V]], Seq[Tuple[K, V]]) {
 	head, tail := a.Take(1)
 	first, _ := head.First()

@@ -30,6 +30,8 @@ type Seq[T any] interface {
 	Skip(int) Seq[T]
 	// Where returns a Seq that only includes elements where Predicate returns true.
 	Where(Predicate[T]) Seq[T]
+	// While returns a Seq with the initial series of elements where predicate returns true.
+	While(predicate Predicate[T]) Seq[T]
 	// First executes the first element and returns an Opt with it. The tail is returned as a Seq.
 	First() (Opt[T], Seq[T])
 	// All(Predicate) bool

@@ -92,9 +92,18 @@ func (ws whereSeq[T]) Skip(i int) Seq[T] {
 	panic("implement me")
 }
 
-func (ws whereSeq[T]) Where(p Predicate[T]) Seq[T] {
-	// TODO implement me
-	panic("implement me")
+func (ws whereSeq[T]) Where(pred Predicate[T]) Seq[T] {
+	return whereSeq[T]{
+		seq:  ws,
+		pred: pred,
+	}
+}
+
+func (ws whereSeq[T]) While(pred Predicate[T]) Seq[T] {
+	return whileSeq[T]{
+		seq:  ws,
+		pred: pred,
+	}
 }
 
 func (ws whereSeq[T]) First() (Opt[T], Seq[T]) {

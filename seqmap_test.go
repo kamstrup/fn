@@ -5,14 +5,14 @@ import (
 )
 
 func TestMapSeq(t *testing.T) {
-	var arr Seq[int] = Map(ArrayOfArgs(1, 2, 3).Seq(), func(i int) int {
+	var arr Seq[int] = MapOf(ArrayOfArgs(1, 2, 3).Seq(), func(i int) int {
 		return i * 2
 	})
 	SeqTest(t, arr).Is(2, 4, 6)
 }
 
 func TestMapSeqTake(t *testing.T) {
-	head, tail := Map[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
+	head, tail := MapOf[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
 		return i * 2
 	}).Take(2)
 
@@ -21,7 +21,7 @@ func TestMapSeqTake(t *testing.T) {
 }
 
 func TestMapSeqTakeWhile(t *testing.T) {
-	head, tail := Map[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
+	head, tail := MapOf[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
 		return i * 2
 	}).TakeWhile(func(i int) bool { return i <= 4 })
 
@@ -30,7 +30,7 @@ func TestMapSeqTakeWhile(t *testing.T) {
 }
 
 func TestMapSeqSkip(t *testing.T) {
-	tail := Map[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
+	tail := MapOf[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
 		return i * 2
 	}).Skip(1)
 
@@ -38,7 +38,7 @@ func TestMapSeqSkip(t *testing.T) {
 }
 
 func TestMapSeqFirst(t *testing.T) {
-	arr := Map[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
+	arr := MapOf[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
 		return i * 2
 	})
 

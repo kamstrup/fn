@@ -40,22 +40,24 @@ type Predicate[T any] func(T) bool
 
 type PredicateErr[T any] func(T) (bool, error)
 
-// Sum is a FuncCollect for use with Into, that sums up the elements it sees
+// Sum is a FuncCollect for use with Into, that sums up the elements it sees.
 func Sum[T Arithmetic](into, t T) T {
 	return into + t
 }
 
-// Count is a FuncCollect for use with Into, that counts the number of elements it sees
+// Count is a FuncCollect for use with Into, that counts the number of elements it sees.
 func Count[T any](into int, _ T) int {
 	return into + 1
 }
 
-// Append is a FuncCollect for use with Into, that uses the standard Go append() function
+// Append is a FuncCollect for use with Into, that uses the standard Go append() function.
+// This function works with nil or a pre-built slice as initial value.
 func Append[T any](into []T, t T) []T {
 	return append(into, t)
 }
 
-// StringBuffer is a FuncCollect for use with Into that writes strings into a bytes.Buffer
+// StringBuffer is a FuncCollect for use with Into that writes strings into a bytes.Buffer.
+// This function works with nil or a pre-built bytes.Buffer as initial value.
 func StringBuffer(into *bytes.Buffer, s string) *bytes.Buffer {
 	if into == nil {
 		into = &bytes.Buffer{}
@@ -64,7 +66,8 @@ func StringBuffer(into *bytes.Buffer, s string) *bytes.Buffer {
 	return into
 }
 
-// ByteBuffer is a FuncCollect for use with Into that writes bytes into a bytes.Buffer
+// ByteBuffer is a FuncCollect for use with Into that writes bytes into a bytes.Buffer.
+// This function works with nil or a pre-built bytes.Buffer as initial value.
 func ByteBuffer(into *bytes.Buffer, b []byte) *bytes.Buffer {
 	if into == nil {
 		into = &bytes.Buffer{}
@@ -74,6 +77,7 @@ func ByteBuffer(into *bytes.Buffer, b []byte) *bytes.Buffer {
 }
 
 // Assoc is a FuncCollect that can take a Seq of Tuple elements and store them in a standard Go map.
+// This function works with nil or a pre-built map[K]V as initial value.
 func Assoc[K comparable, V any](into map[K]V, t Tuple[K, V]) map[K]V {
 	if into == nil {
 		into = make(map[K]V)
@@ -83,6 +87,7 @@ func Assoc[K comparable, V any](into map[K]V, t Tuple[K, V]) map[K]V {
 }
 
 // Set is a FuncCollect that can take a Seq of comparable values and store them in a standard Go set (map[]struct{}).
+// This function works with nil or a pre-built map[K]struct{} as initial value.
 func Set[K comparable](into map[K]struct{}, k K) map[K]struct{} {
 	if into == nil {
 		into = make(map[K]struct{})
@@ -147,9 +152,10 @@ func CurryY[X, Y, Z any](f func(X, Y) Z, y Y) func(X) Z {
 	}
 }
 
-// Into executes a Seq, collecting the results via a collection function.
+// Into executes a Seq, collecting the results via a collection function (FuncCollect).
 // The method signature follows append() and copy() conventions,
 // having the destination to put data into first.
+// Typical collection functions are Append, Assoc, Set, Sum, Count, StringBuffer, or ByteBuffer.
 func Into[S any, T any](into T, collector FuncCollect[S, T], seq Seq[S]) T {
 	seq.ForEach(func(s S) {
 		into = collector(into, s)

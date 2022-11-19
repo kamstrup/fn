@@ -1,6 +1,8 @@
 package fn
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestArraySeq(t *testing.T) {
 	var arr Seq[int] = ArrayOfArgs(1, 2, 3)

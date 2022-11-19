@@ -53,7 +53,7 @@ func TestCollectAssoc(t *testing.T) {
 	oddNums := ArrayOfArgs(1, 2, 3).
 		Where(func(i int) bool { return i%2 == 1 })
 
-	arr := Map(oddNums, func(i int) Tuple[string, int] {
+	arr := MapOf(oddNums, func(i int) Tuple[string, int] {
 		return TupleOf(strconv.FormatInt(int64(i), 10), i)
 	})
 	res := Into(nil, Assoc[string, int], arr)

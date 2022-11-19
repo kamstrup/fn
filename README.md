@@ -3,6 +3,10 @@ Fn(), Functional Programming for Golang
 Fn is library for golang that enables functional programming techniques
 to be blended it with standard idiomatic Go code.
 
+We are inspired by Clojure and the Java Streams APIs that were
+introduced back in Java 8, and want to provide something of similar spirit,
+that makes it even more fun to write GO code.
+
 Philosophy
 ----
  * Be pragmatic. Fn() is not idealistic, academic, or purely functional.
@@ -10,12 +14,17 @@ Philosophy
    a new paradigm for Go. While most of Fn() is built on immutable functional
    data structures, we live in the mutable world of Go. We try to blend in
    smoothly instead of ice skating uphill.
- * Be small and concise. Fn will not come with a tonne of data structures
+ * Be small and concise. Fn() will not come with a tonne of data structures
    that you might expect from a full-featured functional library. The
-   core Fn library does not come with tree structures or persistent hash tables, fx.
+   core Fn() library does not come with immutable red-black tree structures or
+   persistent hash tables, fx.[1]
  * No dependencies. Only the Go standard library.
  * Include simple affordances to interop with constructs from the Go standard
    library, but no big new frameworking for doing IO or other stuff.
+
+[1]: Some of the more advanced functional data types, like the ones mentioned,
+are definitely super useful and would fit well in some extension library for Fn().
+(or perhaps a sub-package, let's see <3)
 
 TODO
 ---

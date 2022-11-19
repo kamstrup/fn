@@ -1,6 +1,10 @@
 package fn
 
-func Map[S, T any](seq Seq[S], fm FuncMap[S, T]) Seq[T] {
+// MapOf creates a new Seq that lazily converts the values, via a FuncMap,
+// into another Seq. The returned Seq has the same Seq.Len() as the input Seq.
+// If you are looking for ways to create a Seq from a Go map[K]V please
+// look at AssocOf() or SetOf().
+func MapOf[S, T any](seq Seq[S], fm FuncMap[S, T]) Seq[T] {
 	return mappedSeq[S, T]{
 		f:   fm,
 		seq: seq,
@@ -52,7 +56,7 @@ func (m mappedSeq[S, T]) Take(n int) (Array[T], Seq[T]) {
 		tail Seq[S]
 	)
 	head, tail = m.seq.Take(n)
-	return Map[S, T](head, m.f).Array(), Map(tail, m.f)
+	return MapOf[S, T](head, m.f).Array(), MapOf(tail, m.f)
 }
 
 func (m mappedSeq[S, T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
@@ -66,12 +70,12 @@ func (m mappedSeq[S, T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 		}
 		return false
 	})
-	return ArrayOf(arr), Map(tail, m.f)
+	return ArrayOf(arr), MapOf(tail, m.f)
 }
 
 func (m mappedSeq[S, T]) Skip(n int) Seq[T] {
 	tail := m.seq.Skip(n)
-	return Map(tail, m.f)
+	return MapOf(tail, m.f)
 }
 func (m mappedSeq[S, T]) Where(pred Predicate[T]) Seq[T] {
 	return whereSeq[T]{
@@ -82,5 +86,5 @@ func (m mappedSeq[S, T]) Where(pred Predicate[T]) Seq[T] {
 
 func (m mappedSeq[S, T]) First() (Opt[T], Seq[T]) {
 	s, tail := m.seq.First()
-	return OptMap(s, m.f), Map(tail, m.f)
+	return OptMap(s, m.f), MapOf(tail, m.f)
 }

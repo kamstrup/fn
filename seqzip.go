@@ -139,6 +139,7 @@ func (z zipSeq[X, Y]) TakeWhile(predicate Predicate[Tuple[X, Y]]) (Array[Tuple[X
 		} else {
 			// pred(tup) is false, so we return
 			// FIXME: Hack - this way of restoring the state of tx and ty to the previous step only works on Array :-(
+			// solution: Create single element Seqs of fx and fy and Concat(fx, tx)
 			return ArrayOf(arr), zipSeq[X, Y]{sx: txPrev, sy: tyPrev}
 		}
 	}

@@ -2,41 +2,39 @@ package fn
 
 var _ Seq[Tuple[int, int]] = assocSeq[int, int]{}
 
-type assocSeq[K comparable, V any] struct {
-	m map[K]V
-}
+type assocSeq[K comparable, V any] map[K]V
 
 func AssocOf[K comparable, V any](m map[K]V) Seq[Tuple[K, V]] {
-	return assocSeq[K, V]{m}
+	return assocSeq[K, V](m)
 }
 
 func (a assocSeq[K, V]) ForEach(f Func1[Tuple[K, V]]) {
-	for k, v := range a.m {
+	for k, v := range a {
 		f(Tuple[K, V]{k, v})
 	}
 }
 
 func (a assocSeq[K, V]) ForEachIndex(f Func2[int, Tuple[K, V]]) {
 	idx := 0
-	for k, v := range a.m {
+	for k, v := range a {
 		f(idx, Tuple[K, V]{k, v})
 		idx++
 	}
 }
 
 func (a assocSeq[K, V]) Len() int {
-	return len(a.m)
+	return len(a)
 }
 
 func (a assocSeq[K, V]) Array() Array[Tuple[K, V]] {
-	sz := len(a.m)
+	sz := len(a)
 	if sz == 0 {
 		return ArrayOf[Tuple[K, V]](nil)
 	}
 
 	arr := make([]Tuple[K, V], sz)
 	idx := 0
-	for k, v := range a.m {
+	for k, v := range a {
 		arr[idx] = Tuple[K, V]{k, v}
 		idx++
 	}
@@ -58,7 +56,7 @@ func (a assocSeq[K, V]) Take(n int) (Array[Tuple[K, V]], Seq[Tuple[K, V]]) {
 		tail []Tuple[K, V]
 		idx  int
 	)
-	sz := len(a.m)
+	sz := len(a)
 	if n >= sz {
 		head = make([]Tuple[K, V], sz)
 		// tail will be empty, we do not have n elements
@@ -67,7 +65,7 @@ func (a assocSeq[K, V]) Take(n int) (Array[Tuple[K, V]], Seq[Tuple[K, V]]) {
 		tail = make([]Tuple[K, V], sz-n)
 	}
 
-	for k, v := range a.m {
+	for k, v := range a {
 		if idx >= n {
 			tail[idx-n] = Tuple[K, V]{k, v}
 		} else {
@@ -90,7 +88,7 @@ func (a assocSeq[K, V]) TakeWhile(predicate Predicate[Tuple[K, V]]) (Array[Tuple
 		tail []Tuple[K, V]
 	)
 
-	for k, v := range a.m {
+	for k, v := range a {
 		t := Tuple[K, V]{k, v}
 		if len(tail) > 0 { // after first time predicate(t) is false, don't call it again
 			tail = append(tail, t)
@@ -116,14 +114,14 @@ func (a assocSeq[K, V]) Skip(n int) Seq[Tuple[K, V]] {
 		tail []Tuple[K, V]
 		idx  int
 	)
-	sz := len(a.m)
+	sz := len(a)
 	if n >= sz {
 		return SeqEmpty[Tuple[K, V]]()
 	} else {
 		tail = make([]Tuple[K, V], sz-n)
 	}
 
-	for k, v := range a.m {
+	for k, v := range a {
 		if idx >= n {
 			tail[idx-n] = Tuple[K, V]{k, v}
 		}

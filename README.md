@@ -32,6 +32,8 @@ TODO
 // MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
 // Seq.Last()
 // Better testing for Zip
+// Seq of single element
+// EmptySeq impl. (currently just wraps an empty slice) 
 ```
 
 DONE

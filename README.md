@@ -21,11 +21,12 @@ TODO
 ---
 ```
 // ConcatOf(seqs Seq[Seq[T]]) Seq[T], and ConcatOfArgs(seqs ... Seq[T]) Seq[T]
-// seq.Any(pred)/All(pred)
+// seq.Any(pred)/All(pred) (should any return a tail Seq, or just bool)?
 // seq.Split(pred) Seq[Seq[T]]
 // Seq over a channel
 // Select on channel
 // Range(int, int)
+// Do we need a special string Seq? StringOf(string)
 // Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
 // Improve testing utils assert/require? Move to own package?
 // seq.Go(n, f) (n goroutines) and seq.GoErr(, f). Auto-wait, or SeqGo.Wait()? Control chan? 
@@ -33,7 +34,10 @@ TODO
 // Seq.Last()
 // Better testing for Zip
 // Seq of single element
-// EmptySeq impl. (currently just wraps an empty slice) 
+// EmptySeq impl. (currently just wraps an empty slice)
+// Maybe a "Random Access"[K,V] interface that Array, AssocOf, and SetOf can implement 
+// Should Len() return (int, ok) instead? DO we want a special LenInfinite?
+           (ZipOf() would benefit in pre-allocs by knowing if one of the seqs were infinite)
 ```
 
 DONE

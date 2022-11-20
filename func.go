@@ -152,6 +152,20 @@ func CurryY[X, Y, Z any](f func(X, Y) Z, y Y) func(X) Z {
 	}
 }
 
+// IsZero is a Predicate that returns true if the input is the zero value of the type T.
+// Can be used with Seq methods like Seq.TakeWhile, Seq.Where, and Seq.While.
+func IsZero[T comparable](t T) bool {
+	var zero T
+	return t == zero
+}
+
+// IsNonZero is a Predicate that returns true if the input is a non-zero value of the type T.
+// Can be used with Seq methods like Seq.TakeWhile, Seq.Where, and Seq.While.
+func IsNonZero[T comparable](t T) bool {
+	var zero T
+	return t != zero
+}
+
 // Into executes a Seq, collecting the results via a collection function (FuncCollect).
 // The method signature follows append() and copy() conventions,
 // having the destination to put data into first.

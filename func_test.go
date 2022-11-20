@@ -7,6 +7,11 @@ import (
 	"testing"
 )
 
+func TestZeroes(t *testing.T) {
+	SeqTest(t, MapOf(ArrayOfArgs(-1, 0, 1, 10).Seq(), IsZero[int])).Is(false, true, false, false)
+	SeqTest(t, MapOf(ArrayOfArgs(-1, 0, 1, 10).Seq(), IsNonZero[int])).Is(true, false, true, true)
+}
+
 func TestCollectSum(t *testing.T) {
 	var arr Seq[int] = ArrayOfArgs(1, 2, 3)
 	sum := Into(0, Sum[int], arr)

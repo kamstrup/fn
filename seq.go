@@ -25,12 +25,15 @@ type Seq[T any] interface {
 	Take(int) (Array[T], Seq[T])
 	// TakeWhile executes the Seq while Predicate returns true,
 	// then returns those elements in an Array and the rest in a tail Seq.
+	// This library ships with a few in-built predicates, like fx, IsZero and IsNonZero.
 	TakeWhile(predicate Predicate[T]) (Array[T], Seq[T])
 	// Skip drops (up to) the first N elements in the Seq, executing them, and returns a tail Seq.
 	Skip(int) Seq[T]
 	// Where returns a Seq that only includes elements where Predicate returns true.
+	// This library ships with a few in-built predicates, like fx, IsZero and IsNonZero.
 	Where(Predicate[T]) Seq[T]
 	// While returns a Seq with the initial series of elements where predicate returns true.
+	// This library ships with a few in-built predicates, like fx, IsZero and IsNonZero.
 	While(predicate Predicate[T]) Seq[T]
 	// First executes the first element and returns an Opt with it. The tail is returned as a Seq.
 	First() (Opt[T], Seq[T])

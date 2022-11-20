@@ -126,6 +126,16 @@ func NumbersFrom(n int) FuncSource[int] {
 	}
 }
 
+// NumbersLowerThan returns a FuncSource that starts from n and count one down on every invocation.
+// You can for example use it with SourceOf()
+func NumbersLowerThan(n int) FuncSource[int] {
+	counter := n + 1
+	return func() int {
+		counter -= 1
+		return counter
+	}
+}
+
 // Constant returns a FuncSource that produces the same value on every invocation.
 // You can for example use it with SourceOf()
 func Constant[T any](t T) FuncSource[T] {

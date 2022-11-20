@@ -38,7 +38,6 @@ TODO
 // seq.Any(pred)/All(pred) (should any return a tail Seq, or just bool)?
 // seq.Split(pred) Seq[Seq[T]]
 // Seq over a channel (maybe some special prupose helpers for Select on channel?)
-// RangeOf(int, int)
 // Do we need a special string Seq? StringOf(string)
 // Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
 // Improve testing utils assert/require? Move to own package?
@@ -67,4 +66,5 @@ Some simple helpers to write testing.T tests using Seqs.
 Sorting with some pre-declared generic helpers
 Infinite Seqs from source functions
 Zip 2 Seqs into a Seq of Tuples
+RangeOf(from, to) in both directions
 ```

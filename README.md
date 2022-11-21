@@ -46,7 +46,7 @@ TODO
 // MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
 // Seq.Last()
 // Better testing for Zip
-// Seq of single element
+// Seq of single element (see SingletOf(t))
 // EmptySeq impl. (currently just wraps an empty slice), but an empty struct{} would do even better
 // Maybe a "Random Access"[K,V] interface that Array, AssocOf, and SetOf can implement
 //         (although Array is just a []T, Assoc just a map[K]V, and Set a map[K]struct{},

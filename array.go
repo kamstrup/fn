@@ -8,6 +8,10 @@ func SeqEmpty[T any]() Seq[T] {
 	return Array[T](nil)
 }
 
+func SingletOf[T any](t T) Seq[T] {
+	return Array[T]([]T{t}) // TODO: optimize with a dedicated singletSeq 'type singletSeq[T any] T'
+}
+
 func ArrayOf[T any](tt []T) Array[T] {
 	return tt
 }

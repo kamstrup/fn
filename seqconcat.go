@@ -68,9 +68,9 @@ func (c concatSeq[T]) Take(n int) (Array[T], Seq[T]) {
 				tail: c.tail,
 			}
 		}
+		c.head = nil // head depleted (it returned < n)
 	}
 
-	c.head = nil
 	for {
 		// If we get here, c.head is depleted, and arr still needs elements,
 		// so check if we have a new head in c.tail
@@ -96,11 +96,10 @@ func (c concatSeq[T]) Take(n int) (Array[T], Seq[T]) {
 		// c.head depleted, go again
 		c.head = nil
 	}
-
 }
 
 func (c concatSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
-	// TODO implement me
+	// FIXME: how can we tell if head was depleted, or pred became false? --  need to use c.First() :-/
 	panic("implement me")
 }
 
@@ -120,8 +119,47 @@ func (c concatSeq[T]) While(pred Predicate[T]) Seq[T] {
 }
 
 func (c concatSeq[T]) First() (Opt[T], Seq[T]) {
-	// TODO implement me
-	panic("implement me")
+	var (
+		fst      Opt[T]
+		headTail Seq[T]
+	)
+
+	// First see if we have enough in c.head
+	if c.head != nil {
+		fst, headTail = c.head.First()
+		if fst.Ok() {
+			return fst, concatSeq[T]{
+				head: headTail,
+				tail: c.tail,
+			}
+		}
+		c.head = nil // head depleted
+	}
+
+	for {
+		// If we get here, c.head is depleted, and we still need an element,
+		// so check if we have a new head in c.tail
+
+		var headOpt Opt[Seq[T]]
+		headOpt, c.tail = c.tail.First()
+		if headOpt.Empty() {
+			// No new head, we took the last elements in initial head.First()
+			return OptEmpty[T](), SeqEmpty[T]()
+		}
+
+		// We have anew head
+		c.head = headOpt.val
+		fst, headTail = c.head.First()
+		if fst.Ok() {
+			return fst, concatSeq[T]{
+				head: headTail,
+				tail: c.tail,
+			}
+		}
+
+		// New head was empty, go again
+		c.head = nil
+	}
 }
 
 // seq is just a cast helper, to make the Go compiler happy

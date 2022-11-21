@@ -123,6 +123,10 @@ func (ts TestSeqSuite[S]) Is(ss ...S) {
 	ts.t.Run("Take", func(t *testing.T) {
 		seqIsTake(t, ts.createSeq(), ss)
 	})
+
+	ts.t.Run("First", func(t *testing.T) {
+		seqIsFirst(t, ts.createSeq(), ss)
+	})
 }
 
 func (ts TestSeqSuite[S]) IsEmpty() {
@@ -245,5 +249,35 @@ func seqIsTake[S comparable](t *testing.T, seq Seq[S], ss []S) {
 					n, sz, count)
 			}
 		})
+	}
+}
+
+func seqIsFirst[S comparable](t *testing.T, seq Seq[S], ss []S) {
+	t.Helper()
+
+	sz := seq.Len()
+	if sz != LenUnknown {
+		if sz != len(ss) {
+			t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
+		}
+	}
+
+	var fst Opt[S]
+	idx := 0
+	for fst, seq = seq.First(); fst.Ok(); fst, seq = seq.First() {
+		s := fst.val
+		if idx >= len(ss) {
+			t.Fatalf("Seq element index out of bounds. Expected max index %d, but got index %d with value %v",
+				len(ss)-1, idx, s)
+		} else if ss[idx] != s {
+			t.Errorf("Seq element mismatch at index %d. Expected %v, found %v",
+				idx, ss[idx], s)
+		}
+		idx++
+	}
+
+	if sz != LenUnknown && sz != idx {
+		t.Errorf("Number of elements in ForEachIndex incorrect. Expected %d, found %d",
+			sz, idx)
 	}
 }

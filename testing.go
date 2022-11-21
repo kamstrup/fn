@@ -1,6 +1,7 @@
 package fn
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -111,9 +112,17 @@ func (to TestOpt[S]) IsEmpty() {
 func (ts TestSeqSuite[S]) Is(ss ...S) {
 	ts.t.Helper()
 
-	seqIsForEach(ts.t, ts.createSeq(), ss)
-	seqIsForEachIndex(ts.t, ts.createSeq(), ss)
+	ts.t.Run("ForEach", func(t *testing.T) {
+		seqIsForEach(t, ts.createSeq(), ss)
+	})
 
+	ts.t.Run("ForEachIndex", func(t *testing.T) {
+		seqIsForEachIndex(t, ts.createSeq(), ss)
+	})
+
+	ts.t.Run("Take", func(t *testing.T) {
+		seqIsTake(t, ts.createSeq(), ss)
+	})
 }
 
 func (ts TestSeqSuite[S]) IsEmpty() {
@@ -187,5 +196,54 @@ func seqIsForEachIndex[S comparable](t *testing.T, seq Seq[S], ss []S) {
 	if sz != LenUnknown && sz != count {
 		t.Errorf("Number of elements in ForEachIndex incorrect. Expected %d, found %d",
 			sz, count)
+	}
+}
+
+func seqIsTake[S comparable](t *testing.T, seq Seq[S], ss []S) {
+	t.Helper()
+
+	sz := seq.Len()
+	if sz != LenUnknown {
+		t.Run("Len", func(t *testing.T) {
+			if sz != len(ss) {
+				t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
+			}
+		})
+	}
+
+	t.Run("0", func(t *testing.T) {
+		head, tail := seq.Take(0)
+		if head.Len() != 0 {
+			t.Errorf("When calling Take(0) 'head' must be the empty array")
+		}
+		if sz != LenUnknown && sz != tail.Len() {
+			t.Errorf("When calling Take(0) 'tail' must have the same length")
+		}
+	})
+
+	// Ensure we can Take(n) for different n, and rebuild the exact ss
+	for _, n := range []int{1, 2, 3, 100} {
+		t.Run(fmt.Sprintf("%d", n), func(t *testing.T) {
+			count := 0
+			for head, tail := seq.Take(n); head.Len() != 0; head, tail = tail.Take(n) {
+				for i := range head {
+					if ss[count+i] != head[i] {
+						t.Errorf("Seq element mismatch at index %d. Expected %v, found %v",
+							count+i, ss[count], head[i])
+					}
+				}
+
+				count += len(head)
+				if count > len(ss) {
+					t.Fatalf("Seq element index out of bounds. Expected max index %d, but got index %d with value %v",
+						len(ss)-1, count, head[0])
+				}
+			}
+
+			if sz != LenUnknown && sz != count {
+				t.Errorf("Number of elements in Take(%d) incorrect. Expected %d, found %d",
+					n, sz, count)
+			}
+		})
 	}
 }

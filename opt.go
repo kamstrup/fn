@@ -87,6 +87,10 @@ func (o Opt[T]) Empty() bool {
 	return o.err != nil
 }
 
+func (o Opt[T]) Ok() bool {
+	return o.err == nil
+}
+
 func (o Opt[T]) Or(altValue T) T {
 	if o.Empty() {
 		return altValue

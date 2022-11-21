@@ -34,6 +34,7 @@ TODO
 ---
 ```
 // STARTED ConcatOf(seqs Seq[Seq[T]]) Seq[T], and ConcatOfArgs(seqs ... Seq[T]) Seq[T]
+// seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
 // Compare func helpers LessThan, GreaterThan, Is, IsNot
 // seq.Any(pred)/All(pred) (should any return a tail Seq, or just bool)?
 // seq.Split(pred) Seq[Seq[T]]

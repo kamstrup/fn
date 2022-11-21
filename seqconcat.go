@@ -51,11 +51,22 @@ func (c concatSeq[T]) Array() Array[T] {
 }
 
 func (c concatSeq[T]) Take(n int) (Array[T], Seq[T]) {
-	arr, headTail := c.head.Take(n)
-	if arr.Len() == n {
-		return arr, concatSeq[T]{
-			head: headTail,
-			tail: c.tail,
+	if n == 0 {
+		return ArrayOf([]T{}), c
+	}
+	var (
+		arr      Array[T]
+		headTail Seq[T]
+	)
+
+	// First see if we have enough in c.head
+	if c.head != nil {
+		arr, headTail = c.head.Take(n)
+		if arr.Len() == n {
+			return arr, concatSeq[T]{
+				head: headTail,
+				tail: c.tail,
+			}
 		}
 	}
 

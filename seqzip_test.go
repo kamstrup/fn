@@ -27,3 +27,18 @@ func TestZipSource(t *testing.T) {
 		TupleOf(4, "four"),
 	)
 }
+
+func TestZipSuite(t *testing.T) {
+	createSeq := func() Seq[Tuple[int, string]] {
+		x := SourceOf(NumbersFrom(1))
+		y := ArrayOfArgs("one", "two", "three", "four").Seq()
+		return ZipOf(x, y)
+	}
+
+	SeqTestSuite(t, createSeq).Is(
+		TupleOf(1, "one"),
+		TupleOf(2, "two"),
+		TupleOf(3, "three"),
+		TupleOf(4, "four"),
+	)
+}

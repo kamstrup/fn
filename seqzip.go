@@ -126,7 +126,6 @@ func (z zipSeq[X, Y]) TakeWhile(predicate Predicate[Tuple[X, Y]]) (Array[Tuple[X
 
 	// Length of at least one Seq is unknown
 	for {
-		txPrev, tyPrev := tx, ty
 		fx, tx = tx.First()
 		fy, ty = ty.First()
 		if fx.Empty() || fy.Empty() {
@@ -137,10 +136,12 @@ func (z zipSeq[X, Y]) TakeWhile(predicate Predicate[Tuple[X, Y]]) (Array[Tuple[X
 		if predicate(tup) {
 			arr = append(arr, tup)
 		} else {
-			// pred(tup) is false, so we return
-			// FIXME: Hack - this way of restoring the state of tx and ty to the previous step only works on Array :-(
-			// solution: Create single element Seqs of fx and fy and Concat(fx, tx)
-			return ArrayOf(arr), zipSeq[X, Y]{sx: txPrev, sy: tyPrev}
+			// pred(tup) is false, so we return.
+			// We already consumed the heads of tx and ty, so we need to "put them back",
+			// we do this by creating a concat() of the consumed tuple with the tail
+			return ArrayOf(arr), ConcatOfArgs(
+				SingletOf(TupleOf(fx.val, fy.val)),
+				ZipOf(tx, ty))
 		}
 	}
 }

@@ -99,23 +99,40 @@ func (c concatSeq[T]) Take(n int) (Array[T], Seq[T]) {
 }
 
 func (c concatSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
-	// FIXME: how can we tell if head was depleted, or pred became false? --  need to use c.First() :-/
-	panic("implement me")
+	var arr []T
+	for fst, tail := c.First(); fst.Ok(); fst, tail = tail.First() {
+		if !pred(fst.val) {
+			return arr, ConcatOfArgs(SingletOf(fst.val), tail)
+		}
+		arr = append(arr, fst.val)
+	}
+	return arr, SeqEmpty[T]()
 }
 
 func (c concatSeq[T]) Skip(n int) Seq[T] {
-	// TODO implement me
-	panic("implement me")
+	var (
+		i    = 0
+		fst  Opt[T]
+		tail Seq[T]
+	)
+	for fst, tail = c.First(); fst.Ok() && i < n; fst, tail = tail.First() {
+		i++
+	}
+	return tail
 }
 
 func (c concatSeq[T]) Where(pred Predicate[T]) Seq[T] {
-	// TODO implement me
-	panic("implement me")
+	return whereSeq[T]{
+		seq:  c,
+		pred: pred,
+	}
 }
 
 func (c concatSeq[T]) While(pred Predicate[T]) Seq[T] {
-	// TODO implement me
-	panic("implement me")
+	return whileSeq[T]{
+		seq:  c,
+		pred: pred,
+	}
 }
 
 func (c concatSeq[T]) First() (Opt[T], Seq[T]) {

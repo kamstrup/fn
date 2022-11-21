@@ -5,7 +5,7 @@ type Tuple[X comparable, Y any] struct {
 	y Y
 }
 
-func TupleOf[X, Y comparable](x X, y Y) Tuple[X, Y] {
+func TupleOf[X comparable, Y any](x X, y Y) Tuple[X, Y] {
 	return Tuple[X, Y]{x, y}
 }
 

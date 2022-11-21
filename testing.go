@@ -121,8 +121,16 @@ func (ts TestSeqSuite[S]) Is(ss ...S) {
 	})
 
 	ts.t.Run("Take", func(t *testing.T) {
-		seqIsTake(t, ts.createSeq(), ss)
+		seqIsTake(t, ts.createSeq, ss)
 	})
+
+	ts.t.Run("TakeWhile", func(t *testing.T) {
+		seqIsTakeWhile(t, ts.createSeq, ss)
+	})
+
+	// TODO: test Skip(n)
+	// TODO: test Where(pred)
+	// TODO: test While(pred)
 
 	ts.t.Run("First", func(t *testing.T) {
 		seqIsFirst(t, ts.createSeq(), ss)
@@ -203,9 +211,10 @@ func seqIsForEachIndex[S comparable](t *testing.T, seq Seq[S], ss []S) {
 	}
 }
 
-func seqIsTake[S comparable](t *testing.T, seq Seq[S], ss []S) {
+func seqIsTake[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
 	t.Helper()
 
+	seq := createSeq()
 	sz := seq.Len()
 	if sz != LenUnknown {
 		t.Run("Len", func(t *testing.T) {
@@ -216,6 +225,7 @@ func seqIsTake[S comparable](t *testing.T, seq Seq[S], ss []S) {
 	}
 
 	t.Run("0", func(t *testing.T) {
+		seq = createSeq()
 		head, tail := seq.Take(0)
 		if head.Len() != 0 {
 			t.Errorf("When calling Take(0) 'head' must be the empty array")
@@ -228,6 +238,7 @@ func seqIsTake[S comparable](t *testing.T, seq Seq[S], ss []S) {
 	// Ensure we can Take(n) for different n, and rebuild the exact ss
 	for _, n := range []int{1, 2, 3, 100} {
 		t.Run(fmt.Sprintf("%d", n), func(t *testing.T) {
+			seq = createSeq()
 			count := 0
 			for head, tail := seq.Take(n); head.Len() != 0; head, tail = tail.Take(n) {
 				for i := range head {
@@ -250,6 +261,42 @@ func seqIsTake[S comparable](t *testing.T, seq Seq[S], ss []S) {
 			}
 		})
 	}
+}
+
+func seqIsTakeWhile[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
+	t.Helper()
+
+	seq := createSeq()
+	sz := seq.Len()
+	if sz != LenUnknown {
+		t.Run("Len", func(t *testing.T) {
+			if sz != len(ss) {
+				t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
+			}
+		})
+	}
+
+	t.Run("skip-all", func(t *testing.T) {
+		seq = createSeq()
+		head, tail := seq.TakeWhile(func(s S) bool { return false })
+		if head.Len() != 0 {
+			t.Errorf("When calling TakeWhile(false) 'head' must be the empty array")
+		}
+		if sz != LenUnknown && sz != tail.Len() {
+			t.Errorf("When calling TakeWhile(false) 'tail' must have the same length")
+		}
+	})
+
+	t.Run("all", func(t *testing.T) {
+		seq = createSeq()
+		head, tail := seq.TakeWhile(func(s S) bool { return true })
+		if sz != LenUnknown && head.Len() != sz {
+			t.Errorf("When calling TakeWhile(true) 'head' must be the entire array. len(head)=%d", len(head))
+		}
+		if remaining, _ := tail.First(); remaining.Ok() {
+			t.Errorf("When calling TakeWhile(true) 'tail' must be empty. Found %v", remaining.val)
+		}
+	})
 }
 
 func seqIsFirst[S comparable](t *testing.T, seq Seq[S], ss []S) {

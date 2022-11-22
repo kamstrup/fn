@@ -33,7 +33,6 @@ are definitely super useful and would fit well in some extension library for Fn(
 TODO
 ---
 ```
-// STARTED ConcatOf(seqs Seq[Seq[T]]) Seq[T], and ConcatOfArgs(seqs ... Seq[T]) Seq[T]
 // seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
 // Compare func helpers LessThan, GreaterThan, Is, IsNot
 // seq.Any(pred)/All(pred) (should any return a tail Seq, or just bool)?
@@ -45,7 +44,6 @@ TODO
 // seq.Go(n, f) (n goroutines) and seq.GoErr(, f). Auto-wait, or SeqGo.Wait()? Control chan? 
 // MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
 // Seq.Last()
-// Better testing for Zip
 // Seq of single element (see SingletOf(t))
 // EmptySeq impl. (currently just wraps an empty slice), but an empty struct{} would do even better
 // Maybe a "Random Access"[K,V] interface that Array, AssocOf, and SetOf can implement
@@ -68,4 +66,5 @@ Sorting with some pre-declared generic helpers
 Infinite Seqs from source functions
 Zip 2 Seqs into a Seq of Tuples
 RangeOf(from, to) in both directions
+Concat(Seq[Seq[T]]), and ConcatOfArgs(seqs ... Seq[T])
 ```

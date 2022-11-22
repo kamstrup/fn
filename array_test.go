@@ -65,3 +65,10 @@ func TestArrayReverse(t *testing.T) {
 	arr = ArrayOfArgs[int]().Reverse()
 	SeqTest(t, arr).IsEmpty()
 }
+
+func TestArraySuite(t *testing.T) {
+	createArr := func() Seq[int] {
+		return ArrayOfArgs(1, 2, 3, 4)
+	}
+	SeqTestSuite(t, createArr).Is(1, 2, 3, 4)
+}

@@ -2,6 +2,7 @@ package fn
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -128,8 +129,13 @@ func (ts TestSeqSuite[S]) Is(ss ...S) {
 		seqIsTakeWhile(t, ts.createSeq, ss)
 	})
 
-	// TODO: test Skip(n)
-	// TODO: test Where(pred)
+	ts.t.Run("Skip", func(t *testing.T) {
+		seqSkip(t, ts.createSeq, ss)
+	})
+
+	ts.t.Run("Where", func(t *testing.T) {
+		seqIsWhere(t, ts.createSeq, ss)
+	})
 	// TODO: test While(pred)
 
 	ts.t.Run("First", func(t *testing.T) {
@@ -295,6 +301,130 @@ func seqIsTakeWhile[S comparable](t *testing.T, createSeq func() Seq[S], ss []S)
 		}
 		if remaining, _ := tail.First(); remaining.Ok() {
 			t.Errorf("When calling TakeWhile(true) 'tail' must be empty. Found %v", remaining.val)
+		}
+	})
+}
+
+func seqSkip[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
+	t.Helper()
+
+	sz := createSeq().Len()
+
+	t.Run("skip-all", func(t *testing.T) {
+		seq := createSeq()
+		tail := seq.Skip(100_000)
+		if sz != LenUnknown && tail.Len() != 0 {
+			t.Errorf("When calling Skip(100,000) 'tail' must be empty")
+		}
+		if fst, _ := tail.First(); fst.Ok() {
+			t.Errorf("Must not be able to take First() after Skipping everything")
+		}
+	})
+
+	t.Run("one-at-a-time", func(t *testing.T) {
+		i := 0
+		seq := createSeq()
+		for ; i < 100_000 && seq.Len() != 0; i++ {
+			seq = seq.Skip(1)
+		}
+		if sz != LenUnknown && i == 100_000 {
+			t.Errorf("Failed to Skip() Seq 1-by-1, never became empty")
+		}
+		if fst, _ := seq.First(); fst.Ok() {
+			t.Errorf("Must not be able to take First() after Skipping everything")
+		}
+	})
+
+	if sz == LenUnknown {
+		return // rest of these tests require a Len
+	}
+
+	t.Run("Len", func(t *testing.T) {
+		if sz != len(ss) {
+			t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
+		}
+	})
+
+	t.Run("skip-all-exact", func(t *testing.T) {
+		seq := createSeq()
+		tail := seq.Skip(sz)
+		if sz != LenUnknown && tail.Len() != 0 {
+			t.Errorf("When calling Skip(sz) 'tail' must be empty")
+		}
+		if fst, _ := tail.First(); fst.Ok() {
+			t.Errorf("Must not be able to take First() after Skipping everything")
+		}
+	})
+}
+
+func seqIsWhere[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
+	t.Helper()
+
+	t.Run("false/first", func(t *testing.T) {
+		seq := createSeq()
+		wh := seq.Where(func(_ S) bool { return false })
+		if fst, _ := wh.First(); fst.Ok() {
+			t.Errorf("Must not be able to take First() after dropping everything with where=false")
+		}
+	})
+
+	t.Run("false/array", func(t *testing.T) {
+		seq := createSeq()
+		wh := seq.Where(func(_ S) bool { return false }).Array()
+		if wh.Len() != 0 {
+			t.Errorf("Must create empty array after dropping everything with where=false")
+		}
+	})
+
+	t.Run("false/take-while", func(t *testing.T) {
+		seq := createSeq()
+		head, tail := seq.Where(func(_ S) bool { return false }).TakeWhile(func(_ S) bool { return true })
+		if head.Len() != 0 {
+			t.Errorf("Must create empty array after dropping everything with where=false")
+		}
+		if fst, _ := tail.First(); fst.Ok() {
+			t.Errorf("Must not be able to take First() from tail, after dropping everything with where=false")
+		}
+	})
+
+	t.Run("true/first", func(t *testing.T) {
+		seq := createSeq()
+		wh := seq.Where(func(_ S) bool { return true })
+		i := 0
+		for fst, tail := wh.First(); fst.Ok(); fst, tail = tail.First() {
+			if ss[i] != fst.val {
+				t.Errorf("Unexpected value at inde %d. Expected %v, got %v", i, ss[i], fst.val)
+			}
+			i++
+		}
+		if i != len(ss) {
+			t.Errorf("Unexpected number of elements in Seq.Where(true). Expected %d, got %d", len(ss), i)
+		}
+	})
+
+	t.Run("true/array", func(t *testing.T) {
+		seq := createSeq()
+		arr := seq.Where(func(_ S) bool { return true }).Array()
+
+		if len(arr) != len(ss) {
+			t.Errorf("Unexpected number of elements in Seq.Where(true). Expected %d, got %d", len(ss), len(arr))
+		}
+		if !reflect.DeepEqual(arr.AsSlice(), ss) {
+			t.Errorf("Array elements mismatch. Expected %v, got %v", ss, arr)
+		}
+	})
+
+	t.Run("true/take-while", func(t *testing.T) {
+		seq := createSeq()
+		head, tail := seq.Where(func(_ S) bool { return true }).TakeWhile(func(_ S) bool { return true })
+		if head.Len() != len(ss) {
+			t.Errorf("Must create empty array after dropping everything with where=false")
+		}
+		if !reflect.DeepEqual(head.AsSlice(), ss) {
+			t.Errorf("Array elements mismatch. Expected %v, got %v", ss, head)
+		}
+		if fst, _ := tail.First(); fst.Ok() {
+			t.Errorf("Tail should be empty. Got %v", fst.val)
 		}
 	})
 }

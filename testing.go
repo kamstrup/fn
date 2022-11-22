@@ -141,6 +141,14 @@ func (ts TestSeqSuite[S]) Is(ss ...S) {
 	ts.t.Run("First", func(t *testing.T) {
 		seqIsFirst(t, ts.createSeq(), ss)
 	})
+
+	ts.t.Run("All", func(t *testing.T) {
+		seqIsAll(t, ts.createSeq, ss)
+	})
+
+	ts.t.Run("Any", func(t *testing.T) {
+		seqIsAny(t, ts.createSeq, ss)
+	})
 }
 
 func (ts TestSeqSuite[S]) IsEmpty() {
@@ -457,4 +465,36 @@ func seqIsFirst[S comparable](t *testing.T, seq Seq[S], ss []S) {
 		t.Errorf("Number of elements in ForEachIndex incorrect. Expected %d, found %d",
 			sz, idx)
 	}
+}
+
+func seqIsAll[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
+	t.Helper()
+
+	t.Run("false", func(t *testing.T) {
+		if createSeq().All(func(_ S) bool { return false }) {
+			t.Errorf("All(false) should be false")
+		}
+	})
+
+	t.Run("true", func(t *testing.T) {
+		if !createSeq().All(func(_ S) bool { return true }) {
+			t.Errorf("All(true) should be true")
+		}
+	})
+}
+
+func seqIsAny[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
+	t.Helper()
+
+	t.Run("false", func(t *testing.T) {
+		if createSeq().Any(func(_ S) bool { return false }) {
+			t.Errorf("Any(false) should be false")
+		}
+	})
+
+	t.Run("true", func(t *testing.T) {
+		if !createSeq().Any(func(_ S) bool { return true }) {
+			t.Errorf("Any(true) should be true")
+		}
+	})
 }

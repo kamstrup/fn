@@ -33,24 +33,27 @@ are definitely super useful and would fit well in some extension library for Fn(
 TODO
 ---
 ```
+// Put examples in this README
+// Should Len() return (int, ok) instead? Do we want a special LenInfinite?
+           (ZipOf() would benefit in pre-allocs by knowing if one of the seqs were infinite)
 // seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
 // Compare func helpers LessThan, GreaterThan, Is, IsNot
-// seq.Any(pred)/All(pred) (should any return a tail Seq, or just bool)?
 // seq.Split(pred) Seq[Seq[T]]
-// Seq over a channel (maybe some special prupose helpers for Select on channel?)
-// Do we need a special string Seq? StringOf(string)
-// Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
+// Seq over a channel (maybe some special purpose helpers for Select on channel?)
+// StringOf(string) Seq[byte] (needed to avoid copying it into a []byte)
+// RunesOf(string) Seq[rune]
 // Improve testing utils assert/require? Move to own package?
 // seq.Go(n, f) (n goroutines) and seq.GoErr(, f). Auto-wait, or SeqGo.Wait()? Control chan? 
-// MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
-// Seq.Last()
 // Seq of single element (see SingletOf(t))
 // EmptySeq impl. (currently just wraps an empty slice), but an empty struct{} would do even better
+// Seq.Last()
 // Maybe a "Random Access"[K,V] interface that Array, AssocOf, and SetOf can implement
 //         (although Array is just a []T, Assoc just a map[K]V, and Set a map[K]struct{},
             so support random access via subscripts directly.) 
-// Should Len() return (int, ok) instead? DO we want a special LenInfinite?
-           (ZipOf() would benefit in pre-allocs by knowing if one of the seqs were infinite)
+// A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
+// A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
+// MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
+// Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
 ```
 
 DONE
@@ -67,4 +70,5 @@ Infinite Seqs from source functions
 Zip 2 Seqs into a Seq of Tuples
 RangeOf(from, to) in both directions
 Concat(Seq[Seq[T]]), and ConcatOfArgs(seqs ... Seq[T])
+seq.Any() and seq.All()
 ```

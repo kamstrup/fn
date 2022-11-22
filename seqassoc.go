@@ -150,3 +150,11 @@ func (a assocSeq[K, V]) First() (Opt[Tuple[K, V]], Seq[Tuple[K, V]]) {
 	first, _ := head.First()
 	return first, tail
 }
+
+func (a assocSeq[K, V]) All(pred Predicate[Tuple[K, V]]) bool {
+	return seqAll[Tuple[K, V]](a, pred)
+}
+
+func (a assocSeq[K, V]) Any(pred Predicate[Tuple[K, V]]) bool {
+	return seqAny[Tuple[K, V]](a, pred)
+}

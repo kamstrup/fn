@@ -59,3 +59,42 @@ func TestMapSeqFirst(t *testing.T) {
 	SeqTest(t, arr).IsEmpty()
 	OptTest(t, first).IsEmpty()
 }
+
+func TestMapWhereAnyAll(t *testing.T) {
+	m := MapOf[int, int](ArrayOfArgs(1, 2, 3), func(i int) int {
+		return i * 2
+	})
+
+	if !m.All(isEven) {
+		t.Errorf("all even numbers should be even!")
+	}
+
+	if !m.Any(isEven) {
+		t.Errorf("all even numbers should be even!")
+	}
+
+	if m.All(isOdd) {
+		t.Errorf("all even numbers should be even!")
+	}
+
+	if m.Any(isOdd) {
+		t.Errorf("all even numbers should be even!")
+	}
+
+	mz := MapOf[int, int](ArrayOfArgs(1, 2, 0, 3), func(i int) int {
+		return i * 2
+	}).Where(func(i int) bool { return i != 4 })
+
+	if !mz.Any(IsZero[int]) {
+		t.Errorf("we should find a zero in mz")
+	}
+	if !mz.Any(IsNonZero[int]) {
+		t.Errorf("we should find a non-zero number in mz")
+	}
+	if mz.All(IsZero[int]) {
+		t.Errorf("mz is not all zeroes!")
+	}
+	if !mz.Any(IsNonZero[int]) {
+		t.Errorf("mz has non-zero elements!")
+	}
+}

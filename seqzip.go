@@ -177,3 +177,11 @@ func (z zipSeq[X, Y]) First() (Opt[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 
 	return OptOf(Tuple[X, Y]{fx.val, fy.val}), zipSeq[X, Y]{tx, ty}
 }
+
+func (z zipSeq[X, Y]) All(pred Predicate[Tuple[X, Y]]) bool {
+	return seqAll[Tuple[X, Y]](z, pred)
+}
+
+func (z zipSeq[X, Y]) Any(pred Predicate[Tuple[X, Y]]) bool {
+	return seqAny[Tuple[X, Y]](z, pred)
+}

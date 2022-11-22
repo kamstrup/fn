@@ -176,6 +176,13 @@ func IsNonZero[T comparable](t T) bool {
 	return t != zero
 }
 
+// Negate takes a Predicate and returns another predicate that is the logical inverse.
+func Negate[T any](pred Predicate[T]) Predicate[T] {
+	return func(t T) bool {
+		return !pred(t)
+	}
+}
+
 // Into executes a Seq, collecting the results via a collection function (FuncCollect).
 // The method signature follows append() and copy() conventions,
 // having the destination to put data into first.

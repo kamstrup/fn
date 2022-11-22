@@ -89,6 +89,14 @@ func (a Array[T]) First() (Opt[T], Seq[T]) {
 	return OptOf(a[0]), ArrayOf(a[1:])
 }
 
+func (a Array[T]) All(pred Predicate[T]) bool {
+	return seqAll(a.Seq(), pred)
+}
+
+func (a Array[T]) Any(pred Predicate[T]) bool {
+	return seqAny(a.Seq(), pred)
+}
+
 // Sort is special for Array Seqs since it is done in place.
 // Generally functions and methods in the fn() library leaves all data structures immutable,
 // but this is an exception. Caveat Emptor!

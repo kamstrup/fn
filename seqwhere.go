@@ -132,3 +132,11 @@ func (ws whereSeq[T]) First() (Opt[T], Seq[T]) {
 		}
 	}
 }
+
+func (ws whereSeq[T]) All(pred Predicate[T]) bool {
+	return seqAll[T](ws, pred)
+}
+
+func (ws whereSeq[T]) Any(pred Predicate[T]) bool {
+	return seqAny[T](ws, pred)
+}

@@ -74,3 +74,11 @@ func (s sourceSeq[T]) While(pred Predicate[T]) Seq[T] {
 func (s sourceSeq[T]) First() (Opt[T], Seq[T]) {
 	return OptOf(s.f()), s
 }
+
+func (s sourceSeq[T]) All(pred Predicate[T]) bool {
+	return seqAll[T](s, pred)
+}
+
+func (s sourceSeq[T]) Any(pred Predicate[T]) bool {
+	return seqAny[T](s, pred)
+}

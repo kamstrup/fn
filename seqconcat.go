@@ -179,6 +179,14 @@ func (c concatSeq[T]) First() (Opt[T], Seq[T]) {
 	}
 }
 
+func (c concatSeq[T]) All(pred Predicate[T]) bool {
+	return seqAll[T](c, pred)
+}
+
+func (c concatSeq[T]) Any(pred Predicate[T]) bool {
+	return seqAny[T](c, pred)
+}
+
 // seq is just a cast helper, to make the Go compiler happy
 func (c concatSeq[T]) seq() Seq[T] {
 	return c

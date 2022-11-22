@@ -14,6 +14,8 @@ type Func2[S, T any] func(S, T)
 
 type Func2Err[S, T any] func(S, T) error
 
+// FuncMap is a function mapping type S to type T.
+// Used with fx. MapOf(), OptMap(), and TupleWithKey().
 type FuncMap[S, T any] func(S) T
 
 type FuncMapErr[S, T any] func(S) (T, error)
@@ -180,6 +182,15 @@ func IsNonZero[T comparable](t T) bool {
 func Negate[T any](pred Predicate[T]) Predicate[T] {
 	return func(t T) bool {
 		return !pred(t)
+	}
+}
+
+// TupleWithKey creates a FuncMap to use with MapOf or OptMap.
+// The returned function yields Tuples keyed by the keySelectors return value.
+// Usually used in conjunction with Into and Assoc to build a map[X]Y.
+func TupleWithKey[X comparable, Y any](keySelector FuncMap[Y, X]) func(Y) Tuple[X, Y] {
+	return func(y Y) Tuple[X, Y] {
+		return TupleOf(keySelector(y), y)
 	}
 }
 

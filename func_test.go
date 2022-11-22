@@ -58,9 +58,9 @@ func TestCollectAssoc(t *testing.T) {
 	oddNums := ArrayOfArgs(1, 2, 3).
 		Where(func(i int) bool { return i%2 == 1 })
 
-	arr := MapOf(oddNums, func(i int) Tuple[string, int] {
-		return TupleOf(strconv.FormatInt(int64(i), 10), i)
-	})
+	arr := MapOf(oddNums, TupleWithKey(func(i int) string {
+		return strconv.FormatInt(int64(i), 10)
+	}))
 	res := Into(nil, Assoc[string, int], arr)
 	exp := map[string]int{
 		"1": 1, "3": 3,

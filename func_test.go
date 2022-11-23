@@ -83,7 +83,7 @@ func TestCollectSet(t *testing.T) {
 
 func TestCollectString(t *testing.T) {
 	strs := ArrayOfArgs("one", "two").Seq()
-	res := Into(nil, StringBuffer, strs)
+	res := Into(nil, StringBuilder, strs)
 	exp := "onetwo"
 	if exp != res.String() {
 		t.Errorf("expected %v, got %v", exp, res)

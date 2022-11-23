@@ -5,14 +5,14 @@ type concatSeq[T any] struct {
 	tail Seq[Seq[T]]
 }
 
-func ConcatOf[T any](seqs Seq[Seq[T]]) Seq[T] {
+func FlattenOf[T any](seqs Seq[Seq[T]]) Seq[T] {
 	return concatSeq[T]{
 		head: nil,
 		tail: seqs,
 	}
 }
 
-func ConcatOfArgs[T any](seqs ...Seq[T]) Seq[T] {
+func ConcatOf[T any](seqs ...Seq[T]) Seq[T] {
 	return concatSeq[T]{
 		head: nil,
 		tail: ArrayOf(seqs),
@@ -102,7 +102,7 @@ func (c concatSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 	var arr []T
 	for fst, tail := c.First(); fst.Ok(); fst, tail = tail.First() {
 		if !pred(fst.val) {
-			return arr, ConcatOfArgs(SingletOf(fst.val), tail)
+			return arr, ConcatOf(SingletOf(fst.val), tail)
 		}
 		arr = append(arr, fst.val)
 	}

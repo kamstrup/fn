@@ -139,7 +139,7 @@ func (z zipSeq[X, Y]) TakeWhile(predicate Predicate[Tuple[X, Y]]) (Array[Tuple[X
 			// pred(tup) is false, so we return.
 			// We already consumed the heads of tx and ty, so we need to "put them back",
 			// we do this by creating a concat() of the consumed tuple with the tail
-			return ArrayOf(arr), ConcatOfArgs(
+			return ArrayOf(arr), ConcatOf(
 				SingletOf(TupleOf(fx.val, fy.val)),
 				ZipOf(tx, ty))
 		}

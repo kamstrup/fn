@@ -50,6 +50,6 @@ func seqAny[T any](seq Seq[T], pred Predicate[T]) bool {
 }
 
 func seqAll[T any](seq Seq[T], pred Predicate[T]) bool {
-	fstMismatch, _ := seq.Where(Negate(pred)).First()
+	fstMismatch, _ := seq.Where(Not(pred)).First()
 	return fstMismatch.Empty()
 }

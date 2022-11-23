@@ -1,6 +1,9 @@
 package fn
 
-import "bytes"
+import (
+	"bytes"
+	"strings"
+)
 
 type Func0 func()
 
@@ -58,11 +61,11 @@ func Append[T any](into []T, t T) []T {
 	return append(into, t)
 }
 
-// StringBuffer is a FuncCollect for use with Into that writes strings into a bytes.Buffer.
+// StringBuilder is a FuncCollect for use with Into that writes strings into a bytes.Buffer.
 // This function works with nil or a pre-built bytes.Buffer as initial value.
-func StringBuffer(into *bytes.Buffer, s string) *bytes.Buffer {
+func StringBuilder(into *strings.Builder, s string) *strings.Builder {
 	if into == nil {
-		into = &bytes.Buffer{}
+		into = &strings.Builder{}
 	}
 	_, _ = into.WriteString(s)
 	return into
@@ -178,8 +181,8 @@ func IsNonZero[T comparable](t T) bool {
 	return t != zero
 }
 
-// Negate takes a Predicate and returns another predicate that is the logical inverse.
-func Negate[T any](pred Predicate[T]) Predicate[T] {
+// Not takes a Predicate and returns another predicate that is the logical inverse.
+func Not[T any](pred Predicate[T]) Predicate[T] {
 	return func(t T) bool {
 		return !pred(t)
 	}
@@ -197,7 +200,7 @@ func TupleWithKey[X comparable, Y any](keySelector FuncMap[Y, X]) func(Y) Tuple[
 // Into executes a Seq, collecting the results via a collection function (FuncCollect).
 // The method signature follows append() and copy() conventions,
 // having the destination to put data into first.
-// Typical collection functions are Append, Assoc, Set, Sum, Count, StringBuffer, or ByteBuffer.
+// Typical collection functions are Append, Assoc, Set, Sum, Count, StringBuilder, or ByteBuffer.
 func Into[S any, T any](into T, collector FuncCollect[S, T], seq Seq[S]) T {
 	seq.ForEach(func(s S) {
 		into = collector(into, s)

@@ -9,6 +9,14 @@ func TupleOf[X comparable, Y any](x X, y Y) Tuple[X, Y] {
 	return Tuple[X, Y]{x, y}
 }
 
+func TupleKey[X comparable, Y any](t Tuple[X, Y]) X {
+	return t.x
+}
+
+func TupleValue[X comparable, Y any](t Tuple[X, Y]) Y {
+	return t.y
+}
+
 func (t Tuple[X, Y]) X() X {
 	return t.x
 }

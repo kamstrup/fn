@@ -65,19 +65,19 @@ func TestMapWhereAnyAll(t *testing.T) {
 		return i * 2
 	})
 
-	if !m.All(isEven) {
+	if !All(m, isEven) {
 		t.Errorf("all even numbers should be even!")
 	}
 
-	if !m.Any(isEven) {
+	if !Any(m, isEven) {
 		t.Errorf("all even numbers should be even!")
 	}
 
-	if m.All(isOdd) {
+	if All(m, isOdd) {
 		t.Errorf("all even numbers should be even!")
 	}
 
-	if m.Any(isOdd) {
+	if Any(m, isOdd) {
 		t.Errorf("all even numbers should be even!")
 	}
 
@@ -85,16 +85,16 @@ func TestMapWhereAnyAll(t *testing.T) {
 		return i * 2
 	}).Where(func(i int) bool { return i != 4 })
 
-	if !mz.Any(IsZero[int]) {
+	if !Any(mz, IsZero[int]) {
 		t.Errorf("we should find a zero in mz")
 	}
-	if !mz.Any(IsNonZero[int]) {
+	if !Any(mz, IsNonZero[int]) {
 		t.Errorf("we should find a non-zero number in mz")
 	}
-	if mz.All(IsZero[int]) {
+	if All(mz, IsZero[int]) {
 		t.Errorf("mz is not all zeroes!")
 	}
-	if !mz.Any(IsNonZero[int]) {
+	if !Any(mz, IsNonZero[int]) {
 		t.Errorf("mz has non-zero elements!")
 	}
 }

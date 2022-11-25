@@ -43,19 +43,4 @@ type Seq[T any] interface {
 	While(predicate Predicate[T]) Seq[T]
 	// First executes the first element and returns an Opt with it. The tail is returned as a Seq.
 	First() (Opt[T], Seq[T])
-	// All executes the Seq and returns true iff all elements return true under the predicate.
-	All(Predicate[T]) bool
-	// Any executes the Seq up to a point where the predicate returns true.
-	// If it finds such an element it returns true, otherwise if there are no matches, false.
-	Any(Predicate[T]) bool
-}
-
-func seqAny[T any](seq Seq[T], pred Predicate[T]) bool {
-	fst, _ := seq.Where(pred).First()
-	return fst.Ok()
-}
-
-func seqAll[T any](seq Seq[T], pred Predicate[T]) bool {
-	fstMismatch, _ := seq.Where(Not(pred)).First()
-	return fstMismatch.Empty()
 }

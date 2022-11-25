@@ -34,8 +34,7 @@ TODO
 ---
 ```
 // Put examples in this README
-// Rework RangeOf() and maybe SourceOf+SourceFunc... should maybe be able to abort by returning ErrStop?
-// Remove All and Any from Seq interface. Reads better as static functions.  
+// Rework RangeOf() and maybe SourceOf+SourceFunc... should maybe be able to abort by returning ErrStop?  
 // seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
 // Compare func helpers LessThan, GreaterThan, Is, IsNot
 // seq.Split(pred) Seq[Seq[T]]

@@ -147,11 +147,3 @@ func (s setSeq[K]) First() (Opt[K], Seq[K]) {
 	first, _ := head.First()
 	return first, tail
 }
-
-func (s setSeq[T]) All(pred Predicate[T]) bool {
-	return seqAll[T](s, pred)
-}
-
-func (s setSeq[T]) Any(pred Predicate[T]) bool {
-	return seqAny[T](s, pred)
-}

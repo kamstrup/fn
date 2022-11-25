@@ -100,14 +100,6 @@ func (c chanSeq[T]) First() (Opt[T], Seq[T]) {
 	return OptOf(t), c
 }
 
-func (c chanSeq[T]) All(pred Predicate[T]) bool {
-	return seqAll[T](c, pred)
-}
-
-func (c chanSeq[T]) Any(pred Predicate[T]) bool {
-	return seqAny[T](c, pred)
-}
-
 func (c chanSeq[T]) seq() Seq[T] {
 	return c
 }

@@ -92,11 +92,3 @@ func (w whileSeq[T]) First() (Opt[T], Seq[T]) {
 		pred: w.pred,
 	}
 }
-
-func (w whileSeq[T]) All(pred Predicate[T]) bool {
-	return seqAll[T](w, pred)
-}
-
-func (w whileSeq[T]) Any(pred Predicate[T]) bool {
-	return seqAny[T](w, pred)
-}

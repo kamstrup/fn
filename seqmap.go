@@ -95,11 +95,3 @@ func (m mappedSeq[S, T]) First() (Opt[T], Seq[T]) {
 	s, tail := m.seq.First()
 	return OptMap(s, m.f), MapOf(tail, m.f)
 }
-
-func (m mappedSeq[S, T]) All(pred Predicate[T]) bool {
-	return seqAll[T](m, pred)
-}
-
-func (m mappedSeq[S, T]) Any(pred Predicate[T]) bool {
-	return seqAny[T](m, pred)
-}

@@ -54,7 +54,7 @@ func TestUsersById(t *testing.T) {
 	}
 
 	// Let's check if they all have a valid "name" field
-	everyOneHasName := fn.ArrayOf(users).All((*User).HasName)
+	everyOneHasName := fn.All(fn.ArrayOf(users).Seq(), (*User).HasName)
 	fmt.Println("Does everyone have a name?", everyOneHasName)
 
 	// Now let's print the IDs of the users without names, sorted reverse alphabetically

@@ -221,3 +221,16 @@ func IntoErr[S any, T any](into T, collector FuncCollectErr[S, T], seq Seq[S]) (
 	})
 	return into, err
 }
+
+// Any executes the Seq up to a point where the predicate returns true.
+// If it finds such an element it returns true, otherwise if there are no matches, false.
+func Any[T any](seq Seq[T], pred Predicate[T]) bool {
+	fst, _ := seq.Where(pred).First()
+	return fst.Ok()
+}
+
+// All executes the Seq and returns true iff all elements return true under the predicate.
+func All[T any](seq Seq[T], pred Predicate[T]) bool {
+	fstMismatch, _ := seq.Where(Not(pred)).First()
+	return fstMismatch.Empty()
+}

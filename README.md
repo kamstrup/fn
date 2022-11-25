@@ -33,26 +33,32 @@ are definitely super useful and would fit well in some extension library for Fn(
 TODO
 ---
 ```
-// Put examples in this README
-// Rework RangeOf() and maybe SourceOf+SourceFunc... should maybe be able to abort by returning ErrStop?  
-// seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
-// Compare func helpers LessThan, GreaterThan, Is, IsNot
-// seq.Split(pred) Seq[Seq[T]]
-// StringOf(string) Seq[byte] (needed to avoid copying it into a []byte)
-// RunesOf(string) Seq[rune]
-// Improve testing utils assert/require? Move to own package?
-// seq.Go(n, f) (n goroutines) and seq.GoErr(, f). Auto-wait, or SeqGo.Wait()? Control chan? 
-// Seq of single element (see SingletOf(t))
-// EmptySeq impl. (currently just wraps an empty slice), but an empty struct{} would do even better
-// Seq.Last()
-// Maybe a "Random Access"[K,V] interface that Array, AssocOf, and SetOf can implement
-//         (although Array is just a []T, Assoc just a map[K]V, and Set a map[K]struct{},
-            so support random access via subscripts directly.) 
-// A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
-// A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
-// MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
-// Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
-// MultiChan() Seq that selects on multiple chan T?
+DOCS
+* Put examples in this README
+
+API CHANGES
+* Rework RangeOf() and maybe SourceOf+SourceFunc... should maybe be able to abort by returning ErrStop?
+* Range.Len() should be well defined.
+
+FEATURES
+* seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
+* Compare func helpers LessThan, GreaterThan, Is, IsNot
+* seq.Split(pred) Seq[Seq[T]] (including or excluding the separator? We need both modes)
+* RunesOf(string) Seq[rune]
+* Improve testing utils assert/require? Move to own package?
+* seq.Go(n, f) (n goroutines) and seq.GoErr(, f). Auto-wait, or SeqGo.Wait()? Control chan? 
+* Seq.Last() maybe?
+* Set, Assoc are just straight type wrappers. Make it public API like for Array and String? 
+* A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
+* A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
+* MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
+* Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
+* MultiChan() Seq that selects on multiple chan T?
+* fn.GroupBy(Seq[S], FuncMap[S,T]) map[T][]S
+
+OPTIMIZATIONS
+* Seq of single element (see SingletOf(t))
+* EmptySeq impl. (currently just wraps an empty slice), but an empty struct{} would do even better
 ```
 
 DONE
@@ -72,4 +78,5 @@ Concat(Seq[Seq[T]]), and ConcatOfArgs(seqs ... Seq[T])
 seq.Any() and seq.All()
 Seq length is optional. sz, ok := seq.Len() and can be finite, infinite, or unknown 
 Seq over a channel
+Seq[byte] of a string
 ```

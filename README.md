@@ -35,10 +35,10 @@ TODO
 ```
 // Put examples in this README
 // Rework RangeOf() and maybe SourceOf+SourceFunc... should maybe be able to abort by returning ErrStop?
+// Remove All and Any from Seq interface. Reads better as static functions.  
 // seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
 // Compare func helpers LessThan, GreaterThan, Is, IsNot
 // seq.Split(pred) Seq[Seq[T]]
-// Seq over a channel (maybe some special purpose helpers for Select on channel?)
 // StringOf(string) Seq[byte] (needed to avoid copying it into a []byte)
 // RunesOf(string) Seq[rune]
 // Improve testing utils assert/require? Move to own package?
@@ -53,6 +53,7 @@ TODO
 // A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
 // MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
 // Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
+// MultiChan() Seq that selects on multiple chan T?
 ```
 
 DONE
@@ -71,4 +72,5 @@ RangeOf(from, to) in both directions
 Concat(Seq[Seq[T]]), and ConcatOfArgs(seqs ... Seq[T])
 seq.Any() and seq.All()
 Seq length is optional. sz, ok := seq.Len() and can be finite, infinite, or unknown 
+Seq over a channel
 ```

@@ -46,7 +46,7 @@ FEATURES
 * seq.Split(pred) Seq[Seq[T]] (including or excluding the separator? We need both modes)
 * RunesOf(string) Seq[rune]
 * Improve testing utils assert/require? Move to own package?
-* seq.Go(n, f) (n goroutines) and seq.GoErr(, f). Auto-wait, or SeqGo.Wait()? Control chan? 
+* fn.GoErr(seq, numTasks, FuncMapErr) -- or some version of fn.Go() with cancellation and error handling. 
 * Seq.Last() maybe?
 * Set, Assoc are just straight type wrappers. Make it public API like for Array and String? 
 * A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
@@ -79,4 +79,5 @@ seq.Any() and seq.All()
 Seq length is optional. sz, ok := seq.Len() and can be finite, infinite, or unknown 
 Seq over a channel
 Seq[byte] of a string
+fn.Go() to execute a Seq in N goroutines and collect the results into another Seq
 ```

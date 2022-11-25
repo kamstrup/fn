@@ -4,6 +4,8 @@ package fn
 // into another Seq. The returned Seq has the same Seq.Len() as the input Seq.
 // If you are looking for ways to create a Seq from a Go map[K]V please
 // look at AssocOf() or SetOf().
+// If the mapping function is some kind of heavy operation or requires IO,
+// consider using the parallelized version of MapOf called Go.
 func MapOf[S, T any](seq Seq[S], fm FuncMap[S, T]) Seq[T] {
 	return mappedSeq[S, T]{
 		f:   fm,

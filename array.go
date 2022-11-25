@@ -37,8 +37,8 @@ func (a Array[T]) ForEachIndex(f Func2[int, T]) {
 	}
 }
 
-func (a Array[T]) Len() int {
-	return len(a)
+func (a Array[T]) Len() (int, bool) {
+	return len(a), true
 }
 
 func (a Array[T]) Array() Array[T] {
@@ -46,7 +46,7 @@ func (a Array[T]) Array() Array[T] {
 }
 
 func (a Array[T]) Take(n int) (Array[T], Seq[T]) {
-	if a.Len() <= n {
+	if len(a) <= n {
 		return a, SeqEmpty[T]()
 	}
 	return a[:n], a[n:]
@@ -62,7 +62,7 @@ func (a Array[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 }
 
 func (a Array[T]) Skip(n int) Seq[T] {
-	if a.Len() <= n {
+	if len(a) <= n {
 		return SeqEmpty[T]()
 	}
 	return a[n:]

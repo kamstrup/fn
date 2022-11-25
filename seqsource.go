@@ -26,8 +26,8 @@ func (s sourceSeq[T]) ForEachIndex(f Func2[int, T]) {
 	}
 }
 
-func (s sourceSeq[T]) Len() int {
-	return LenUnknown
+func (s sourceSeq[T]) Len() (int, bool) {
+	return LenInfinite, false
 }
 
 func (s sourceSeq[T]) Array() Array[T] {

@@ -30,12 +30,12 @@ func (m mappedSeq[S, T]) ForEachIndex(f Func2[int, T]) {
 	})
 }
 
-func (m mappedSeq[S, T]) Len() int {
+func (m mappedSeq[S, T]) Len() (int, bool) {
 	return m.seq.Len()
 }
 
 func (m mappedSeq[S, T]) Array() Array[T] {
-	if sz := m.seq.Len(); sz != LenUnknown {
+	if sz, ok := m.seq.Len(); ok {
 		arr := make([]T, sz)
 		m.ForEachIndex(func(i int, t T) {
 			arr[i] = t

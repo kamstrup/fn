@@ -34,8 +34,7 @@ TODO
 ---
 ```
 // Put examples in this README
-// Should Len() return (int, ok) instead? Do we want a special LenInfinite?
-           (ZipOf() would benefit in pre-allocs by knowing if one of the seqs were infinite)
+// Rework RangeOf() and maybe SourceOf+SourceFunc... should maybe be able to abort by returning ErrStop?
 // seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
 // Compare func helpers LessThan, GreaterThan, Is, IsNot
 // seq.Split(pred) Seq[Seq[T]]
@@ -71,4 +70,5 @@ Zip 2 Seqs into a Seq of Tuples
 RangeOf(from, to) in both directions
 Concat(Seq[Seq[T]]), and ConcatOfArgs(seqs ... Seq[T])
 seq.Any() and seq.All()
+Seq length is optional. sz, ok := seq.Len() and can be finite, infinite, or unknown 
 ```

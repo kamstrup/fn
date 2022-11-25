@@ -20,8 +20,8 @@ func (s setSeq[K]) ForEachIndex(f Func2[int, K]) {
 	}
 }
 
-func (s setSeq[K]) Len() int {
-	return len(s)
+func (s setSeq[K]) Len() (int, bool) {
+	return len(s), true
 }
 
 func (s setSeq[K]) Array() Array[K] {

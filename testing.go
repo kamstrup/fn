@@ -45,7 +45,7 @@ func SeqTestSuite[S comparable](t *testing.T, createSeq func() Seq[S]) TestSeqSu
 func (ts TestSeq[S]) LenIs(n int) {
 	ts.t.Helper()
 
-	if sz := ts.seq.Len(); sz != n {
+	if sz, _ := ts.seq.Len(); sz != n {
 		ts.t.Errorf("Seq len mismatch. Expected %d, found %d", n, sz)
 	}
 }
@@ -53,8 +53,8 @@ func (ts TestSeq[S]) LenIs(n int) {
 func (ts TestSeq[S]) Is(ss ...S) {
 	ts.t.Helper()
 
-	sz := ts.seq.Len()
-	if sz != LenUnknown {
+	sz, lenOk := ts.seq.Len()
+	if lenOk {
 		if sz != len(ss) {
 			ts.t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
 		}
@@ -72,7 +72,7 @@ func (ts TestSeq[S]) Is(ss ...S) {
 		}
 	})
 
-	if sz != LenUnknown && sz != count {
+	if lenOk && sz != count {
 		ts.t.Errorf("Number of elements in ForEachIndex incorrect. Expected %d, found %d",
 			sz, count)
 	}
@@ -167,8 +167,8 @@ func (ts TestSeqSuite[S]) IsEmpty() {
 func seqIsForEach[S comparable](t *testing.T, seq Seq[S], ss []S) {
 	t.Helper()
 
-	sz := seq.Len()
-	if sz != LenUnknown {
+	sz, lenOk := seq.Len()
+	if lenOk {
 		if sz != len(ss) {
 			t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
 		}
@@ -189,7 +189,7 @@ func seqIsForEach[S comparable](t *testing.T, seq Seq[S], ss []S) {
 		i++
 	})
 
-	if sz != LenUnknown && sz != i {
+	if lenOk && sz != i {
 		t.Errorf("Number of elements in ForEachIndex incorrect. Expected %d, found %d",
 			sz, i)
 	}
@@ -198,8 +198,8 @@ func seqIsForEach[S comparable](t *testing.T, seq Seq[S], ss []S) {
 func seqIsForEachIndex[S comparable](t *testing.T, seq Seq[S], ss []S) {
 	t.Helper()
 
-	sz := seq.Len()
-	if sz != LenUnknown {
+	sz, lenOk := seq.Len()
+	if lenOk {
 		if sz != len(ss) {
 			t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
 		}
@@ -219,7 +219,7 @@ func seqIsForEachIndex[S comparable](t *testing.T, seq Seq[S], ss []S) {
 		}
 	})
 
-	if sz != LenUnknown && sz != count {
+	if lenOk && sz != count {
 		t.Errorf("Number of elements in ForEachIndex incorrect. Expected %d, found %d",
 			sz, count)
 	}
@@ -229,8 +229,8 @@ func seqIsTake[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
 	t.Helper()
 
 	seq := createSeq()
-	sz := seq.Len()
-	if sz != LenUnknown {
+	sz, lenOk := seq.Len()
+	if lenOk {
 		t.Run("Len", func(t *testing.T) {
 			if sz != len(ss) {
 				t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
@@ -241,10 +241,10 @@ func seqIsTake[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
 	t.Run("0", func(t *testing.T) {
 		seq = createSeq()
 		head, tail := seq.Take(0)
-		if head.Len() != 0 {
+		if len(head) != 0 {
 			t.Errorf("When calling Take(0) 'head' must be the empty array")
 		}
-		if sz != LenUnknown && sz != tail.Len() {
+		if tailLen, _ := tail.Len(); lenOk && tailLen != sz {
 			t.Errorf("When calling Take(0) 'tail' must have the same length")
 		}
 	})
@@ -254,7 +254,7 @@ func seqIsTake[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
 		t.Run(fmt.Sprintf("%d", n), func(t *testing.T) {
 			seq = createSeq()
 			count := 0
-			for head, tail := seq.Take(n); head.Len() != 0; head, tail = tail.Take(n) {
+			for head, tail := seq.Take(n); len(head) != 0; head, tail = tail.Take(n) {
 				for i := range head {
 					if ss[count+i] != head[i] {
 						t.Errorf("Seq element mismatch at index %d. Expected %v, found %v",
@@ -281,8 +281,8 @@ func seqIsTakeWhile[S comparable](t *testing.T, createSeq func() Seq[S], ss []S)
 	t.Helper()
 
 	seq := createSeq()
-	sz := seq.Len()
-	if sz != LenUnknown {
+	sz, lenOk := seq.Len()
+	if lenOk {
 		t.Run("Len", func(t *testing.T) {
 			if sz != len(ss) {
 				t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
@@ -293,18 +293,18 @@ func seqIsTakeWhile[S comparable](t *testing.T, createSeq func() Seq[S], ss []S)
 	t.Run("skip-all", func(t *testing.T) {
 		seq = createSeq()
 		head, tail := seq.TakeWhile(func(s S) bool { return false })
-		if head.Len() != 0 {
+		if len(head) != 0 {
 			t.Errorf("When calling TakeWhile(false) 'head' must be the empty array")
 		}
-		if sz != LenUnknown && sz != tail.Len() {
-			t.Errorf("When calling TakeWhile(false) 'tail' must have the same length")
+		if tailLen, _ := tail.Len(); lenOk && sz != tailLen {
+			t.Errorf("When calling TakeWhile(false) 'tail' must have the same length. Expected %d, found %d", sz, tailLen)
 		}
 	})
 
 	t.Run("all", func(t *testing.T) {
 		seq = createSeq()
 		head, tail := seq.TakeWhile(func(s S) bool { return true })
-		if sz != LenUnknown && head.Len() != sz {
+		if lenOk && len(head) != sz {
 			t.Errorf("When calling TakeWhile(true) 'head' must be the entire array. len(head)=%d", len(head))
 		}
 		if remaining, _ := tail.First(); remaining.Ok() {
@@ -316,12 +316,12 @@ func seqIsTakeWhile[S comparable](t *testing.T, createSeq func() Seq[S], ss []S)
 func seqSkip[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
 	t.Helper()
 
-	sz := createSeq().Len()
+	sz, lenOk := createSeq().Len()
 
 	t.Run("skip-all", func(t *testing.T) {
 		seq := createSeq()
 		tail := seq.Skip(100_000)
-		if sz != LenUnknown && tail.Len() != 0 {
+		if tailLen, _ := tail.Len(); lenOk && tailLen != 0 {
 			t.Errorf("When calling Skip(100,000) 'tail' must be empty")
 		}
 		if fst, _ := tail.First(); fst.Ok() {
@@ -332,8 +332,11 @@ func seqSkip[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
 	t.Run("one-at-a-time", func(t *testing.T) {
 		i := 0
 		seq := createSeq()
-		for ; i < 100_000 && seq.Len() != 0; i++ {
+		for ; i < 100_000; i++ {
 			seq = seq.Skip(1)
+			if l, _ := seq.Len(); l == 0 {
+				break
+			}
 		}
 		if sz != LenUnknown && i == 100_000 {
 			t.Errorf("Failed to Skip() Seq 1-by-1, never became empty")
@@ -356,7 +359,7 @@ func seqSkip[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
 	t.Run("skip-all-exact", func(t *testing.T) {
 		seq := createSeq()
 		tail := seq.Skip(sz)
-		if sz != LenUnknown && tail.Len() != 0 {
+		if tailLen, _ := tail.Len(); lenOk && tailLen != 0 {
 			t.Errorf("When calling Skip(sz) 'tail' must be empty")
 		}
 		if fst, _ := tail.First(); fst.Ok() {
@@ -379,7 +382,7 @@ func seqIsWhere[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
 	t.Run("false/array", func(t *testing.T) {
 		seq := createSeq()
 		wh := seq.Where(func(_ S) bool { return false }).Array()
-		if wh.Len() != 0 {
+		if l, _ := wh.Len(); l != 0 {
 			t.Errorf("Must create empty array after dropping everything with where=false")
 		}
 	})
@@ -387,7 +390,7 @@ func seqIsWhere[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
 	t.Run("false/take-while", func(t *testing.T) {
 		seq := createSeq()
 		head, tail := seq.Where(func(_ S) bool { return false }).TakeWhile(func(_ S) bool { return true })
-		if head.Len() != 0 {
+		if len(head) != 0 {
 			t.Errorf("Must create empty array after dropping everything with where=false")
 		}
 		if fst, _ := tail.First(); fst.Ok() {
@@ -425,7 +428,7 @@ func seqIsWhere[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
 	t.Run("true/take-while", func(t *testing.T) {
 		seq := createSeq()
 		head, tail := seq.Where(func(_ S) bool { return true }).TakeWhile(func(_ S) bool { return true })
-		if head.Len() != len(ss) {
+		if len(head) != len(ss) {
 			t.Errorf("Must create empty array after dropping everything with where=false")
 		}
 		if !reflect.DeepEqual(head.AsSlice(), ss) {
@@ -440,8 +443,8 @@ func seqIsWhere[S comparable](t *testing.T, createSeq func() Seq[S], ss []S) {
 func seqIsFirst[S comparable](t *testing.T, seq Seq[S], ss []S) {
 	t.Helper()
 
-	sz := seq.Len()
-	if sz != LenUnknown {
+	sz, lenOk := seq.Len()
+	if lenOk {
 		if sz != len(ss) {
 			t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
 		}

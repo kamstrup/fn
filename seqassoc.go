@@ -22,8 +22,8 @@ func (a assocSeq[K, V]) ForEachIndex(f Func2[int, Tuple[K, V]]) {
 	}
 }
 
-func (a assocSeq[K, V]) Len() int {
-	return len(a)
+func (a assocSeq[K, V]) Len() (int, bool) {
+	return len(a), true
 }
 
 func (a assocSeq[K, V]) Array() Array[Tuple[K, V]] {

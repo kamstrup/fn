@@ -5,6 +5,10 @@ package fn
 // the resultant Seq is lazily executed the length can not be known up front.
 const LenUnknown = -1
 
+// LenInfinite is returned by certain Seqs such as SourceOf(), when the sequence will
+// not terminate by itself but continue to yield values indefinitely.
+const LenInfinite = -2
+
 // Seq is the primary interface for the fn() library.
 // Seqs should be thought of a lazily computed collections of elements.
 // Operations that force traversing or computation of the Seq are said to "execute" the Seq.
@@ -17,8 +21,10 @@ type Seq[T any] interface {
 	ForEach(f Func1[T])
 	// ForEachIndex executes the Seq and calls f on each index and element.
 	ForEachIndex(f Func2[int, T])
-	// Len returns the number of elements in the Seq OR LenUnknown if the Seq does not have a well-defined length.
-	Len() int
+	// Len returns the number of elements in the Seq if it is well-defined.
+	// If the boolean return value is false, the length is not well-defined and is either
+	// LenUnknown or LenInfinite.
+	Len() (int, bool)
 	// Array executes the Seq and stores all elements in memory as an Array
 	Array() Array[T]
 	// Take executes up to the first N elements of the Seq and returns the rest in a tail Seq

@@ -38,20 +38,45 @@ func (c concatSeq[T]) ForEachIndex(f Func2[int, T]) {
 	})
 }
 
-func (c concatSeq[T]) Len() int {
-	// TODO: There are certain cases where we can safely try calculate the total length
-	// fx. if c.tail is an Array
-	return LenUnknown
+func (c concatSeq[T]) Len() (int, bool) {
+	// fx. if c.tail is an Array we can do a stateless check to see if we can calculate a total length
+	tailArr, tailIsArray := c.tail.(Array[Seq[T]])
+	if !tailIsArray {
+		return LenUnknown, false
+	}
+	sz := 0
+	if c.head != nil {
+		if l, ok := c.head.Len(); ok {
+			sz += l
+		} else {
+			return l, false // head is infinite or unknown
+		}
+	}
+
+	for _, tailSeq := range tailArr {
+		if l, ok := tailSeq.Len(); ok {
+			sz += l
+		} else {
+			return l, false // tailSeq is infinite or unknown
+		}
+	}
+
+	return sz, true
 }
 
 func (c concatSeq[T]) Array() Array[T] {
-	// TODO: If we implement proper Len() calculation, we can pre-alloc the output array here
-	arr := Into(nil, Append[T], c.seq())
-	return ArrayOf(arr)
+	var buf []T
+	sz, hasLen := c.Len()
+	if hasLen {
+		buf = make([]T, 0, sz)
+	}
+
+	buf = Into(buf, Append[T], c.seq())
+	return ArrayOf(buf)
 }
 
 func (c concatSeq[T]) Take(n int) (Array[T], Seq[T]) {
-	if n == 0 {
+	if n <= 0 {
 		return ArrayOf([]T{}), c
 	}
 	var (
@@ -62,7 +87,7 @@ func (c concatSeq[T]) Take(n int) (Array[T], Seq[T]) {
 	// First see if we have enough in c.head
 	if c.head != nil {
 		arr, headTail = c.head.Take(n)
-		if arr.Len() == n {
+		if len(arr) == n {
 			return arr, concatSeq[T]{
 				head: headTail,
 				tail: c.tail,
@@ -85,7 +110,7 @@ func (c concatSeq[T]) Take(n int) (Array[T], Seq[T]) {
 			return arr, SeqEmpty[T]()
 		}
 
-		headArr, headTail = headOpt.val.Take(n - arr.Len())
+		headArr, headTail = headOpt.val.Take(n - len(arr))
 		arr = append(arr, headArr...)
 		c.head = headTail
 

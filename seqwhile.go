@@ -21,8 +21,8 @@ func (w whileSeq[T]) ForEachIndex(f Func2[int, T]) {
 	}
 }
 
-func (w whileSeq[T]) Len() int {
-	return LenUnknown
+func (w whileSeq[T]) Len() (int, bool) {
+	return LenUnknown, false
 }
 
 func (w whileSeq[T]) Array() Array[T] {

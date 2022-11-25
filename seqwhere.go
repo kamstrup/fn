@@ -25,15 +25,15 @@ func (ws whereSeq[T]) ForEachIndex(f Func2[int, T]) {
 	})
 }
 
-func (ws whereSeq[T]) Len() int {
-	if sz := ws.seq.Len(); sz == 0 {
-		return 0
+func (ws whereSeq[T]) Len() (int, bool) {
+	if sz, _ := ws.seq.Len(); sz == 0 {
+		return 0, true
 	}
-	return LenUnknown
+	return LenUnknown, false
 }
 
 func (ws whereSeq[T]) Array() Array[T] {
-	if ws.Len() == 0 {
+	if l, _ := ws.Len(); l == 0 {
 		return ArrayOf[T](nil)
 	}
 
@@ -46,7 +46,7 @@ func (ws whereSeq[T]) Array() Array[T] {
 }
 
 func (ws whereSeq[T]) Take(n int) (Array[T], Seq[T]) {
-	if ws.Len() == 0 || n == 0 {
+	if l, _ := ws.Len(); l == 0 || n == 0 {
 		return ArrayOf[T](nil), SeqEmpty[T]()
 	}
 
@@ -68,7 +68,7 @@ func (ws whereSeq[T]) Take(n int) (Array[T], Seq[T]) {
 }
 
 func (ws whereSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
-	if ws.Len() == 0 {
+	if l, _ := ws.Len(); l == 0 {
 		return ArrayOf[T](nil), SeqEmpty[T]()
 	}
 

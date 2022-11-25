@@ -49,20 +49,30 @@ func (z zipSeq[X, Y]) ForEachIndex(f Func2[int, Tuple[X, Y]]) {
 	}
 }
 
-func (z zipSeq[X, Y]) Len() int {
-	// TODO: If we allowed a special LenInfinite (like LenUnknown) we could optimize some allocs in zipSeq
-	lx, ly := z.sx.Len(), z.sy.Len()
-	if lx == LenUnknown || ly == LenUnknown {
-		return LenUnknown
+func (z zipSeq[X, Y]) Len() (int, bool) {
+	lx, okx := z.sx.Len()
+	ly, oky := z.sy.Len()
+	if okx && oky {
+		// Both well-defined. Return the minimum
+		if lx < ly {
+			return lx, true
+		}
+		return ly, true
 	}
-	if lx < ly {
-		return lx
+
+	// If one is infinite, return the other.
+	// This might help with allocations in certain cases.
+	if lx == LenInfinite {
+		return ly, oky
+	} else if ly == LenInfinite {
+		return lx, okx
 	}
-	return ly
+
+	return LenUnknown, false
 }
 
 func (z zipSeq[X, Y]) Array() Array[Tuple[X, Y]] {
-	if sz := z.Len(); sz != LenUnknown {
+	if sz, ok := z.Len(); ok {
 		arr := make([]Tuple[X, Y], sz)
 		z.ForEachIndex(func(i int, t Tuple[X, Y]) {
 			arr[i] = t
@@ -85,7 +95,7 @@ func (z zipSeq[X, Y]) Take(n int) (Array[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 		tx  = z.sx
 		ty  = z.sy
 	)
-	if sz := z.Len(); sz != LenUnknown {
+	if sz, ok := z.Len(); ok {
 		if sz <= n {
 			// Best case
 			return z.Array(), SeqEmpty[Tuple[X, Y]]()

@@ -54,7 +54,7 @@ func (c chanSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 		if pred(t) {
 			arr = append(arr, t)
 		} else {
-			return arr, ConcatOf(ArrayOfArgs(t).Seq(), c.seq())
+			return arr, ConcatOf(SingletOf(t), c.seq())
 		}
 	}
 

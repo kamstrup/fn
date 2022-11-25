@@ -2,7 +2,7 @@ package fn
 
 import "sync"
 
-// Go is like a parallelized version, eager, version of MapOf.
+// Go is like a parallelized, eager, version of MapOf.
 // It runs numJobs parallel goroutines of the task() function,
 // and returns a Seq[T] that receives the results as they come in.
 // This function returns immediately and the results are computed in the background.

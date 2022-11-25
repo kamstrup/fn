@@ -39,6 +39,7 @@ DOCS
 API CHANGES
 * Rework RangeOf() and maybe SourceOf+SourceFunc... should maybe be able to abort by returning ErrStop?
 * Range.Len() should be well defined.
+* For walking a Dir or reading a file we need a way to return errors from Seqs
 
 FEATURES
 * seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)

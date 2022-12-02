@@ -5,7 +5,7 @@ to be blended it with standard idiomatic Go code.
 
 We are inspired by Clojure and the Java Streams APIs that were
 introduced back in Java 8, and want to provide something of similar spirit,
-that makes it even more fun to write GO code.
+that makes it even more fun to write Go code.
 
 Philosophy
 ----

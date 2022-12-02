@@ -7,6 +7,13 @@ type whileSeq[T any] struct {
 	pred Predicate[T]
 }
 
+func WhileOf[T any](seq Seq[T], pred Predicate[T]) Seq[T] {
+	return whileSeq[T]{
+		seq:  seq,
+		pred: pred,
+	}
+}
+
 func (w whileSeq[T]) ForEach(f Func1[T]) {
 	for fst, tail := w.First(); !fst.Empty(); fst, tail = tail.First() {
 		f(fst.val)

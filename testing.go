@@ -162,6 +162,12 @@ func (ts TestSeqSuite[S]) IsEmpty() {
 	if count != 0 {
 		ts.t.Errorf("Seq is not empty. Length %d", count)
 	}
+
+	if arr := ts.createSeq().Array(); len(arr) != 0 {
+		ts.t.Errorf("Seq.Array is not empty. Length %d", len(arr))
+	}
+
+	// TODO: more checks for emptiness!
 }
 
 func seqIsForEach[S comparable](t *testing.T, seq Seq[S], ss []S) {

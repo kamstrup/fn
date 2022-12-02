@@ -97,3 +97,11 @@ func (o Opt[T]) Or(altValue T) T {
 	}
 	return o.val
 }
+
+func (o Opt[T]) Seq() Seq[T] {
+	if o.err != nil {
+		return ErrorOf[T](o.err)
+	} else {
+		return SingletOf(o.val)
+	}
+}

@@ -37,11 +37,16 @@ DOCS
 * Put examples in this README
 
 API CHANGES
+* ForEach and ForEachIndex should return an empty seq (needed for IO to report errors)
+* Error handling for IO and context cancelling etc: seq.Error() error -- a special kind of empty Seq that always returns itself
 * Rework RangeOf() and maybe SourceOf+SourceFunc... should maybe be able to abort by returning ErrStop?
 * Range.Len() should be well defined.
 * For walking a Dir or reading a file we need a way to return errors from Seqs
 
 FEATURES
+* WIP A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
+* fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)
+* fnio.LinesOf(io.Reader)
 * seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
 * Compare func helpers LessThan, GreaterThan, Is, IsNot
 * seq.Split(pred) Seq[Seq[T]] (including or excluding the separator? We need both modes)
@@ -50,7 +55,6 @@ FEATURES
 * fn.GoErr(seq, numTasks, FuncMapErr) -- or some version of fn.Go() with cancellation and error handling. 
 * Seq.Last() maybe?
 * Set, Assoc are just straight type wrappers. Make it public API like for Array and String? 
-* A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
 * A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
 * MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
 * Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)

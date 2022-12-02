@@ -7,6 +7,13 @@ type whereSeq[T any] struct {
 	pred Predicate[T]
 }
 
+func WhereOf[T any](seq Seq[T], pred Predicate[T]) Seq[T] {
+	return whereSeq[T]{
+		seq:  seq,
+		pred: pred,
+	}
+}
+
 func (ws whereSeq[T]) ForEach(f Func1[T]) {
 	ws.seq.ForEach(func(t T) {
 		if ws.pred(t) {

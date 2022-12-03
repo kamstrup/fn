@@ -12,14 +12,14 @@ func SourceOf[T any](f FuncSource[T]) Seq[T] {
 	return sourceSeq[T]{f}
 }
 
-func (s sourceSeq[T]) ForEach(f Func1[T]) {
+func (s sourceSeq[T]) ForEach(f Func1[T]) Seq[T] {
 	for { // loop infinitely, only a panic or Exit() will stop this
 		t := s.f()
 		f(t)
 	}
 }
 
-func (s sourceSeq[T]) ForEachIndex(f Func2[int, T]) {
+func (s sourceSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 	for i := 0; ; i++ {
 		t := s.f()
 		f(i, t)

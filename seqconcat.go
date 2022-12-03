@@ -19,7 +19,7 @@ func ConcatOf[T any](seqs ...Seq[T]) Seq[T] {
 	}
 }
 
-func (c concatSeq[T]) ForEach(f Func1[T]) {
+func (c concatSeq[T]) ForEach(f Func1[T]) Seq[T] {
 	if c.head != nil {
 		c.ForEach(f)
 	}
@@ -28,14 +28,18 @@ func (c concatSeq[T]) ForEach(f Func1[T]) {
 			seq.ForEach(f)
 		})
 	}
+
+	return SeqEmpty[T]()
 }
 
-func (c concatSeq[T]) ForEachIndex(f Func2[int, T]) {
+func (c concatSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 	i := 0
 	c.ForEach(func(t T) {
 		f(i, t)
 		i++
 	})
+
+	return SeqEmpty[T]()
 }
 
 func (c concatSeq[T]) Len() (int, bool) {

@@ -202,6 +202,7 @@ func TupleWithKey[X comparable, Y any](keySelector FuncMap[Y, X]) func(Y) Tuple[
 // having the destination to put data into first.
 // Typical collection functions are Append, Assoc, Set, Sum, Count, StringBuilder, or ByteBuffer.
 func Into[S any, T any](into T, collector FuncCollect[S, T], seq Seq[S]) T {
+	// FIXME: error reporting?
 	seq.ForEach(func(s S) {
 		into = collector(into, s)
 	})
@@ -212,6 +213,12 @@ func Into[S any, T any](into T, collector FuncCollect[S, T], seq Seq[S]) T {
 // causing collection to stop and the error returned.
 func IntoErr[S any, T any](into T, collector FuncCollectErr[S, T], seq Seq[S]) (T, error) {
 	var err error
+
+	if err = Error(seq); err != nil {
+		var t T
+		return t, err
+	}
+
 	seq.TakeWhile(func(s S) bool {
 		into, err = collector(into, s)
 		if err != nil {

@@ -6,20 +6,24 @@ func StringOf(s string) Seq[byte] {
 	return String(s)
 }
 
-func (s String) ForEach(f Func1[byte]) {
+func (s String) ForEach(f Func1[byte]) Seq[byte] {
 	// a for-range loop on a string iterates codepoints, and not bytes,
 	// so we do a handrolled for-loop to go byte by byte
 	for i := 0; i < len(s); i++ {
 		f(s[i])
 	}
+
+	return SeqEmpty[byte]()
 }
 
-func (s String) ForEachIndex(f Func2[int, byte]) {
+func (s String) ForEachIndex(f Func2[int, byte]) Seq[byte] {
 	// a for-range loop on a string iterates codepoints, and not bytes,
 	// so we do a handrolled for-loop to go byte by byte
 	for i := 0; i < len(s); i++ {
 		f(i, s[i])
 	}
+
+	return SeqEmpty[byte]()
 }
 
 func (s String) Len() (int, bool) {

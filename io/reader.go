@@ -23,31 +23,35 @@ func ReaderOf(r io.Reader, buf []byte) fn.Seq[[]byte] {
 	}
 }
 
-func (r readerSeq) ForEach(f fn.Func1[[]byte]) {
+func (r readerSeq) ForEach(f fn.Func1[[]byte]) fn.Seq[[]byte] {
 	for {
 		n, err := r.r.Read(r.buf)
 		if err == io.EOF && n == 0 {
 			break
 		} else if err != nil {
-			// FIXME: return ErrorOf(err)
+			return fn.ErrorOf[[]byte](err)
 		}
 		f(r.buf[:n])
 	}
+
+	return fn.SeqEmpty[[]byte]()
 }
 
 // ForEachIndex on a Reader sequence passes the stream offset, not the iteration index to f.
-func (r readerSeq) ForEachIndex(f fn.Func2[int, []byte]) {
+func (r readerSeq) ForEachIndex(f fn.Func2[int, []byte]) fn.Seq[[]byte] {
 	offset := 0
 	for {
 		n, err := r.r.Read(r.buf)
 		if err == io.EOF && n == 0 {
 			break
 		} else if err != nil {
-			// FIXME: return ErrorOf(err)
+			return fn.ErrorOf[[]byte](err)
 		}
 		f(offset, r.buf[:n])
 		offset += n
 	}
+
+	return fn.SeqEmpty[[]byte]()
 }
 
 // Len on a Reader is unknown, unless the underlying io.Reader is an *os.File

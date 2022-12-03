@@ -14,18 +14,22 @@ func WhileOf[T any](seq Seq[T], pred Predicate[T]) Seq[T] {
 	}
 }
 
-func (w whileSeq[T]) ForEach(f Func1[T]) {
+func (w whileSeq[T]) ForEach(f Func1[T]) Seq[T] {
 	for fst, tail := w.First(); !fst.Empty(); fst, tail = tail.First() {
 		f(fst.val)
 	}
+
+	return SeqEmpty[T]()
 }
 
-func (w whileSeq[T]) ForEachIndex(f Func2[int, T]) {
+func (w whileSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 	i := 0
 	for fst, tail := w.First(); !fst.Empty(); fst, tail = tail.First() {
 		f(i, fst.val)
 		i++
 	}
+
+	return SeqEmpty[T]()
 }
 
 func (w whileSeq[T]) Len() (int, bool) {

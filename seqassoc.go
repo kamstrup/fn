@@ -8,18 +8,22 @@ func AssocOf[K comparable, V any](m map[K]V) Seq[Tuple[K, V]] {
 	return assocSeq[K, V](m)
 }
 
-func (a assocSeq[K, V]) ForEach(f Func1[Tuple[K, V]]) {
+func (a assocSeq[K, V]) ForEach(f Func1[Tuple[K, V]]) Seq[Tuple[K, V]] {
 	for k, v := range a {
 		f(Tuple[K, V]{k, v})
 	}
+
+	return SeqEmpty[Tuple[K, V]]()
 }
 
-func (a assocSeq[K, V]) ForEachIndex(f Func2[int, Tuple[K, V]]) {
+func (a assocSeq[K, V]) ForEachIndex(f Func2[int, Tuple[K, V]]) Seq[Tuple[K, V]] {
 	idx := 0
 	for k, v := range a {
 		f(idx, Tuple[K, V]{k, v})
 		idx++
 	}
+
+	return SeqEmpty[Tuple[K, V]]()
 }
 
 func (a assocSeq[K, V]) Len() (int, bool) {

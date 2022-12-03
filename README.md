@@ -37,11 +37,10 @@ DOCS
 * Put examples in this README
 
 API CHANGES
-* ForEach and ForEachIndex should return an empty seq (needed for IO to report errors)
-* Error handling for IO and context cancelling etc: seq.Error() error -- a special kind of empty Seq that always returns itself
 * Rework RangeOf() and maybe SourceOf+SourceFunc... should maybe be able to abort by returning ErrStop?
 * Range.Len() should be well defined.
 * For walking a Dir or reading a file we need a way to return errors from Seqs
+* Error reporting for fn.Seq.Array()? Tricky since Array is not a struct, but a just slice type alias
 
 FEATURES
 * WIP A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
@@ -60,6 +59,7 @@ FEATURES
 * Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
 * MultiChan() Seq that selects on multiple chan T?
 * fn.GroupBy(Seq[S], FuncMap[S,T]) map[T][]S
+* Something for context.Context? Support cancel() and Done() chans?
 
 OPTIMIZATIONS
 * Seq of single element (see SingletOf(t))
@@ -85,4 +85,5 @@ Seq length is optional. sz, ok := seq.Len() and can be finite, infinite, or unkn
 Seq over a channel
 Seq[byte] of a string
 fn.Go() to execute a Seq in N goroutines and collect the results into another Seq
+Special "error seq" that can be returned from IO ops and anything that can fail at runtime
 ```

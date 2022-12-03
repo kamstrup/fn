@@ -28,12 +28,12 @@ func (e errorSeq[T]) Error() error {
 	return e.error
 }
 
-func (e errorSeq[T]) ForEach(f Func1[T]) {
-	return
+func (e errorSeq[T]) ForEach(f Func1[T]) Seq[T] {
+	return e
 }
 
-func (e errorSeq[T]) ForEachIndex(f Func2[int, T]) {
-	return
+func (e errorSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
+	return e
 }
 
 func (e errorSeq[T]) Len() (int, bool) {

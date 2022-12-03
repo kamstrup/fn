@@ -6,18 +6,22 @@ func SetOf[K comparable](s map[K]struct{}) Seq[K] {
 	return setSeq[K](s)
 }
 
-func (s setSeq[K]) ForEach(f Func1[K]) {
+func (s setSeq[K]) ForEach(f Func1[K]) Seq[K] {
 	for k := range s {
 		f(k)
 	}
+
+	return SeqEmpty[K]()
 }
 
-func (s setSeq[K]) ForEachIndex(f Func2[int, K]) {
+func (s setSeq[K]) ForEachIndex(f Func2[int, K]) Seq[K] {
 	idx := 0
 	for k := range s {
 		f(idx, k)
 		idx++
 	}
+
+	return SeqEmpty[K]()
 }
 
 func (s setSeq[K]) Len() (int, bool) {

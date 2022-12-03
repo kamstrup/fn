@@ -13,14 +13,18 @@ const LenInfinite = -2
 // Seqs should be thought of a lazily computed collections of elements.
 // Operations that force traversing or computation of the Seq are said to "execute" the Seq.
 // As a rule of thumb any method that returns an Array will execute that part of the Seq.
-// For example, seq.Take(7) executes the first 7 elements and returns them in an array,
+// For example, seq.Take(7) executes the first 7 elements and returns them in an Array,
 // and the rest of the Seq is untouched and returned as a tail Seq.
 // Any method that executes the Seq must document it explicitly.
 type Seq[T any] interface {
 	// ForEach executes the Seq and calls f on each element.
-	ForEach(f Func1[T])
+	// Returns an empty Seq. If the Seq has capabilities for errors,
+	// the returned Seq should be checked with Error().
+	ForEach(f Func1[T]) Seq[T]
 	// ForEachIndex executes the Seq and calls f on each index and element.
-	ForEachIndex(f Func2[int, T])
+	// Returns an empty Seq. If the Seq has capabilities for errors,
+	// the returned Seq should be checked with Error().
+	ForEachIndex(f Func2[int, T]) Seq[T]
 	// Len returns the number of elements in the Seq if it is well-defined.
 	// If the boolean return value is false, the length is not well-defined and is either
 	// LenUnknown or LenInfinite.

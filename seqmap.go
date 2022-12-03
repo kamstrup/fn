@@ -18,18 +18,22 @@ type mappedSeq[S, T any] struct {
 	seq Seq[S]
 }
 
-func (m mappedSeq[S, T]) ForEach(f Func1[T]) {
+func (m mappedSeq[S, T]) ForEach(f Func1[T]) Seq[T] {
 	m.seq.ForEach(func(s S) {
 		t := m.f(s)
 		f(t)
 	})
+
+	return SeqEmpty[T]()
 }
 
-func (m mappedSeq[S, T]) ForEachIndex(f Func2[int, T]) {
+func (m mappedSeq[S, T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 	m.seq.ForEachIndex(func(i int, s S) {
 		t := m.f(s)
 		f(i, t)
 	})
+
+	return SeqEmpty[T]()
 }
 
 func (m mappedSeq[S, T]) Len() (int, bool) {

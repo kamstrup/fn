@@ -7,18 +7,22 @@ func ChanOf[T any](ch <-chan T) Seq[T] {
 	return chanSeq[T](ch)
 }
 
-func (c chanSeq[T]) ForEach(f Func1[T]) {
+func (c chanSeq[T]) ForEach(f Func1[T]) Seq[T] {
 	for t := range c {
 		f(t)
 	}
+
+	return SeqEmpty[T]()
 }
 
-func (c chanSeq[T]) ForEachIndex(f Func2[int, T]) {
+func (c chanSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 	i := 0
 	for t := range c {
 		f(i, t)
 		i++
 	}
+
+	return SeqEmpty[T]()
 }
 
 func (c chanSeq[T]) Len() (int, bool) {

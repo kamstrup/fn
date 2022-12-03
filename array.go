@@ -25,16 +25,20 @@ func (a Array[T]) Seq() Seq[T] {
 	return a
 }
 
-func (a Array[T]) ForEach(f Func1[T]) {
+func (a Array[T]) ForEach(f Func1[T]) Seq[T] {
 	for _, v := range a {
 		f(v)
 	}
+
+	return SeqEmpty[T]()
 }
 
-func (a Array[T]) ForEachIndex(f Func2[int, T]) {
+func (a Array[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 	for i, v := range a {
 		f(i, v)
 	}
+
+	return SeqEmpty[T]()
 }
 
 func (a Array[T]) Len() (int, bool) {

@@ -181,7 +181,7 @@ func seqIsForEach[S comparable](t *testing.T, seq Seq[S], ss []S) {
 	}
 
 	i := 0
-	seq.ForEach(func(s S) {
+	res := seq.ForEach(func(s S) {
 		t.Helper()
 
 		if i >= len(ss) {
@@ -199,6 +199,13 @@ func seqIsForEach[S comparable](t *testing.T, seq Seq[S], ss []S) {
 		t.Errorf("Number of elements in ForEachIndex incorrect. Expected %d, found %d",
 			sz, i)
 	}
+
+	if err := Error(res); err != nil {
+		t.Errorf("Seq returned error: %s", err)
+	}
+	if sz, lenOk = res.Len(); !lenOk || sz != 0 {
+		t.Errorf("Seq returned non-empty from ForEach")
+	}
 }
 
 func seqIsForEachIndex[S comparable](t *testing.T, seq Seq[S], ss []S) {
@@ -212,7 +219,7 @@ func seqIsForEachIndex[S comparable](t *testing.T, seq Seq[S], ss []S) {
 	}
 
 	count := 0
-	seq.ForEachIndex(func(i int, s S) {
+	res := seq.ForEachIndex(func(i int, s S) {
 		t.Helper()
 
 		count++
@@ -228,6 +235,13 @@ func seqIsForEachIndex[S comparable](t *testing.T, seq Seq[S], ss []S) {
 	if lenOk && sz != count {
 		t.Errorf("Number of elements in ForEachIndex incorrect. Expected %d, found %d",
 			sz, count)
+	}
+
+	if err := Error(res); err != nil {
+		t.Errorf("Seq returned error: %s", err)
+	}
+	if sz, lenOk = res.Len(); !lenOk || sz != 0 {
+		t.Errorf("Seq returned non-empty from ForEachIndex")
 	}
 }
 

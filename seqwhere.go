@@ -14,17 +14,17 @@ func WhereOf[T any](seq Seq[T], pred Predicate[T]) Seq[T] {
 	}
 }
 
-func (ws whereSeq[T]) ForEach(f Func1[T]) {
-	ws.seq.ForEach(func(t T) {
+func (ws whereSeq[T]) ForEach(f Func1[T]) Seq[T] {
+	return ws.seq.ForEach(func(t T) {
 		if ws.pred(t) {
 			f(t)
 		}
 	})
 }
 
-func (ws whereSeq[T]) ForEachIndex(f Func2[int, T]) {
+func (ws whereSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 	i := 0
-	ws.seq.ForEachIndex(func(_ int, t T) {
+	return ws.seq.ForEachIndex(func(_ int, t T) {
 		if ws.pred(t) {
 			f(i, t)
 			i++

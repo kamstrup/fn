@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"fn"
+	"github.com/kamstrup/fn"
 )
 
 type User struct {

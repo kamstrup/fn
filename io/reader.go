@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"fn"
+	"github.com/kamstrup/fn"
 )
 
 type readerSeq struct {

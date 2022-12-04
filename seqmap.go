@@ -90,9 +90,9 @@ func (m mappedSeq[S, T]) Where(pred Predicate[T]) Seq[T] {
 	}
 }
 
-func (a mappedSeq[S, T]) While(pred Predicate[T]) Seq[T] {
+func (m mappedSeq[S, T]) While(pred Predicate[T]) Seq[T] {
 	return whileSeq[T]{
-		seq:  a,
+		seq:  m,
 		pred: pred,
 	}
 }
@@ -100,4 +100,11 @@ func (a mappedSeq[S, T]) While(pred Predicate[T]) Seq[T] {
 func (m mappedSeq[S, T]) First() (Opt[T], Seq[T]) {
 	s, tail := m.seq.First()
 	return OptMap(s, m.f), MapOf(tail, m.f)
+}
+
+func (m mappedSeq[S, T]) Shape(shaper FuncMap[T, T]) Seq[T] {
+	return mappedSeq[T, T]{
+		f:   shaper,
+		seq: m,
+	}
 }

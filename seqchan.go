@@ -104,6 +104,13 @@ func (c chanSeq[T]) First() (Opt[T], Seq[T]) {
 	return OptOf(t), c
 }
 
+func (c chanSeq[T]) Shape(shaper FuncMap[T, T]) Seq[T] {
+	return mappedSeq[T, T]{
+		f:   shaper,
+		seq: c,
+	}
+}
+
 func (c chanSeq[T]) seq() Seq[T] {
 	return c
 }

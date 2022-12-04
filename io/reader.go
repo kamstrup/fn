@@ -159,6 +159,10 @@ func (r readerSeq) First() (fn.Opt[[]byte], fn.Seq[[]byte]) {
 	return fn.OptOf(r.buf[:n]), r
 }
 
+func (r readerSeq) Shape(shaper fn.FuncMap[[]byte, []byte]) fn.Seq[[]byte] {
+	return fn.MapOf[[]byte](r, shaper)
+}
+
 // prepBuffer prepares a buffer of a given size. Pass n=0 for sensible default.
 func (r readerSeq) prepBuffer(n int) *bytes.Buffer {
 	buf := &bytes.Buffer{}

@@ -74,3 +74,10 @@ func (s sourceSeq[T]) While(pred Predicate[T]) Seq[T] {
 func (s sourceSeq[T]) First() (Opt[T], Seq[T]) {
 	return OptOf(s.f()), s
 }
+
+func (s sourceSeq[K]) Shape(shaper FuncMap[K, K]) Seq[K] {
+	return mappedSeq[K, K]{
+		f:   shaper,
+		seq: s,
+	}
+}

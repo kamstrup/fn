@@ -151,3 +151,10 @@ func (s setSeq[K]) First() (Opt[K], Seq[K]) {
 	first, _ := head.First()
 	return first, tail
 }
+
+func (s setSeq[K]) Shape(shaper FuncMap[K, K]) Seq[K] {
+	return mappedSeq[K, K]{
+		f:   shaper,
+		seq: s,
+	}
+}

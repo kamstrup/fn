@@ -93,6 +93,13 @@ func (a Array[T]) First() (Opt[T], Seq[T]) {
 	return OptOf(a[0]), ArrayOf(a[1:])
 }
 
+func (a Array[T]) Shape(shaper FuncMap[T, T]) Seq[T] {
+	return mappedSeq[T, T]{
+		f:   shaper,
+		seq: a,
+	}
+}
+
 // Sort is special for Array Seqs since it is done in place.
 // Generally functions and methods in the fn() library leaves all data structures immutable,
 // but this is an exception. Caveat Emptor!

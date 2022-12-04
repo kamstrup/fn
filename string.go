@@ -77,3 +77,10 @@ func (s String) First() (Opt[byte], Seq[byte]) {
 	}
 	return OptOf(s[0]), s[1:]
 }
+
+func (s String) Shape(shaper FuncMap[byte, byte]) Seq[byte] {
+	return mappedSeq[byte, byte]{
+		f:   shaper,
+		seq: s,
+	}
+}

@@ -208,6 +208,13 @@ func (c concatSeq[T]) First() (Opt[T], Seq[T]) {
 	}
 }
 
+func (c concatSeq[T]) Shape(shaper FuncMap[T, T]) Seq[T] {
+	return mappedSeq[T, T]{
+		f:   shaper,
+		seq: c,
+	}
+}
+
 // seq is just a cast helper, to make the Go compiler happy
 func (c concatSeq[T]) seq() Seq[T] {
 	return c

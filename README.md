@@ -42,7 +42,7 @@ API CHANGES
 * For walking a Dir or reading a file we need a way to return errors from Seqs
 * Error reporting for fn.Seq.Array()? Tricky since Array is not a struct, but a just slice type alias
 
-FEATURES
+FEATURES (in order of prio)
 * WIP A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
 * fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)
 * fnio.LinesOf(io.Reader)
@@ -51,15 +51,15 @@ FEATURES
 * seq.Split(pred) Seq[Seq[T]] (including or excluding the separator? We need both modes)
 * RunesOf(string) Seq[rune]
 * Improve testing utils assert/require? Move to own package?
-* fn.GoErr(seq, numTasks, FuncMapErr) -- or some version of fn.Go() with cancellation and error handling. 
-* Seq.Last() maybe?
-* Set, Assoc are just straight type wrappers. Make it public API like for Array and String? 
 * A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
-* MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
-* Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
 * MultiChan() Seq that selects on multiple chan T?
 * fn.GroupBy(Seq[S], FuncMap[S,T]) map[T][]S
-* Something for context.Context? Support cancel() and Done() chans?
+* Something for context.Context? Support cancel() cb and Done() chans? fncontext package...
+* fn.GoErr(seq, numTasks, FuncMapErr) -- or some version of fn.Go() with cancellation and error handling. 
+* Seq.Last() maybe? 
+* Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
+* Set, Assoc are just straight type wrappers. Make it public API like for Array and String?
+* MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
 
 OPTIMIZATIONS
 * Seq of single element (see SingletOf(t))

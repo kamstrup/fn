@@ -191,3 +191,10 @@ func (z zipSeq[X, Y]) First() (Opt[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 
 	return OptOf(Tuple[X, Y]{fx.val, fy.val}), zipSeq[X, Y]{tx, ty}
 }
+
+func (z zipSeq[X, Y]) Shape(shaper FuncMap[Tuple[X, Y], Tuple[X, Y]]) Seq[Tuple[X, Y]] {
+	return mappedSeq[Tuple[X, Y], Tuple[X, Y]]{
+		f:   shaper,
+		seq: z,
+	}
+}

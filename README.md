@@ -87,3 +87,10 @@ Seq[byte] of a string
 fn.Go() to execute a Seq in N goroutines and collect the results into another Seq
 Special "error seq" that can be returned from IO ops and anything that can fail at runtime
 ```
+
+Performance
+----
+If the foundational functional data structures and algorithms is not done carefully,
+execution speed and memory usage will suffer. Fn() is designed to make the best of what
+the Go runtime can provide. Initial benchmarks puts it as a top contender among Golang
+functional libraries. See benchmarks here https://github.com/mariomac/go-stream-benchmarks/pull/1

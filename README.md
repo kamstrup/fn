@@ -37,7 +37,6 @@ DOCS
 * Put examples in this README
 
 API CHANGES
-* Rework RangeOf() and maybe SourceOf+SourceFunc... should maybe be able to abort by returning ErrStop?
 * Range.Len() should be well defined.
 * For walking a Dir or reading a file we need a way to return errors from Seqs
 * Error reporting for fn.Seq.Array()? Tricky since Array is not a struct, but a just slice type alias
@@ -86,6 +85,7 @@ Seq over a channel
 Seq[byte] of a string
 fn.Go() to execute a Seq in N goroutines and collect the results into another Seq
 Special "error seq" that can be returned from IO ops and anything that can fail at runtime
+RangeOf Seqs always have a well-defined length. Works for unsigned types as well
 ```
 
 Performance

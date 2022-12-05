@@ -45,6 +45,9 @@ func (e errorSeq[T]) Array() Array[T] {
 }
 
 func (e errorSeq[T]) Take(n int) (Array[T], Seq[T]) {
+	if n < 0 {
+		panic("must take >= 0 elements")
+	}
 	return nil, e
 }
 
@@ -53,6 +56,9 @@ func (e errorSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 }
 
 func (e errorSeq[T]) Skip(n int) Seq[T] {
+	if n < 0 {
+		panic("must skip >= 0 elements")
+	}
 	return e
 }
 

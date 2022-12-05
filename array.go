@@ -66,6 +66,10 @@ func (a Array[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 }
 
 func (a Array[T]) Skip(n int) Seq[T] {
+	if n < 0 {
+		panic("must skip >= 0 elements")
+	}
+
 	if len(a) <= n {
 		return SeqEmpty[T]()
 	}

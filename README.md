@@ -37,9 +37,9 @@ DOCS
 * Put examples in this README
 
 API CHANGES
-* Range.Len() should be well defined.
-* For walking a Dir or reading a file we need a way to return errors from Seqs
 * Error reporting for fn.Seq.Array()? Tricky since Array is not a struct, but a just slice type alias
+* Rename fn.Set to Uniq? ("set" is a heavily overloaded word)
+* Rename Seq.Shape() to .Map()
 
 FEATURES (in order of prio)
 * WIP A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
@@ -51,6 +51,7 @@ FEATURES (in order of prio)
 * RunesOf(string) Seq[rune]
 * Improve testing utils assert/require? Move to own package?
 * A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
+* Array.Reverse() Seq[T], zero-copy reversed Array (just reversed view on arr)
 * MultiChan() Seq that selects on multiple chan T?
 * fn.GroupBy(Seq[S], FuncMap[S,T]) map[T][]S
 * Something for context.Context? Support cancel() cb and Done() chans? fncontext package...

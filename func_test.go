@@ -4,6 +4,7 @@ import (
 	"errors"
 	"reflect"
 	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -86,6 +87,57 @@ func TestCollectString(t *testing.T) {
 	res := Into(nil, StringBuilder, strs)
 	exp := "onetwo"
 	if exp != res.String() {
+		t.Errorf("expected %v, got %v", exp, res)
+	}
+}
+
+func TestCollectGroupBy(t *testing.T) {
+	names := ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
+	tups := ZipOf[string, int](names, SourceOf(NumbersFrom(0)))
+	res := Into(nil, GroupBy[string, int], tups)
+	exp := map[string][]int{
+		"bob":    {0, 2, 4},
+		"alan":   {1, 5},
+		"scotty": {3},
+	}
+
+	if !reflect.DeepEqual(exp, res) {
+		t.Errorf("expected %v, got %v", exp, res)
+	}
+}
+
+func TestCollectUpdateAssoc(t *testing.T) {
+	names := ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
+	tups := ZipOf[string, int](names, SourceOf(Constant(1)))
+	res := Into(nil, UpdateAssoc[string, int](Sum[int]), tups)
+	exp := map[string]int{
+		"bob":    3,
+		"alan":   2,
+		"scotty": 1,
+	}
+
+	if !reflect.DeepEqual(exp, res) {
+		t.Errorf("expected %v, got %v", exp, res)
+	}
+}
+
+func TestCollectUpdateArray(t *testing.T) {
+
+	hellos := ArrayOfArgs(
+		TupleOf(1, "hello"), TupleOf(2, "hej"),
+		TupleOf(1, "world"), TupleOf(2, "verden")).Seq()
+
+	res := Into(nil, UpdateArray[int, string](func(old, new_ string) string {
+		return strings.TrimSpace(old + " " + new_)
+	}), hellos)
+
+	exp := []string{
+		"",
+		"hello world",
+		"hej verden",
+	}
+
+	if !reflect.DeepEqual(exp, res) {
 		t.Errorf("expected %v, got %v", exp, res)
 	}
 }

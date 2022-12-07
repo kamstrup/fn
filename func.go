@@ -45,9 +45,28 @@ type Predicate[T any] func(T) bool
 
 type PredicateErr[T any] func(T) (bool, error)
 
-// Sum is a FuncCollect for use with Into, that sums up the elements it sees.
+// FuncUpdate is used to update an existing 'old' value compared to a 'new_' value, and returning the updated result.
+type FuncUpdate[T any] func(old, new_ T) T
+
+// Sum is a FuncCollect and a FuncUpdate, for use with Into or UpdateAt, that sums up the elements it sees.
 func Sum[T Arithmetic](into, t T) T {
 	return into + t
+}
+
+// Max is a FuncCollect and a FuncUpdate, for use with Into or UpdateAt, that returns the maximal element.
+func Max[T Ordered](s, t T) T {
+	if s > t {
+		return s
+	}
+	return t
+}
+
+// Min is a FuncCollect and a FuncUpdate, for use with Into or UpdateAt, that returns the minimal element.
+func Min[T Ordered](s, t T) T {
+	if s < t {
+		return s
+	}
+	return t
 }
 
 // Count is a FuncCollect for use with Into, that counts the number of elements it sees.
@@ -101,6 +120,85 @@ func Set[K comparable](into map[K]struct{}, k K) map[K]struct{} {
 	return into
 }
 
+// GroupBy is a FuncCollect that can take a Seq of Tuple values and group them by Tuple.Key in a map.
+// All values of Tuple.Value are appended to a slice under each key.
+// This function works with nil or a pre-built map[K][]V as initial value.
+//
+// Example, grouping serial numbers under a slice of first names:
+//
+//	names := ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
+//	tups := ZipOf[string, int](names, SourceOf(NumbersFrom(0)))
+//	result := Into(nil, GroupBy[string, int], tups)
+//
+// Then the result is
+//
+//	map[string][]int{
+//	  "bob":    {0, 2, 4},
+//	  "alan":   {1, 5},
+//	  "scotty": {3},
+//	}
+func GroupBy[K comparable, V any](into map[K][]V, tup Tuple[K, V]) map[K][]V {
+	if into == nil {
+		into = make(map[K][]V)
+	}
+	into[tup.Key()] = append(into[tup.Key()], tup.Value())
+	return into
+}
+
+// UpdateAssoc is used to build a new FuncCollect that can update a map[K]V in place.
+// It updates the element at Tuple.Key() with the provided FuncUpdate.
+// Classic update functions could be Max, Min, or Sum.
+//
+// Example, counting the number of unique names in a slice:
+//
+//	names := fn.ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
+//	tups := fn.ZipOf[string, int](names, SourceOf(Constant(1)))
+//	res := fn.Into(nil, fn.UpdateAssoc[string, int](Sum[int]), tups)
+//	fmt.Println(res)
+//
+// Prints:
+//
+//	map[alan:2 bob:3 scotty:1]
+func UpdateAssoc[K comparable, V any](updater FuncUpdate[V]) FuncCollect[Tuple[K, V], map[K]V] {
+	return func(into map[K]V, tup Tuple[K, V]) map[K]V {
+		if into == nil {
+			into = make(map[K]V)
+		}
+
+		// Do the update
+		into[tup.Key()] = updater(into[tup.Key()], tup.Value())
+		return into
+	}
+}
+
+// UpdateArray is used to build a new FuncCollect that can update a slice []V in place.
+// It looks at the elements in the index specified by Tuple.X(), ensures that the slice is big enough
+// (growing it if needed), and updates the value at that index with the provided FuncUpdate.
+// Classic update functions could be Max, Min, or Sum.
+func UpdateArray[I Integer, V any](updater FuncUpdate[V]) FuncCollect[Tuple[I, V], []V] {
+	return func(into []V, tup Tuple[I, V]) []V {
+		idx := int(tup.Key())
+
+		// Ensure target slice has required size (len(into) >= idx+1)
+		if into == nil {
+			into = make([]V, idx+1, 3*(idx+1)/2)
+		} else if len(into) <= idx {
+			if cap(into) >= idx {
+				into = into[:idx+1] // into is big enough, we can just extend
+			} else {
+				// grow into
+				newInto := make([]V, idx+1, 3*(idx+1)/2)
+				copy(newInto, into)
+				into = newInto
+			}
+		}
+
+		// Do the update
+		into[idx] = updater(into[idx], tup.Value())
+		return into
+	}
+}
+
 // OrderAsc is a FuncLess that can be used with Array.Sort
 func OrderAsc[T Ordered](t1, t2 T) bool {
 	return t1 < t2
@@ -131,9 +229,9 @@ func NumbersFrom(n int) FuncSource[int] {
 	}
 }
 
-// NumbersLowerThan returns a FuncSource that starts from n and count one down on every invocation.
+// NumbersBelow returns a FuncSource that starts from n and count one down on every invocation.
 // You can for example use it with SourceOf()
-func NumbersLowerThan(n int) FuncSource[int] {
+func NumbersBelow(n int) FuncSource[int] {
 	counter := n + 1
 	return func() int {
 		counter -= 1

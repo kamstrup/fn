@@ -93,7 +93,7 @@ func TestCollectString(t *testing.T) {
 
 func TestCollectGroupBy(t *testing.T) {
 	names := ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
-	tups := ZipOf[string, int](names, SourceOf(NumbersFrom(0)))
+	tups := ZipOf[string, int](names, NumbersFrom(0))
 	res := Into(nil, GroupBy[string, int], tups)
 	exp := map[string][]int{
 		"bob":    {0, 2, 4},
@@ -108,7 +108,7 @@ func TestCollectGroupBy(t *testing.T) {
 
 func TestCollectUpdateAssoc(t *testing.T) {
 	names := ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
-	tups := ZipOf[string, int](names, SourceOf(Constant(1)))
+	tups := ZipOf[string, int](names, Constant(1))
 	res := Into(nil, UpdateAssoc[string, int](Sum[int]), tups)
 	exp := map[string]int{
 		"bob":    3,

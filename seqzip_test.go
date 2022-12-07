@@ -16,7 +16,7 @@ func TestZip(t *testing.T) {
 }
 
 func TestZipSource(t *testing.T) {
-	x := SourceOf(NumbersFrom(1))
+	x := NumbersFrom(1)
 	y := ArrayOfArgs("one", "two", "three", "four").Seq()
 
 	z := ZipOf(x, y)
@@ -30,7 +30,7 @@ func TestZipSource(t *testing.T) {
 
 func TestZipSuite(t *testing.T) {
 	createSeq := func() Seq[Tuple[int, string]] {
-		x := SourceOf(NumbersFrom(1))
+		x := NumbersFrom(1)
 		y := ArrayOfArgs("one", "two", "three", "four").Seq()
 		return ZipOf(x, y)
 	}

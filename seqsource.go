@@ -5,11 +5,38 @@ type sourceSeq[T any] struct {
 }
 
 // SourceOf creates a new Seq yielding the return value of the FuncSource for every element.
-// You can for example use it NumbersFrom or Constant.
+// The length of a source Seq is always LenInfinite.
 // Beware when using SourceOf since it often produces a stateful Seq, so order of operations
 // may matter.
 func SourceOf[T any](f FuncSource[T]) Seq[T] {
 	return sourceSeq[T]{f}
+}
+
+// NumbersFrom returns an infinite Seq that starts from n and count one up on every invocation.
+func NumbersFrom[N Arithmetic](n N) Seq[N] {
+	counter := n - 1
+
+	return SourceOf(func() N {
+		counter += 1
+		return counter
+	})
+}
+
+// NumbersBelow returns an infinite Seq that starts from n and count one down on every invocation.
+func NumbersBelow[N Arithmetic](n N) Seq[N] {
+	counter := n + 1
+
+	return SourceOf(func() N {
+		counter -= 1
+		return counter
+	})
+}
+
+// Constant returns an infinite Seq that repeats the same value.
+func Constant[T any](t T) Seq[T] {
+	return SourceOf(func() T {
+		return t
+	})
 }
 
 func (s sourceSeq[T]) ForEach(f Func1[T]) Seq[T] {

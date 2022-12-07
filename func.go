@@ -127,7 +127,7 @@ func Set[K comparable](into map[K]struct{}, k K) map[K]struct{} {
 // Example, grouping serial numbers under a slice of first names:
 //
 //	names := ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
-//	tups := ZipOf[string, int](names, SourceOf(NumbersFrom(0)))
+//	tups := ZipOf[string, int](names, NumbersFrom(0))
 //	result := Into(nil, GroupBy[string, int], tups)
 //
 // Then the result is
@@ -152,7 +152,7 @@ func GroupBy[K comparable, V any](into map[K][]V, tup Tuple[K, V]) map[K][]V {
 // Example, counting the number of unique names in a slice:
 //
 //	names := fn.ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
-//	tups := fn.ZipOf[string, int](names, SourceOf(Constant(1)))
+//	tups := fn.ZipOf[string, int](names, Constant(1))
 //	res := fn.Into(nil, fn.UpdateAssoc[string, int](Sum[int]), tups)
 //	fmt.Println(res)
 //
@@ -217,52 +217,6 @@ func OrderTupleAsc[K Ordered, V any](t1, t2 Tuple[K, V]) bool {
 // OrderTupleDesc is a FuncLess that can be used with Array.Sort
 func OrderTupleDesc[K Ordered, V any](t1, t2 Tuple[K, V]) bool {
 	return t1.Key() > t2.Key()
-}
-
-// NumbersFrom returns a FuncSource that starts from n and count one up on every invocation.
-// You can for example use it with SourceOf()
-func NumbersFrom(n int) FuncSource[int] {
-	counter := n - 1
-	return func() int {
-		counter += 1
-		return counter
-	}
-}
-
-// NumbersBelow returns a FuncSource that starts from n and count one down on every invocation.
-// You can for example use it with SourceOf()
-func NumbersBelow(n int) FuncSource[int] {
-	counter := n + 1
-	return func() int {
-		counter -= 1
-		return counter
-	}
-}
-
-// Constant returns a FuncSource that produces the same value on every invocation.
-// You can for example use it with SourceOf()
-func Constant[T any](t T) FuncSource[T] {
-	return func() T {
-		return t
-	}
-}
-
-func Curry[X, Z any](f func(X) Z, x X) func() Z {
-	return func() Z {
-		return f(x)
-	}
-}
-
-func CurryX[X, Y, Z any](f func(X, Y) Z, x X) func(Y) Z {
-	return func(y Y) Z {
-		return f(x, y)
-	}
-}
-
-func CurryY[X, Y, Z any](f func(X, Y) Z, y Y) func(X) Z {
-	return func(x X) Z {
-		return f(x, y)
-	}
 }
 
 // IsZero is a Predicate that returns true if the input is the zero value of the type T.

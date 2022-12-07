@@ -3,7 +3,7 @@ package fn
 import "testing"
 
 func TestSource(t *testing.T) {
-	nums, tail := SourceOf(NumbersFrom(0)).
+	nums, tail := NumbersFrom(0).
 		Shape(func(i int) int { return i * 2 }).
 		Take(3)
 	SeqTest(t, nums.Seq()).Is(0, 2, 4)

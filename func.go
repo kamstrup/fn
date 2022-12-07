@@ -53,7 +53,7 @@ func Sum[T Arithmetic](into, t T) T {
 	return into + t
 }
 
-// Max is a FuncCollect and a FuncUpdate, for use with Into or UpdateAt, that returns the maximal element.
+// Max is a FuncCollect and a FuncUpdate, for use with Into or UpdateAssoc, that returns the maximal element.
 func Max[T Ordered](s, t T) T {
 	if s > t {
 		return s
@@ -61,7 +61,7 @@ func Max[T Ordered](s, t T) T {
 	return t
 }
 
-// Min is a FuncCollect and a FuncUpdate, for use with Into or UpdateAt, that returns the minimal element.
+// Min is a FuncCollect and a FuncUpdate, for use with Into or UpdateAssoc, that returns the minimal element.
 func Min[T Ordered](s, t T) T {
 	if s < t {
 		return s

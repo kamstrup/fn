@@ -26,6 +26,29 @@ func TestCollectSum(t *testing.T) {
 	}
 }
 
+func TestCollectMinMax(t *testing.T) {
+	arr := ArrayOfArgs(1, 2, 3, 2, -1, 1).Seq()
+	min := Into(0, Min[int], arr)
+	if min != -1 {
+		t.Errorf("expected min -1: %d", min)
+	}
+
+	min = Into(27, Min[int], SeqEmpty[int]())
+	if min != 27 {
+		t.Errorf("expected min 27: %d", min)
+	}
+
+	max := Into(0, Max[int], arr)
+	if max != 3 {
+		t.Errorf("expected max 3: %d", max)
+	}
+
+	max = Into(27, Max[int], SeqEmpty[int]())
+	if max != 27 {
+		t.Errorf("expected max 27: %d", max)
+	}
+}
+
 func TestCollectCount(t *testing.T) {
 	arr := ArrayOfArgs[int](1, 2, 3).Seq()
 

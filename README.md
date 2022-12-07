@@ -40,16 +40,16 @@ API CHANGES
 * Error reporting for fn.Seq.Array()? Tricky since Array is not a struct, but a just slice type alias
 * Rename fn.Set to Uniq? ("set" is a heavily overloaded word)
 * Rename Seq.Shape() to .Map()
+* Move test helpers + unit tests to separate package
 
 FEATURES (in order of prio)
 * WIP A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
+* seq.Split(pred) Seq[Seq[T]] (including or excluding the separator? We need both modes)
 * fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)
 * fnio.LinesOf(io.Reader)
 * seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
-* Compare func helpers LessThan, GreaterThan, Is, IsNot
-* seq.Split(pred) Seq[Seq[T]] (including or excluding the separator? We need both modes)
+* Predicate helpers: LessThan, GreaterThan, Is, IsNot
 * RunesOf(string) Seq[rune]
-* Improve testing utils assert/require? Move to own package?
 * A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
 * Array.Reverse() Seq[T], zero-copy reversed Array (just reversed view on arr)
 * MultiChan() Seq that selects on multiple chan T?

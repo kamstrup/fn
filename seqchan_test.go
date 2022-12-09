@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/testing"
 )
 
 func chanWithVals[T any](tt ...T) <-chan T {
@@ -19,14 +20,14 @@ func chanWithVals[T any](tt ...T) <-chan T {
 
 func TestChan(t *testing.T) {
 	ch := chanWithVals(1, 2, 3)
-	fn.SeqTest(t, fn.ChanOf(ch)).Is(1, 2, 3)
+	fntesting.TestOf(t, fn.ChanOf(ch)).Is(1, 2, 3)
 
 	// ch is now closed
-	fn.SeqTest(t, fn.ChanOf(ch)).IsEmpty()
+	fntesting.TestOf(t, fn.ChanOf(ch)).IsEmpty()
 }
 
 func TestChanSuite(t *testing.T) {
-	fn.SeqTestSuite(t, func() fn.Seq[int] {
+	fntesting.SuiteOf(t, func() fn.Seq[int] {
 		return fn.ChanOf(chanWithVals(1, 2, 3, 4))
 	}).Is(1, 2, 3, 4)
 }

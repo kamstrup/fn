@@ -5,13 +5,14 @@ import (
 	"testing"
 
 	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/testing"
 )
 
 func TestSeqAssoc(t *testing.T) {
 	m := map[string]int{"one": 1, "two": 2, "three": 3}
 	as := fn.AssocOf(m)
 
-	fn.SeqTest(t, as).LenIs(3)
+	fntesting.TestOf(t, as).LenIs(3)
 	m2 := fn.Into(nil, fn.Assoc[string, int], as)
 
 	if !reflect.DeepEqual(m, m2) {
@@ -20,7 +21,7 @@ func TestSeqAssoc(t *testing.T) {
 
 	as = as.Array().Sort(fn.OrderTupleAsc[string, int])
 
-	fn.SeqTest(t, as).Is(
+	fntesting.TestOf(t, as).Is(
 		fn.TupleOf("one", 1),
 		fn.TupleOf("three", 3),
 		fn.TupleOf("two", 2))

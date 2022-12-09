@@ -5,11 +5,12 @@ import (
 	"testing"
 
 	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/testing"
 )
 
 func TestSet(t *testing.T) {
 	s := fn.SetOf(map[string]struct{}{"foo": {}, "bar": {}})
-	st := fn.SeqTest(t, s)
+	st := fntesting.TestOf(t, s)
 	st.LenIs(2)
 
 	exp := []string{"bar", "foo"}

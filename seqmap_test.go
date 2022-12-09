@@ -4,13 +4,14 @@ import (
 	"testing"
 
 	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/testing"
 )
 
 func TestMapSeq(t *testing.T) {
 	var arr fn.Seq[int] = fn.MapOf(fn.ArrayOfArgs(1, 2, 3).Seq(), func(i int) int {
 		return i * 2
 	})
-	fn.SeqTest(t, arr).Is(2, 4, 6)
+	fntesting.TestOf(t, arr).Is(2, 4, 6)
 }
 
 func TestMapSeqTake(t *testing.T) {
@@ -18,8 +19,8 @@ func TestMapSeqTake(t *testing.T) {
 		return i * 2
 	}).Take(2)
 
-	fn.SeqTest(t, head.Seq()).Is(2, 4)
-	fn.SeqTest(t, tail).Is(6)
+	fntesting.TestOf(t, head.Seq()).Is(2, 4)
+	fntesting.TestOf(t, tail).Is(6)
 }
 
 func TestMapSeqTakeWhile(t *testing.T) {
@@ -27,8 +28,8 @@ func TestMapSeqTakeWhile(t *testing.T) {
 		return i * 2
 	}).TakeWhile(func(i int) bool { return i <= 4 })
 
-	fn.SeqTest(t, head.Seq()).Is(2, 4)
-	fn.SeqTest(t, tail).Is(6)
+	fntesting.TestOf(t, head.Seq()).Is(2, 4)
+	fntesting.TestOf(t, tail).Is(6)
 }
 
 func TestMapSeqSkip(t *testing.T) {
@@ -36,7 +37,7 @@ func TestMapSeqSkip(t *testing.T) {
 		return i * 2
 	}).Skip(1)
 
-	fn.SeqTest(t, tail).Is(4, 6)
+	fntesting.TestOf(t, tail).Is(4, 6)
 }
 
 func TestMapSeqFirst(t *testing.T) {
@@ -46,20 +47,20 @@ func TestMapSeqFirst(t *testing.T) {
 
 	var first fn.Opt[int]
 	first, arr = arr.First()
-	fn.SeqTest(t, arr).Is(4, 6)
-	fn.OptTest(t, first).Is(2)
+	fntesting.TestOf(t, arr).Is(4, 6)
+	fntesting.OptOf(t, first).Is(2)
 
 	first, arr = arr.First()
-	fn.SeqTest(t, arr).Is(6)
-	fn.OptTest(t, first).Is(4)
+	fntesting.TestOf(t, arr).Is(6)
+	fntesting.OptOf(t, first).Is(4)
 
 	first, arr = arr.First()
-	fn.SeqTest(t, arr).IsEmpty()
-	fn.OptTest(t, first).Is(6)
+	fntesting.TestOf(t, arr).IsEmpty()
+	fntesting.OptOf(t, first).Is(6)
 
 	first, arr = arr.First()
-	fn.SeqTest(t, arr).IsEmpty()
-	fn.OptTest(t, first).IsEmpty()
+	fntesting.TestOf(t, arr).IsEmpty()
+	fntesting.OptOf(t, first).IsEmpty()
 }
 
 func TestMapWhereAnyAll(t *testing.T) {

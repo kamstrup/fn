@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/testing"
 )
 
 func TestZip(t *testing.T) {
@@ -11,7 +12,7 @@ func TestZip(t *testing.T) {
 	y := fn.ArrayOfArgs("one", "two", "three", "four").Seq()
 
 	z := fn.ZipOf(x, y)
-	fn.SeqTest(t, z).Is(
+	fntesting.TestOf(t, z).Is(
 		fn.TupleOf(1, "one"),
 		fn.TupleOf(2, "two"),
 		fn.TupleOf(3, "three"),
@@ -24,7 +25,7 @@ func TestZipSource(t *testing.T) {
 	y := fn.ArrayOfArgs("one", "two", "three", "four").Seq()
 
 	z := fn.ZipOf(x, y)
-	fn.SeqTest(t, z).Is(
+	fntesting.TestOf(t, z).Is(
 		fn.TupleOf(1, "one"),
 		fn.TupleOf(2, "two"),
 		fn.TupleOf(3, "three"),
@@ -39,7 +40,7 @@ func TestZipSuite(t *testing.T) {
 		return fn.ZipOf(x, y)
 	}
 
-	fn.SeqTestSuite(t, createSeq).Is(
+	fntesting.SuiteOf(t, createSeq).Is(
 		fn.TupleOf(1, "one"),
 		fn.TupleOf(2, "two"),
 		fn.TupleOf(3, "three"),

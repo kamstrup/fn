@@ -8,11 +8,12 @@ import (
 	"testing"
 
 	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/testing"
 )
 
 func TestZeroes(t *testing.T) {
-	fn.SeqTest(t, fn.MapOf(fn.ArrayOfArgs(-1, 0, 1, 10).Seq(), fn.IsZero[int])).Is(false, true, false, false)
-	fn.SeqTest(t, fn.MapOf(fn.ArrayOfArgs(-1, 0, 1, 10).Seq(), fn.IsNonZero[int])).Is(true, false, true, true)
+	fntesting.TestOf(t, fn.MapOf(fn.ArrayOfArgs(-1, 0, 1, 10).Seq(), fn.IsZero[int])).Is(false, true, false, false)
+	fntesting.TestOf(t, fn.MapOf(fn.ArrayOfArgs(-1, 0, 1, 10).Seq(), fn.IsNonZero[int])).Is(true, false, true, true)
 }
 
 func TestCollectSum(t *testing.T) {

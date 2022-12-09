@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/testing"
 )
 
 func TestError(t *testing.T) {
@@ -31,5 +32,5 @@ func TestError(t *testing.T) {
 
 func TestErrorSuite(t *testing.T) {
 	err := errors.New("hello")
-	fn.SeqTestSuite(t, func() fn.Seq[int] { return fn.ErrorOf[int](err) }).IsEmpty()
+	fntesting.SuiteOf(t, func() fn.Seq[int] { return fn.ErrorOf[int](err) }).IsEmpty()
 }

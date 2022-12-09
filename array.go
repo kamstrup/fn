@@ -97,7 +97,7 @@ func (a Array[T]) First() (Opt[T], Seq[T]) {
 	return OptOf(a[0]), ArrayOf(a[1:])
 }
 
-func (a Array[T]) Shape(shaper FuncMap[T, T]) Seq[T] {
+func (a Array[T]) Map(shaper FuncMap[T, T]) Seq[T] {
 	return mappedSeq[T, T]{
 		f:   shaper,
 		seq: a,

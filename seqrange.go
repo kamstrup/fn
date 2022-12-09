@@ -194,7 +194,7 @@ func (r rangeSeq[N]) First() (Opt[N], Seq[N]) {
 	return OptOf(r.from), SeqEmpty[N]()
 }
 
-func (r rangeSeq[N]) Shape(shaper FuncMap[N, N]) Seq[N] {
+func (r rangeSeq[N]) Map(shaper FuncMap[N, N]) Seq[N] {
 	return mappedSeq[N, N]{
 		f:   shaper,
 		seq: r,

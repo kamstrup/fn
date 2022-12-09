@@ -74,7 +74,7 @@ func (e errorSeq[T]) First() (Opt[T], Seq[T]) {
 	return OptErr[T](e.error), e
 }
 
-func (e errorSeq[T]) Shape(shaper FuncMap[T, T]) Seq[T] {
+func (e errorSeq[T]) Map(shaper FuncMap[T, T]) Seq[T] {
 	return mappedSeq[T, T]{
 		f:   shaper,
 		seq: e,

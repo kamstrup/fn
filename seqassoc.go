@@ -155,7 +155,7 @@ func (a assocSeq[K, V]) First() (Opt[Tuple[K, V]], Seq[Tuple[K, V]]) {
 	return first, tail
 }
 
-func (a assocSeq[K, V]) Shape(shaper FuncMap[Tuple[K, V], Tuple[K, V]]) Seq[Tuple[K, V]] {
+func (a assocSeq[K, V]) Map(shaper FuncMap[Tuple[K, V], Tuple[K, V]]) Seq[Tuple[K, V]] {
 	return mappedSeq[Tuple[K, V], Tuple[K, V]]{
 		f:   shaper,
 		seq: a,

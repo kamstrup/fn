@@ -39,7 +39,6 @@ DOCS
 API CHANGES
 * Error reporting for fn.Seq.Array()? Tricky since Array is not a struct, but a just slice type alias
 * Rename fn.Set to Uniq? ("set" is a heavily overloaded word)
-* Rename Seq.Shape() to .Map()
 * Move test helpers + unit tests to separate package
 
 FEATURES (in order of prio)
@@ -60,6 +59,7 @@ FEATURES (in order of prio)
 * Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
 * Set, Assoc are just straight type wrappers. Make it public API like for Array and String?
 * MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
+* Compound FuncCollect, CollectorOf[S,T any](funcs ... FuncCollect[S,T]) FuncCollect[S,[]T]
 
 OPTIMIZATIONS
 * Seq of single element (see SingletOf(t))

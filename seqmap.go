@@ -102,7 +102,7 @@ func (m mappedSeq[S, T]) First() (Opt[T], Seq[T]) {
 	return OptMap(s, m.f), MapOf(tail, m.f)
 }
 
-func (m mappedSeq[S, T]) Shape(shaper FuncMap[T, T]) Seq[T] {
+func (m mappedSeq[S, T]) Map(shaper FuncMap[T, T]) Seq[T] {
 	return mappedSeq[T, T]{
 		f:   shaper,
 		seq: m,

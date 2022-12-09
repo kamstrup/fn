@@ -140,7 +140,7 @@ func (ws whereSeq[T]) First() (Opt[T], Seq[T]) {
 	}
 }
 
-func (ws whereSeq[K]) Shape(shaper FuncMap[K, K]) Seq[K] {
+func (ws whereSeq[K]) Map(shaper FuncMap[K, K]) Seq[K] {
 	return mappedSeq[K, K]{
 		f:   shaper,
 		seq: ws,

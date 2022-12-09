@@ -102,7 +102,7 @@ func (s sourceSeq[T]) First() (Opt[T], Seq[T]) {
 	return OptOf(s.f()), s
 }
 
-func (s sourceSeq[K]) Shape(shaper FuncMap[K, K]) Seq[K] {
+func (s sourceSeq[K]) Map(shaper FuncMap[K, K]) Seq[K] {
 	return mappedSeq[K, K]{
 		f:   shaper,
 		seq: s,

@@ -208,7 +208,7 @@ func (c concatSeq[T]) First() (Opt[T], Seq[T]) {
 	}
 }
 
-func (c concatSeq[T]) Shape(shaper FuncMap[T, T]) Seq[T] {
+func (c concatSeq[T]) Map(shaper FuncMap[T, T]) Seq[T] {
 	return mappedSeq[T, T]{
 		f:   shaper,
 		seq: c,

@@ -104,7 +104,7 @@ func (w whileSeq[T]) First() (Opt[T], Seq[T]) {
 	}
 }
 
-func (w whileSeq[K]) Shape(shaper FuncMap[K, K]) Seq[K] {
+func (w whileSeq[K]) Map(shaper FuncMap[K, K]) Seq[K] {
 	return mappedSeq[K, K]{
 		f:   shaper,
 		seq: w,

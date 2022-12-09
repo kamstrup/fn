@@ -30,6 +30,47 @@ Philosophy
 are definitely super useful and would fit well in some extension library for Fn().
 (or perhaps a sub-package, let's see <3)
 
+Fn() Quick Start
+---
+**Seq:** The core data structure is `Seq[T]`. It is short for Sequence.
+The API they expose is designed to work on top of immutable structures,
+thus there is no stateful "iterator". Walking through a Seq is done similarly,
+but inverse, to how you `append()` elements to a slice in Go.
+
+```
+ints = append(ints, i)
+// OR with other words
+tail = append(tail, head)
+```
+The "inverse" of this operation looks like:
+```
+head, tail = tail.First() // pops the first element and returns a new tail
+```
+
+[Check the interface definition for Seq here](https://github.com/kamstrup/fn/blob/main/seq.go). 
+
+**Array:** Standard Go slices `[]T` are wrapped in the `fn.Array[T]` type.
+The `Array` type is a public subtype of `[]T` so you can do numeric indexing on a `Array`.
+Arrays are seqs, but also add some extra methods like `Sort()`.
+
+**Assoc:** Because "map" is an overloaded word in functional programming,
+Fn() uses the word "assoc" instead of `map[K]V` (pronounced with a soft "ch" at the end).
+The word "map" is reserved for the mapping operation used to convert a Seq to something else.
+
+**Creating a Seq**: A new Seq is obtained by one of the included constructor methods.
+Such as `ArrayOf()`, `ArrayOfArgs()`, `AssocOf()`, `MapOf()`, `ConcatOf()`, `ConcatOfArgs()`,
+`RangeOf()`, `SetOf()`, `SourceOf()`, `ZipOf()`, and `StringOf()`.
+
+**Tuple:** Or "pair". Represent to data points. A helper mainly used when working with assocs,
+where the tuple captures a key and a value.
+
+**Opt:** Returned from operations where you are not certain to get a result.
+For example when you call `seq.First()`. If the seq is empty you get back an empty opt,
+and an empty tail seq.
+
+**Seq.Len():** Lengths are handled in a special way in Fn(). They are allowed to be finite, 
+unknown, or infinite. 
+
 TODO
 ---
 ```

@@ -1,6 +1,10 @@
-package fn
+package fn_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/kamstrup/fn"
+)
 
 func chanWithVals[T any](tt ...T) <-chan T {
 	ch := make(chan T)
@@ -15,14 +19,14 @@ func chanWithVals[T any](tt ...T) <-chan T {
 
 func TestChan(t *testing.T) {
 	ch := chanWithVals(1, 2, 3)
-	SeqTest(t, ChanOf(ch)).Is(1, 2, 3)
+	fn.SeqTest(t, fn.ChanOf(ch)).Is(1, 2, 3)
 
 	// ch is now closed
-	SeqTest(t, ChanOf(ch)).IsEmpty()
+	fn.SeqTest(t, fn.ChanOf(ch)).IsEmpty()
 }
 
 func TestChanSuite(t *testing.T) {
-	SeqTestSuite(t, func() Seq[int] {
-		return ChanOf(chanWithVals(1, 2, 3, 4))
+	fn.SeqTestSuite(t, func() fn.Seq[int] {
+		return fn.ChanOf(chanWithVals(1, 2, 3, 4))
 	}).Is(1, 2, 3, 4)
 }

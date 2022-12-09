@@ -1,44 +1,48 @@
-package fn
+package fn_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/kamstrup/fn"
+)
 
 func TestZip(t *testing.T) {
-	x := ArrayOfArgs(1, 2, 3).Seq()
-	y := ArrayOfArgs("one", "two", "three", "four").Seq()
+	x := fn.ArrayOfArgs(1, 2, 3).Seq()
+	y := fn.ArrayOfArgs("one", "two", "three", "four").Seq()
 
-	z := ZipOf(x, y)
-	SeqTest(t, z).Is(
-		TupleOf(1, "one"),
-		TupleOf(2, "two"),
-		TupleOf(3, "three"),
+	z := fn.ZipOf(x, y)
+	fn.SeqTest(t, z).Is(
+		fn.TupleOf(1, "one"),
+		fn.TupleOf(2, "two"),
+		fn.TupleOf(3, "three"),
 		// note: seqx is too short, so we truncate seqy
 	)
 }
 
 func TestZipSource(t *testing.T) {
-	x := NumbersFrom(1)
-	y := ArrayOfArgs("one", "two", "three", "four").Seq()
+	x := fn.NumbersFrom(1)
+	y := fn.ArrayOfArgs("one", "two", "three", "four").Seq()
 
-	z := ZipOf(x, y)
-	SeqTest(t, z).Is(
-		TupleOf(1, "one"),
-		TupleOf(2, "two"),
-		TupleOf(3, "three"),
-		TupleOf(4, "four"),
+	z := fn.ZipOf(x, y)
+	fn.SeqTest(t, z).Is(
+		fn.TupleOf(1, "one"),
+		fn.TupleOf(2, "two"),
+		fn.TupleOf(3, "three"),
+		fn.TupleOf(4, "four"),
 	)
 }
 
 func TestZipSuite(t *testing.T) {
-	createSeq := func() Seq[Tuple[int, string]] {
-		x := NumbersFrom(1)
-		y := ArrayOfArgs("one", "two", "three", "four").Seq()
-		return ZipOf(x, y)
+	createSeq := func() fn.Seq[fn.Tuple[int, string]] {
+		x := fn.NumbersFrom(1)
+		y := fn.ArrayOfArgs("one", "two", "three", "four").Seq()
+		return fn.ZipOf(x, y)
 	}
 
-	SeqTestSuite(t, createSeq).Is(
-		TupleOf(1, "one"),
-		TupleOf(2, "two"),
-		TupleOf(3, "three"),
-		TupleOf(4, "four"),
+	fn.SeqTestSuite(t, createSeq).Is(
+		fn.TupleOf(1, "one"),
+		fn.TupleOf(2, "two"),
+		fn.TupleOf(3, "three"),
+		fn.TupleOf(4, "four"),
 	)
 }

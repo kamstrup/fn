@@ -1,20 +1,24 @@
-package fn
+package fn_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/kamstrup/fn"
+)
 
 func TestSource(t *testing.T) {
-	nums, tail := NumbersFrom(0).
+	nums, tail := fn.NumbersFrom(0).
 		Map(func(i int) int { return i * 2 }).
 		Take(3)
-	SeqTest(t, nums.Seq()).Is(0, 2, 4)
+	fn.SeqTest(t, nums.Seq()).Is(0, 2, 4)
 
 	nums, tail = tail.Take(1)
-	SeqTest(t, nums.Seq()).Is(6)
+	fn.SeqTest(t, nums.Seq()).Is(6)
 
-	var first Opt[int]
+	var first fn.Opt[int]
 	first, tail = tail.First()
-	OptTest(t, first).Is(8)
+	fn.OptTest(t, first).Is(8)
 
 	nums, tail = tail.TakeWhile(func(i int) bool { return i < 20 })
-	SeqTest(t, nums.Seq()).Is(10, 12, 14, 16, 18)
+	fn.SeqTest(t, nums.Seq()).Is(10, 12, 14, 16, 18)
 }

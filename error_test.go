@@ -1,15 +1,17 @@
-package fn
+package fn_test
 
 import (
 	"errors"
 	"testing"
+
+	"github.com/kamstrup/fn"
 )
 
 func TestError(t *testing.T) {
 	err := errors.New("hello")
 
-	errSeq := ErrorOf[any](err)
-	if Error(errSeq) != err {
+	errSeq := fn.ErrorOf[any](err)
+	if fn.Error(errSeq) != err {
 		t.Errorf("Error() on errorSeq must return the wrapped error")
 	}
 
@@ -29,5 +31,5 @@ func TestError(t *testing.T) {
 
 func TestErrorSuite(t *testing.T) {
 	err := errors.New("hello")
-	SeqTestSuite(t, func() Seq[int] { return ErrorOf[int](err) }).IsEmpty()
+	fn.SeqTestSuite(t, func() fn.Seq[int] { return fn.ErrorOf[int](err) }).IsEmpty()
 }

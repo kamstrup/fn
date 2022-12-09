@@ -1,10 +1,14 @@
-package fn
+package fn_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/kamstrup/fn"
+)
 
 func TestString(t *testing.T) {
-	createSeq := func() Seq[byte] {
-		return StringOf("hello world")
+	createSeq := func() fn.Seq[byte] {
+		return fn.StringOf("hello world")
 	}
-	SeqTestSuite[byte](t, createSeq).Is([]byte("hello world")...)
+	fn.SeqTestSuite[byte](t, createSeq).Is([]byte("hello world")...)
 }

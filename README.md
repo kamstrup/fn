@@ -32,20 +32,24 @@ are definitely super useful and would fit well in some extension library for Fn(
 
 Fn() Quick Start
 ---
+For starters let's get some terminology in place.
+
 **Seq:** The core data structure is `Seq[T]`. It is short for Sequence.
 The API they expose is designed to work on top of immutable structures,
-thus there is no stateful "iterator". Walking through a Seq is done similarly,
-but inverse, to how you `append()` elements to a slice in Go.
+thus there is no stateful "iterator". Walking through a Seq is done similarly 
+to how you `append()` elements to a slice in Go, but inversely.
 
 ```
 ints = append(ints, i)
-// OR with other words
+// OR if we call the slice "tail" and the element "head":
 tail = append(tail, head)
 ```
 The "inverse" of this operation looks like:
 ```
 head, tail = tail.First() // pops the first element and returns a new tail
 ```
+
+Generally seqs are immutable. Any exception to this will be clearly documented. 
 
 [Check the interface definition for Seq here](https://github.com/kamstrup/fn/blob/main/seq.go). 
 

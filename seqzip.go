@@ -81,14 +81,14 @@ func (z zipSeq[X, Y]) Array() Array[Tuple[X, Y]] {
 		z.ForEachIndex(func(i int, t Tuple[X, Y]) {
 			arr[i] = t
 		})
-		return ArrayOf(arr)
+		return arr
 	}
 
 	var arr []Tuple[X, Y]
 	z.ForEach(func(t Tuple[X, Y]) {
 		arr = append(arr, t)
 	})
-	return ArrayOf(arr)
+	return arr
 }
 
 func (z zipSeq[X, Y]) Take(n int) (Array[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
@@ -112,7 +112,7 @@ func (z zipSeq[X, Y]) Take(n int) (Array[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 			fy, ty = ty.First()
 			arr[i] = Tuple[X, Y]{fx.val, fy.val}
 		}
-		return ArrayOf(arr), zipSeq[X, Y]{sx: tx, sy: ty}
+		return arr, zipSeq[X, Y]{sx: tx, sy: ty}
 	}
 
 	// Length of at least one Seq is unknown
@@ -121,12 +121,12 @@ func (z zipSeq[X, Y]) Take(n int) (Array[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 		fy, ty = ty.First()
 		if fx.Empty() || fy.Empty() {
 			// we are done, at least one Seq drained
-			return ArrayOf(arr), SeqEmpty[Tuple[X, Y]]()
+			return arr, SeqEmpty[Tuple[X, Y]]()
 		}
 		arr = append(arr, Tuple[X, Y]{fx.val, fy.val})
 	}
 
-	return ArrayOf(arr), zipSeq[X, Y]{sx: tx, sy: ty}
+	return arr, zipSeq[X, Y]{sx: tx, sy: ty}
 }
 
 func (z zipSeq[X, Y]) TakeWhile(predicate Predicate[Tuple[X, Y]]) (Array[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
@@ -144,7 +144,7 @@ func (z zipSeq[X, Y]) TakeWhile(predicate Predicate[Tuple[X, Y]]) (Array[Tuple[X
 		fy, ty = ty.First()
 		if fx.Empty() || fy.Empty() {
 			// we are done, at least one Seq drained
-			return ArrayOf(arr), SeqEmpty[Tuple[X, Y]]()
+			return arr, SeqEmpty[Tuple[X, Y]]()
 		}
 		tup := Tuple[X, Y]{fx.val, fy.val}
 		if predicate(tup) {
@@ -153,7 +153,7 @@ func (z zipSeq[X, Y]) TakeWhile(predicate Predicate[Tuple[X, Y]]) (Array[Tuple[X
 			// pred(tup) is false, so we return.
 			// We already consumed the heads of tx and ty, so we need to "put them back",
 			// we do this by creating a concat() of the consumed tuple with the tail
-			return ArrayOf(arr), ConcatOf(
+			return arr, ConcatOf(
 				SingletOf(TupleOf(fx.val, fy.val)),
 				ZipOf(tx, ty))
 		}

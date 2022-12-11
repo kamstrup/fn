@@ -2,7 +2,7 @@ package fn
 
 type String string
 
-func StringOf(s string) Seq[byte] {
+func StringOf(s string) String {
 	return String(s)
 }
 

@@ -80,8 +80,8 @@ func (r readerSeq) Array() fn.Array[[]byte] {
 	res := r.prepBuffer(0)
 
 	// FIXME: error reporting!?
-	fn.Into[[]byte, *bytes.Buffer](res, fn.ByteBuffer, r)
-	return fn.ArrayOfArgs(res.Bytes())
+	fn.Into[[]byte, *bytes.Buffer](res, fn.MakeBytes, r)
+	return fn.ArrayAsArgs(res.Bytes())
 }
 
 func (r readerSeq) Take(n int) (fn.Array[[]byte], fn.Seq[[]byte]) {
@@ -95,16 +95,16 @@ func (r readerSeq) Take(n int) (fn.Array[[]byte], fn.Seq[[]byte]) {
 
 		numRead, err := r.r.Read(r.buf[:reqSz])
 		if err == io.EOF && numRead == 0 {
-			return fn.ArrayOfArgs(res.Bytes()), fn.SeqEmpty[[]byte]()
+			return fn.ArrayAsArgs(res.Bytes()), fn.SeqEmpty[[]byte]()
 		} else if err != nil {
-			return fn.ArrayOfArgs(res.Bytes()), fn.ErrorOf[[]byte](err)
+			return fn.ArrayAsArgs(res.Bytes()), fn.ErrorOf[[]byte](err)
 		}
 
 		_, _ = res.Write(r.buf[:numRead])
 		n -= numRead
 	}
 
-	return fn.ArrayOfArgs(res.Bytes()), fn.SeqEmpty[[]byte]()
+	return fn.ArrayAsArgs(res.Bytes()), fn.SeqEmpty[[]byte]()
 }
 
 func (r readerSeq) TakeWhile(pred fn.Predicate[[]byte]) (fn.Array[[]byte], fn.Seq[[]byte]) {
@@ -113,9 +113,9 @@ func (r readerSeq) TakeWhile(pred fn.Predicate[[]byte]) (fn.Array[[]byte], fn.Se
 	for {
 		numRead, err := r.r.Read(r.buf)
 		if err == io.EOF && numRead == 0 {
-			return fn.ArrayOfArgs(res.Bytes()), fn.SeqEmpty[[]byte]()
+			return fn.ArrayAsArgs(res.Bytes()), fn.SeqEmpty[[]byte]()
 		} else if err != nil {
-			return fn.ArrayOfArgs(res.Bytes()), fn.ErrorOf[[]byte](err)
+			return fn.ArrayAsArgs(res.Bytes()), fn.ErrorOf[[]byte](err)
 		}
 
 		if pred(r.buf) {
@@ -125,11 +125,11 @@ func (r readerSeq) TakeWhile(pred fn.Predicate[[]byte]) (fn.Array[[]byte], fn.Se
 			// This works out as long as the caller does not user r further, since r will not use the buffer
 			// before the singlet is exhausted. We might need to copy the r.buf if this is problematic in practice.
 			tail := fn.ConcatOf[[]byte](fn.SingletOf(r.buf), r)
-			return fn.ArrayOfArgs(res.Bytes()), tail
+			return fn.ArrayAsArgs(res.Bytes()), tail
 		}
 	}
 
-	return fn.ArrayOfArgs(res.Bytes()), fn.SeqEmpty[[]byte]()
+	return fn.ArrayAsArgs(res.Bytes()), fn.SeqEmpty[[]byte]()
 }
 
 func (r readerSeq) Skip(n int) fn.Seq[[]byte] {

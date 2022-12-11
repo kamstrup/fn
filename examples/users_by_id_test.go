@@ -54,7 +54,7 @@ func TestUsersById(t *testing.T) {
 	}
 
 	// Let's check if they all have a valid "name" field
-	everyOneHasName := fn.All(fn.ArrayOf(users).Seq(), (*User).HasName)
+	everyOneHasName := fn.All(fn.ArrayOf(users), (*User).HasName)
 	fmt.Println("Does everyone have a name?", everyOneHasName)
 
 	// Now let's print the IDs of the users without names, sorted reverse alphabetically
@@ -67,9 +67,9 @@ func TestUsersById(t *testing.T) {
 
 	// Let's create a map[userID]*User:
 	// First we create a Seq of Tuples(userId, User)
-	usersWithIDs := fn.MapOf(fn.ArrayOf(users).Seq(), fn.TupleWithKey((*User).ID))
-	// Now flush that Seq of tuples into the Assoc collector
-	usersByIDs := fn.Into(nil, fn.Assoc[string, *User], usersWithIDs)
+	usersWithIDs := fn.MapOf(fn.ArrayOf(users), fn.TupleWithKey((*User).ID))
+	// Now flush that Seq of tuples into the MakeAssoc collector
+	usersByIDs := fn.Into(nil, fn.MakeAssoc[string, *User], usersWithIDs)
 
 	// usersById is now a map[string]*User. Let's look up some users
 	fmt.Println("User with ID(xyz123):", usersByIDs["xyz123"]) // no one, nil

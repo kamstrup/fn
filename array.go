@@ -12,15 +12,37 @@ func SingletOf[T any](t T) Seq[T] {
 	return Array[T]([]T{t}) // TODO: optimize with a dedicated singletSeq 'type singletSeq[T any] T'
 }
 
-func ArrayOf[T any](tt []T) Array[T] {
+// ArrayOf returns a slice cast as a Seq implemented by Array.
+// This method returns a Seq instead of Array because the Go compiler
+// can not do the required type inference for concrete types implementing
+// generic interfaces. If you need to explicitly use an Array then you
+// can use ArrayAsArgs, ArrayAs, or straight type conversion Array[T](mySlice).
+func ArrayOf[T any](tt []T) Seq[T] {
+	// NOTE: Ideally this function would return Array[T]
+	// and the compiler would infer that this is a valid Seq[T].
+	// Alas, as of Go 1.19 this is not possible.
+	// See https://github.com/golang/go/issues/41176
+	return Array[T](tt)
+}
+
+// ArrayOfArgs is a helper for creating a Seq from a variable list of arguments.
+func ArrayOfArgs[T any](tt ...T) Seq[T] {
+	return Array[T](tt)
+}
+
+// ArrayAs returns a slice cast into Array.
+// This lets you avoid explicit type arguments that a normal type conversion would require.
+func ArrayAs[T any](tt []T) Array[T] {
 	return tt
 }
 
-func ArrayOfArgs[T any](tt ...T) Array[T] {
+// ArrayAsArgs return the variable argument list as an Array.
+// This is sometimes needed instead of ArrayOfArgs(), when you
+// need to explicitly use an Array and not any Seq.
+func ArrayAsArgs[T any](tt ...T) Array[T] {
 	return tt
 }
 
-// Seq is a helper function for letting the Go compiler understand that Array[T] implements Seq[T]
 func (a Array[T]) Seq() Seq[T] {
 	return a
 }
@@ -120,6 +142,7 @@ func (a Array[T]) Sort(less FuncLess[T]) Array[T] {
 // Generally functions and methods in the fn() library leaves all data structures immutable,
 // but this is an exception. Caveat Emptor!
 func (a Array[T]) Reverse() Seq[T] {
+	// TODO: This could be done as a lazy seq
 	end := len(a) / 2
 	for i := 0; i < end; i++ {
 		swapIdx := len(a) - 1 - i

@@ -46,13 +46,13 @@ func (m mappedSeq[S, T]) Array() Array[T] {
 		m.ForEachIndex(func(i int, t T) {
 			arr[i] = t
 		})
-		return ArrayOf(arr)
+		return arr
 	} else {
 		var arr []T
 		m.ForEach(func(t T) {
 			arr = append(arr, t)
 		})
-		return ArrayOf(arr)
+		return arr
 	}
 }
 
@@ -76,7 +76,7 @@ func (m mappedSeq[S, T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 		}
 		return false
 	})
-	return ArrayOf(arr), MapOf(tail, m.f)
+	return arr, MapOf(tail, m.f)
 }
 
 func (m mappedSeq[S, T]) Skip(n int) Seq[T] {

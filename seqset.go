@@ -1,12 +1,31 @@
 package fn
 
-type setSeq[K comparable] map[K]struct{}
+// Set represents a collection of unique elements, represented as a standard map of empty structs.
+type Set[K comparable] map[K]struct{}
 
+// SetOf returns a Seq representation of standard Go set.
+// Sets can be used directly as Go maps if you instantiate them via SetAs().
 func SetOf[K comparable](s map[K]struct{}) Seq[K] {
-	return setSeq[K](s)
+	// NOTE: Ideally this function would return Set[K]
+	// and the compiler would infer that this is a valid Seq[K].
+	// Alas, as of Go 1.19 this is not possible.
+	// See https://github.com/golang/go/issues/41176
+	return Set[K](s)
 }
 
-func (s setSeq[K]) ForEach(f Func1[K]) Seq[K] {
+// SetAs returns a Set. You can cast the set to a Seq by calling Set.Seq().
+// The Go compiler can not do the type inference required to use a Set as a Seq.
+func SetAs[K comparable](s map[K]struct{}) Set[K] {
+	return s
+}
+
+// Seq casts the Set into a Seq. This is sometimes required because
+// the Go compiler can not do the type inference required to use a Set[K] as a Seq[K].
+func (s Set[K]) Seq() Seq[K] {
+	return s
+}
+
+func (s Set[K]) ForEach(f Func1[K]) Seq[K] {
 	for k := range s {
 		f(k)
 	}
@@ -14,7 +33,7 @@ func (s setSeq[K]) ForEach(f Func1[K]) Seq[K] {
 	return SeqEmpty[K]()
 }
 
-func (s setSeq[K]) ForEachIndex(f Func2[int, K]) Seq[K] {
+func (s Set[K]) ForEachIndex(f Func2[int, K]) Seq[K] {
 	idx := 0
 	for k := range s {
 		f(idx, k)
@@ -24,14 +43,14 @@ func (s setSeq[K]) ForEachIndex(f Func2[int, K]) Seq[K] {
 	return SeqEmpty[K]()
 }
 
-func (s setSeq[K]) Len() (int, bool) {
+func (s Set[K]) Len() (int, bool) {
 	return len(s), true
 }
 
-func (s setSeq[K]) Array() Array[K] {
+func (s Set[K]) Array() Array[K] {
 	sz := len(s)
 	if sz == 0 {
-		return ArrayOf[K](nil)
+		return Array[K](nil)
 	}
 
 	arr := make([]K, sz)
@@ -41,16 +60,16 @@ func (s setSeq[K]) Array() Array[K] {
 		idx++
 	}
 
-	return ArrayOf(arr)
+	return arr
 }
 
-func (s setSeq[K]) Take(n int) (Array[K], Seq[K]) {
+func (s Set[K]) Take(n int) (Array[K], Seq[K]) {
 	// Taking the "first n elements" from a map[K]V does *almost* never make sense,
 	// since maps in Go a deliberately not ordered consistently.
 	// We provide the feature for completeness.
 
 	if n == 0 {
-		return ArrayOf([]K{}), s
+		return []K{}, s
 	}
 
 	var (
@@ -76,10 +95,10 @@ func (s setSeq[K]) Take(n int) (Array[K], Seq[K]) {
 		idx++
 	}
 
-	return ArrayOf(head), ArrayOf(tail)
+	return head, ArrayOf(tail)
 }
 
-func (s setSeq[K]) TakeWhile(predicate Predicate[K]) (Array[K], Seq[K]) {
+func (s Set[K]) TakeWhile(predicate Predicate[K]) (Array[K], Seq[K]) {
 	// TakeWhile makes a *little* more sense on a map[K]V than Take(n) does,
 	// but not much... For the rare case where someone needs it we provide the feature for completeness.
 	// Example: Collect up to N random values from the map where V has some property.
@@ -100,10 +119,10 @@ func (s setSeq[K]) TakeWhile(predicate Predicate[K]) (Array[K], Seq[K]) {
 		}
 	}
 
-	return ArrayOf(head), ArrayOf(tail)
+	return head, ArrayOf(tail)
 }
 
-func (s setSeq[K]) Skip(n int) Seq[K] {
+func (s Set[K]) Skip(n int) Seq[K] {
 	// Skipping the "first n elements" from a map[K]V does *almost* never make sense,
 	// since maps in Go a deliberately not ordered consistently.
 	// We provide the feature for completeness.
@@ -132,27 +151,27 @@ func (s setSeq[K]) Skip(n int) Seq[K] {
 	return ArrayOf(tail)
 }
 
-func (s setSeq[K]) Where(p Predicate[K]) Seq[K] {
+func (s Set[K]) Where(p Predicate[K]) Seq[K] {
 	return whereSeq[K]{
 		seq:  s,
 		pred: p,
 	}
 }
 
-func (s setSeq[T]) While(pred Predicate[T]) Seq[T] {
+func (s Set[T]) While(pred Predicate[T]) Seq[T] {
 	return whileSeq[T]{
 		seq:  s,
 		pred: pred,
 	}
 }
 
-func (s setSeq[K]) First() (Opt[K], Seq[K]) {
+func (s Set[K]) First() (Opt[K], Seq[K]) {
 	head, tail := s.Take(1)
 	first, _ := head.First()
 	return first, tail
 }
 
-func (s setSeq[K]) Map(shaper FuncMap[K, K]) Seq[K] {
+func (s Set[K]) Map(shaper FuncMap[K, K]) Seq[K] {
 	return mappedSeq[K, K]{
 		f:   shaper,
 		seq: s,

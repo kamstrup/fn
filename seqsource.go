@@ -66,7 +66,7 @@ func (s sourceSeq[T]) Take(n int) (Array[T], Seq[T]) {
 	for i := 0; i < n; i++ {
 		arr[i] = s.f()
 	}
-	return ArrayOf(arr), s
+	return arr, s
 }
 
 func (s sourceSeq[T]) TakeWhile(predicate Predicate[T]) (Array[T], Seq[T]) {
@@ -74,7 +74,7 @@ func (s sourceSeq[T]) TakeWhile(predicate Predicate[T]) (Array[T], Seq[T]) {
 	for t := s.f(); predicate(t); t = s.f() {
 		arr = append(arr, t)
 	}
-	return ArrayOf(arr), s
+	return arr, s
 }
 
 func (s sourceSeq[T]) Skip(n int) Seq[T] {

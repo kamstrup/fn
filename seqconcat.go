@@ -76,12 +76,12 @@ func (c concatSeq[T]) Array() Array[T] {
 	}
 
 	buf = Into(buf, Append[T], c.seq())
-	return ArrayOf(buf)
+	return buf
 }
 
 func (c concatSeq[T]) Take(n int) (Array[T], Seq[T]) {
 	if n <= 0 {
-		return ArrayOf([]T{}), c
+		return []T{}, c
 	}
 	var (
 		arr      Array[T]

@@ -80,9 +80,9 @@ func Append[T any](into []T, t T) []T {
 	return append(into, t)
 }
 
-// StringBuilder is a FuncCollect for use with Into that writes strings into a bytes.Buffer.
+// MakeString is a FuncCollect for use with Into that writes strings into a bytes.Buffer.
 // This function works with nil or a pre-built bytes.Buffer as initial value.
-func StringBuilder(into *strings.Builder, s string) *strings.Builder {
+func MakeString(into *strings.Builder, s string) *strings.Builder {
 	if into == nil {
 		into = &strings.Builder{}
 	}
@@ -90,9 +90,9 @@ func StringBuilder(into *strings.Builder, s string) *strings.Builder {
 	return into
 }
 
-// ByteBuffer is a FuncCollect for use with Into that writes bytes into a bytes.Buffer.
+// MakeBytes is a FuncCollect for use with Into that writes bytes into a bytes.Buffer.
 // This function works with nil or a pre-built bytes.Buffer as initial value.
-func ByteBuffer(into *bytes.Buffer, b []byte) *bytes.Buffer {
+func MakeBytes(into *bytes.Buffer, b []byte) *bytes.Buffer {
 	if into == nil {
 		into = &bytes.Buffer{}
 	}
@@ -100,9 +100,9 @@ func ByteBuffer(into *bytes.Buffer, b []byte) *bytes.Buffer {
 	return into
 }
 
-// Assoc is a FuncCollect that can take a Seq of Tuple elements and store them in a standard Go map.
+// MakeAssoc is a FuncCollect that can take a Seq of Tuple elements and store them in a standard Go map.
 // This function works with nil or a pre-built map[K]V as initial value.
-func Assoc[K comparable, V any](into map[K]V, t Tuple[K, V]) map[K]V {
+func MakeAssoc[K comparable, V any](into map[K]V, t Tuple[K, V]) map[K]V {
 	if into == nil {
 		into = make(map[K]V)
 	}
@@ -110,9 +110,9 @@ func Assoc[K comparable, V any](into map[K]V, t Tuple[K, V]) map[K]V {
 	return into
 }
 
-// Set is a FuncCollect that can take a Seq of comparable values and store them in a standard Go set (map[]struct{}).
+// MakeSet is a FuncCollect that can take a Seq of comparable values and store them in a standard Go set (map[]struct{}).
 // This function works with nil or a pre-built map[K]struct{} as initial value.
-func Set[K comparable](into map[K]struct{}, k K) map[K]struct{} {
+func MakeSet[K comparable](into map[K]struct{}, k K) map[K]struct{} {
 	if into == nil {
 		into = make(map[K]struct{})
 	}
@@ -242,7 +242,7 @@ func Not[T any](pred Predicate[T]) Predicate[T] {
 
 // TupleWithKey creates a FuncMap to use with MapOf or OptMap.
 // The returned function yields Tuples keyed by the keySelectors return value.
-// Usually used in conjunction with Into and Assoc to build a map[X]Y.
+// Usually used in conjunction with Into and MakeAssoc to build a map[X]Y.
 func TupleWithKey[X comparable, Y any](keySelector FuncMap[Y, X]) func(Y) Tuple[X, Y] {
 	return func(y Y) Tuple[X, Y] {
 		return TupleOf(keySelector(y), y)
@@ -252,7 +252,7 @@ func TupleWithKey[X comparable, Y any](keySelector FuncMap[Y, X]) func(Y) Tuple[
 // Into executes a Seq, collecting the results via a collection function (FuncCollect).
 // The method signature follows append() and copy() conventions,
 // having the destination to put data into first.
-// Typical collection functions are Append, Assoc, Set, Sum, Count, StringBuilder, or ByteBuffer.
+// Typical collection functions are Append, MakeAssoc, MakeSet, Sum, Count, MakeString, or MakeBytes.
 func Into[S any, T any](into T, collector FuncCollect[S, T], seq Seq[S]) T {
 	// FIXME: error reporting?
 	seq.ForEach(func(s S) {

@@ -12,8 +12,8 @@ import (
 )
 
 func TestZeroes(t *testing.T) {
-	fntesting.TestOf(t, fn.MapOf(fn.ArrayOfArgs(-1, 0, 1, 10).Seq(), fn.IsZero[int])).Is(false, true, false, false)
-	fntesting.TestOf(t, fn.MapOf(fn.ArrayOfArgs(-1, 0, 1, 10).Seq(), fn.IsNonZero[int])).Is(true, false, true, true)
+	fntesting.TestOf(t, fn.MapOf(fn.ArrayOfArgs(-1, 0, 1, 10), fn.IsZero[int])).Is(false, true, false, false)
+	fntesting.TestOf(t, fn.MapOf(fn.ArrayOfArgs(-1, 0, 1, 10), fn.IsNonZero[int])).Is(true, false, true, true)
 }
 
 func TestCollectSum(t *testing.T) {
@@ -30,7 +30,7 @@ func TestCollectSum(t *testing.T) {
 }
 
 func TestCollectMinMax(t *testing.T) {
-	arr := fn.ArrayOfArgs(1, 2, 3, 2, -1, 1).Seq()
+	arr := fn.ArrayOfArgs(1, 2, 3, 2, -1, 1)
 	min := fn.Into(0, fn.Min[int], arr)
 	if min != -1 {
 		t.Errorf("expected min -1: %d", min)
@@ -53,7 +53,7 @@ func TestCollectMinMax(t *testing.T) {
 }
 
 func TestCollectCount(t *testing.T) {
-	arr := fn.ArrayOfArgs[int](1, 2, 3).Seq()
+	arr := fn.ArrayOfArgs[int](1, 2, 3)
 
 	count := fn.Into(0, fn.Count[int], arr)
 	if count != 3 {
@@ -88,7 +88,7 @@ func TestCollectAssoc(t *testing.T) {
 	arr := fn.MapOf(oddNums, fn.TupleWithKey(func(i int) string {
 		return strconv.FormatInt(int64(i), 10)
 	}))
-	res := fn.Into(nil, fn.Assoc[string, int], arr)
+	res := fn.Into(nil, fn.MakeAssoc[string, int], arr)
 	exp := map[string]int{
 		"1": 1, "3": 3,
 	}
@@ -98,8 +98,8 @@ func TestCollectAssoc(t *testing.T) {
 }
 
 func TestCollectSet(t *testing.T) {
-	nums := fn.ArrayOfArgs(1, 2, 2, 3, 1).Seq()
-	res := fn.Into(nil, fn.Set[int], nums)
+	nums := fn.ArrayOfArgs(1, 2, 2, 3, 1)
+	res := fn.Into(nil, fn.MakeSet[int], nums)
 	exp := map[int]struct{}{
 		1: {}, 2: {}, 3: {},
 	}
@@ -109,8 +109,8 @@ func TestCollectSet(t *testing.T) {
 }
 
 func TestCollectString(t *testing.T) {
-	strs := fn.ArrayOfArgs("one", "two").Seq()
-	res := fn.Into(nil, fn.StringBuilder, strs)
+	strs := fn.ArrayOfArgs("one", "two")
+	res := fn.Into(nil, fn.MakeString, strs)
 	exp := "onetwo"
 	if exp != res.String() {
 		t.Errorf("expected %v, got %v", exp, res)
@@ -151,7 +151,7 @@ func TestCollectUpdateArray(t *testing.T) {
 
 	hellos := fn.ArrayOfArgs(
 		fn.TupleOf(1, "hello"), fn.TupleOf(2, "hej"),
-		fn.TupleOf(1, "world"), fn.TupleOf(2, "verden")).Seq()
+		fn.TupleOf(1, "world"), fn.TupleOf(2, "verden"))
 
 	res := fn.Into(nil, fn.UpdateArray[int, string](func(old, new_ string) string {
 		return strings.TrimSpace(old + " " + new_)

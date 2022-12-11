@@ -8,7 +8,7 @@ import (
 )
 
 func TestMapSeq(t *testing.T) {
-	var arr fn.Seq[int] = fn.MapOf(fn.ArrayOfArgs(1, 2, 3).Seq(), func(i int) int {
+	var arr fn.Seq[int] = fn.MapOf(fn.ArrayOfArgs(1, 2, 3), func(i int) int {
 		return i * 2
 	})
 	fntesting.TestOf(t, arr).Is(2, 4, 6)

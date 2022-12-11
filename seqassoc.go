@@ -1,14 +1,35 @@
 package fn
 
-var _ Seq[Tuple[int, int]] = assocSeq[int, int]{}
+// Assoc is a type wrapper for Go maps exposing them as a Seq of Tuple[K,V].
+type Assoc[K comparable, V any] map[K]V
 
-type assocSeq[K comparable, V any] map[K]V
-
+// AssocOf returns a map cast as a Seq implemented by Assoc.
+// If you need to explicitly use an Assoc then please use AssocAs
+// and call Assoc.Seq() when you need to use it as a Seq.
+// The Go compiler can not do the type inference required to use
+// an Assoc as a Seq.
 func AssocOf[K comparable, V any](m map[K]V) Seq[Tuple[K, V]] {
-	return assocSeq[K, V](m)
+	// NOTE: Ideally this function would return Assoc[K,V]
+	// and the compiler would infer that this is a valid Seq[Tuple[K, V]].
+	// Alas, as of Go 1.19 this is not possible.
+	// See https://github.com/golang/go/issues/41176
+	return Assoc[K, V](m)
 }
 
-func (a assocSeq[K, V]) ForEach(f Func1[Tuple[K, V]]) Seq[Tuple[K, V]] {
+// AssocAs returns a map cast as an Assoc. To use an Assoc as a Seq you can call Assoc.Seq().
+// This is sometimes needed because the Go compiler can not do the type
+// inference required to use an Assoc as a Seq.
+// Since an Assoc is a Go map you can use normal indexing to access elements.
+func AssocAs[K comparable, V any](m map[K]V) Assoc[K, V] {
+	return m
+}
+
+// Seq returns the Assoc cast as a Seq.
+func (a Assoc[K, V]) Seq() Seq[Tuple[K, V]] {
+	return a
+}
+
+func (a Assoc[K, V]) ForEach(f Func1[Tuple[K, V]]) Seq[Tuple[K, V]] {
 	for k, v := range a {
 		f(Tuple[K, V]{k, v})
 	}
@@ -16,7 +37,7 @@ func (a assocSeq[K, V]) ForEach(f Func1[Tuple[K, V]]) Seq[Tuple[K, V]] {
 	return SeqEmpty[Tuple[K, V]]()
 }
 
-func (a assocSeq[K, V]) ForEachIndex(f Func2[int, Tuple[K, V]]) Seq[Tuple[K, V]] {
+func (a Assoc[K, V]) ForEachIndex(f Func2[int, Tuple[K, V]]) Seq[Tuple[K, V]] {
 	idx := 0
 	for k, v := range a {
 		f(idx, Tuple[K, V]{k, v})
@@ -26,14 +47,14 @@ func (a assocSeq[K, V]) ForEachIndex(f Func2[int, Tuple[K, V]]) Seq[Tuple[K, V]]
 	return SeqEmpty[Tuple[K, V]]()
 }
 
-func (a assocSeq[K, V]) Len() (int, bool) {
+func (a Assoc[K, V]) Len() (int, bool) {
 	return len(a), true
 }
 
-func (a assocSeq[K, V]) Array() Array[Tuple[K, V]] {
+func (a Assoc[K, V]) Array() Array[Tuple[K, V]] {
 	sz := len(a)
 	if sz == 0 {
-		return ArrayOf[Tuple[K, V]](nil)
+		return Array[Tuple[K, V]](nil)
 	}
 
 	arr := make([]Tuple[K, V], sz)
@@ -43,16 +64,16 @@ func (a assocSeq[K, V]) Array() Array[Tuple[K, V]] {
 		idx++
 	}
 
-	return ArrayOf(arr)
+	return arr
 }
 
-func (a assocSeq[K, V]) Take(n int) (Array[Tuple[K, V]], Seq[Tuple[K, V]]) {
+func (a Assoc[K, V]) Take(n int) (Array[Tuple[K, V]], Seq[Tuple[K, V]]) {
 	// Taking the "first n elements" from a map[K]V does *almost* never make sense,
 	// since maps in Go a deliberately not ordered consistently.
 	// We provide the feature for completeness.
 
 	if n == 0 {
-		return ArrayOf([]Tuple[K, V]{}), a
+		return []Tuple[K, V]{}, a
 	}
 
 	var (
@@ -78,10 +99,10 @@ func (a assocSeq[K, V]) Take(n int) (Array[Tuple[K, V]], Seq[Tuple[K, V]]) {
 		idx++
 	}
 
-	return ArrayOf(head), ArrayOf(tail)
+	return head, ArrayOf(tail)
 }
 
-func (a assocSeq[K, V]) TakeWhile(predicate Predicate[Tuple[K, V]]) (Array[Tuple[K, V]], Seq[Tuple[K, V]]) {
+func (a Assoc[K, V]) TakeWhile(predicate Predicate[Tuple[K, V]]) (Array[Tuple[K, V]], Seq[Tuple[K, V]]) {
 	// TakeWhile makes a *little* more sense on a map[K]V than Take(n) does,
 	// but not much... For the rare case where someone needs it we provide the feature for completeness.
 	// Example: Collect up to N random values from the map where V has some property.
@@ -103,10 +124,10 @@ func (a assocSeq[K, V]) TakeWhile(predicate Predicate[Tuple[K, V]]) (Array[Tuple
 		}
 	}
 
-	return ArrayOf(head), ArrayOf(tail)
+	return head, ArrayOf(tail)
 }
 
-func (a assocSeq[K, V]) Skip(n int) Seq[Tuple[K, V]] {
+func (a Assoc[K, V]) Skip(n int) Seq[Tuple[K, V]] {
 	// Skipping the "first n elements" from a map[K]V does *almost* never make sense,
 	// since maps in Go a deliberately not ordered consistently.
 	// We provide the feature for completeness.
@@ -135,27 +156,27 @@ func (a assocSeq[K, V]) Skip(n int) Seq[Tuple[K, V]] {
 	return ArrayOf(tail)
 }
 
-func (a assocSeq[K, V]) Where(p Predicate[Tuple[K, V]]) Seq[Tuple[K, V]] {
+func (a Assoc[K, V]) Where(p Predicate[Tuple[K, V]]) Seq[Tuple[K, V]] {
 	return whereSeq[Tuple[K, V]]{
 		seq:  a,
 		pred: p,
 	}
 }
 
-func (a assocSeq[K, V]) While(pred Predicate[Tuple[K, V]]) Seq[Tuple[K, V]] {
+func (a Assoc[K, V]) While(pred Predicate[Tuple[K, V]]) Seq[Tuple[K, V]] {
 	return whileSeq[Tuple[K, V]]{
 		seq:  a,
 		pred: pred,
 	}
 }
 
-func (a assocSeq[K, V]) First() (Opt[Tuple[K, V]], Seq[Tuple[K, V]]) {
+func (a Assoc[K, V]) First() (Opt[Tuple[K, V]], Seq[Tuple[K, V]]) {
 	head, tail := a.Take(1)
 	first, _ := head.First()
 	return first, tail
 }
 
-func (a assocSeq[K, V]) Map(shaper FuncMap[Tuple[K, V], Tuple[K, V]]) Seq[Tuple[K, V]] {
+func (a Assoc[K, V]) Map(shaper FuncMap[Tuple[K, V], Tuple[K, V]]) Seq[Tuple[K, V]] {
 	return mappedSeq[Tuple[K, V], Tuple[K, V]]{
 		f:   shaper,
 		seq: a,

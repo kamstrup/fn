@@ -83,7 +83,6 @@ DOCS
 
 API CHANGES
 * Error reporting for fn.Seq.Array()? Tricky since Array is not a struct, but a just slice type alias
-* Rename fn.Set to Uniq? ("set" is a heavily overloaded word)
 
 FEATURES (in order of prio)
 * WIP A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?

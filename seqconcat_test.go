@@ -9,12 +9,12 @@ import (
 
 func TestConcat2x3(t *testing.T) {
 	fntesting.SuiteOf(t, func() fn.Seq[int] {
-		return fn.ConcatOf(fn.ArrayOfArgs(1, 2, 3).Seq(), fn.ArrayOfArgs(4, 5, 6).Seq())
+		return fn.ConcatOf(fn.ArrayOfArgs(1, 2, 3), fn.ArrayOfArgs(4, 5, 6))
 	}).Is(1, 2, 3, 4, 5, 6)
 }
 
 func TestConcatWithEmpty(t *testing.T) {
 	fntesting.SuiteOf(t, func() fn.Seq[int] {
-		return fn.ConcatOf(fn.SeqEmpty[int](), fn.SingletOf(1), fn.ArrayOfArgs(2, 3).Seq())
+		return fn.ConcatOf(fn.SeqEmpty[int](), fn.SingletOf(1), fn.ArrayOfArgs(2, 3))
 	}).Is(1, 2, 3)
 }

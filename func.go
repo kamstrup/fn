@@ -295,6 +295,7 @@ func TupleWithKey[X comparable, Y any](keySelector FuncMap[Y, X]) func(Y) Tuple[
 // The method signature follows append() and copy() conventions,
 // having the destination to put data into first.
 // Typical collection functions are Append, MakeAssoc, MakeSet, Sum, Count, MakeString, or MakeBytes.
+// In other languages and libraries this function is also known as "reduce" or "fold".
 func Into[S any, T any](into T, collector FuncCollect[S, T], seq Seq[S]) T {
 	// FIXME: error reporting?
 	seq.ForEach(func(s S) {

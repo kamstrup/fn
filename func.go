@@ -233,6 +233,48 @@ func IsNonZero[T comparable](t T) bool {
 	return t != zero
 }
 
+// Is returns a Predicate checking equality against the given argument.
+// If you are checking for the zero value of a type it is faster to use IsZero.
+func Is[T comparable](val T) Predicate[T] {
+	return func(other T) bool {
+		return val == other
+	}
+}
+
+// IsNot returns a Predicate checking inequality against the given argument.
+// If you are checking against the zero value of a type it is faster to use IsNonZero.
+func IsNot[T comparable](val T) Predicate[T] {
+	return func(other T) bool {
+		return val != other
+	}
+}
+
+// GreaterThanZero is a Predicate
+func GreaterThanZero[T Ordered](t T) bool {
+	var zero T
+	return t > zero
+}
+
+// LessThanZero is a Predicate
+func LessThanZero[T Ordered](t T) bool {
+	var zero T
+	return t < zero
+}
+
+// GreaterThan returns a Predicate. If you compare against zero then GreaterThanZero is more efficient.
+func GreaterThan[T Ordered](val T) Predicate[T] {
+	return func(other T) bool {
+		return other > val
+	}
+}
+
+// LessThan returns a Predicate. If you compare against zero then LessThanZero is more efficient.
+func LessThan[T Ordered](val T) Predicate[T] {
+	return func(other T) bool {
+		return other < val
+	}
+}
+
 // Not takes a Predicate and returns another predicate that is the logical inverse.
 func Not[T any](pred Predicate[T]) Predicate[T] {
 	return func(t T) bool {

@@ -187,3 +187,39 @@ func TestCollectErr(t *testing.T) {
 		t.Errorf("did not get expected error: %v", expErr)
 	}
 }
+
+func TestPredicates(t *testing.T) {
+	if fn.LessThanZero(1) {
+		t.Errorf("1 is not < 0")
+	}
+	if !fn.LessThanZero(-1) {
+		t.Errorf("-1 is < 0")
+	}
+
+	if !fn.GreaterThanZero(1) {
+		t.Errorf("1 is > 0")
+	}
+	if fn.GreaterThanZero(-1) {
+		t.Errorf("-1 is not > 0")
+	}
+
+	if fn.Is("hello")("hej") {
+		t.Errorf("hello != hej")
+	}
+	if !fn.IsNot("hello")("hej") {
+		t.Errorf("hello != hej")
+	}
+
+	if fn.IsZero("hello") {
+		t.Errorf("hello is non-zero")
+	}
+	if !fn.IsZero("") {
+		t.Errorf("\"\" should be zero")
+	}
+	if !fn.IsNonZero("hello") {
+		t.Errorf("hello is non-zero")
+	}
+	if fn.IsNonZero("") {
+		t.Errorf("\"\" should be zero")
+	}
+}

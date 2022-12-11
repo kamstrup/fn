@@ -90,7 +90,6 @@ FEATURES (in order of prio)
 * fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)
 * fnio.LinesOf(io.Reader)
 * seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
-* Predicate helpers: LessThan, GreaterThan, Is, IsNot
 * RunesOf(string) Seq[rune]
 * A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
 * Array.Reverse() Seq[T], zero-copy reversed Array (just reversed view on arr)
@@ -130,6 +129,7 @@ Seq[byte] of a string
 fn.Go() to execute a Seq in N goroutines and collect the results into another Seq
 Special "error seq" that can be returned from IO ops and anything that can fail at runtime
 RangeOf Seqs always have a well-defined length. Works for unsigned types as well
+A bunch of helper predicates like Is(), IsNot(), IsZero(), IsGreaterThan(), etc
 ```
 
 Performance

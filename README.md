@@ -35,7 +35,7 @@ Fn() Quick Start
 For starters let's get some terminology in place.
 
 **Seq:** The core data structure is `Seq[T]`. It is short for Sequence.
-The API they expose is designed to work on top of immutable structures,
+The Seq API is designed to work on top of immutable structures,
 thus there is no stateful "iterator". Walking through a Seq is done similarly 
 to how you `append()` elements to a slice in Go, but inversely.
 
@@ -54,18 +54,18 @@ Generally seqs are immutable. Any exception to this will be clearly documented.
 [Check the interface definition for Seq here](https://github.com/kamstrup/fn/blob/main/seq.go). 
 
 **Array:** Standard Go slices `[]T` are wrapped in the `fn.Array[T]` type.
-The `Array` type is a public subtype of `[]T` so you can do numeric indexing on a `Array`.
-Arrays are seqs, but also add some extra methods like `Sort()`.
+The `Array` type is a public subtype of `[]T` so you can do numeric indexing on an `Array`.
+Arrays are seqs, but also add some extra methods like `Sort()` and `Reverse()`.
 
 **Assoc:** Because "map" is an overloaded word in functional programming,
 Fn() uses the word "assoc" instead of `map[K]V` (pronounced with a soft "ch" at the end).
 The word "map" is reserved for the mapping operation used to convert a Seq to something else.
 
-**Creating a Seq**: A new Seq is obtained by one of the included constructor methods.
-Such as `ArrayOf()`, `ArrayOfArgs()`, `AssocOf()`, `MapOf()`, `ConcatOf()`, `ConcatOfArgs()`,
+**Creating a Seq**: A new Seq is obtained by one of the included constructor methods,
+such as `ArrayOf()`, `ArrayOfArgs()`, `AssocOf()`, `MapOf()`, `ConcatOf()`, `ConcatOfArgs()`,
 `RangeOf()`, `SetOf()`, `SourceOf()`, `ZipOf()`, and `StringOf()`.
 
-**Tuple:** Or "pair". Represent to data points. A helper mainly used when working with assocs,
+**Tuple:** Or "pair". Represents to data points. A helper mainly used when working with assocs,
 where the tuple captures a key and a value.
 
 **Opt:** Returned from operations where you are not certain to get a result.
@@ -83,6 +83,7 @@ DOCS
 
 API CHANGES
 * Error reporting for fn.Seq.Array()? Tricky since Array is not a struct, but a just slice type alias
+* ?? Array.Reverse() Seq[T], zero-copy reversed Array (just reversed view on arr). Currently modifies in place.
 
 FEATURES (in order of prio)
 * WIP A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
@@ -92,14 +93,12 @@ FEATURES (in order of prio)
 * seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
 * RunesOf(string) Seq[rune]
 * A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
-* Array.Reverse() Seq[T], zero-copy reversed Array (just reversed view on arr)
+* Special seqs for Assoc.Keys() and Assoc.Values()
 * MultiChan() Seq that selects on multiple chan T?
-* fn.GroupBy(Seq[S], FuncMap[S,T]) map[T][]S
 * Something for context.Context? Support cancel() cb and Done() chans? fncontext package...
 * fn.GoErr(seq, numTasks, FuncMapErr) -- or some version of fn.Go() with cancellation and error handling. 
 * Seq.Last() maybe? 
 * Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
-* Set, Assoc are just straight type wrappers. Make it public API like for Array and String?
 * MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
 * Compound FuncCollect, CollectorOf[S,T any](funcs ... FuncCollect[S,T]) FuncCollect[S,[]T]
 

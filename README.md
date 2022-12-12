@@ -48,6 +48,8 @@ The "inverse" of this operation looks like:
 ```
 head, tail = tail.First() // pops the first element and returns a new tail
 ```
+There are many easier ways to walk a Seq though. For example via `seq.ForEach()`
+, `seq.Take()`, and `fn.Into()`
 
 Generally seqs are immutable. Any exception to this will be clearly documented. 
 

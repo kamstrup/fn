@@ -67,15 +67,17 @@ The word "map" is reserved for the mapping operation used to convert a Seq to so
 such as `ArrayOf()`, `ArrayOfArgs()`, `AssocOf()`, `MapOf()`, `ConcatOf()`, `ConcatOfArgs()`,
 `RangeOf()`, `SetOf()`, `SourceOf()`, `ZipOf()`, and `StringOf()`.
 
-**Tuple:** Or "pair". Represents to data points. A helper mainly used when working with assocs,
-where the tuple captures a key and a value.
+**Tuple:** Or "pair". Represents two data points. A helper mainly used when working with assocs,
+where the tuple captures a key and a value. Assocs can be interpreted as a seq of tuples, or if you
+build a seq of tuples you can create an assoc or map from it.
 
 **Opt:** Returned from operations where you are not certain to get a result.
 For example when you call `seq.First()`. If the seq is empty you get back an empty opt,
 and an empty tail seq.
 
 **Seq.Len():** Lengths are handled in a special way in Fn(). They are allowed to be finite, 
-unknown, or infinite. 
+unknown, or infinite. Making these distinctions opens the possibility of pre-allocating
+slices and maps of the correct size, which can make a big difference in performance critical code.
 
 TODO
 ---

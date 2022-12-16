@@ -1,10 +1,10 @@
 Fn(), Functional Programming for Golang
 ====
-Fn is library for golang that enables functional programming techniques
-to be blended it with standard idiomatic Go code.
+Fn is library for golang that enables you to blend functional programming techniques
+with standard idiomatic Go code.
 
 We are inspired by Clojure and the Java Streams APIs that were
-introduced back in Java 8, and want to provide something of similar spirit,
+introduced back in Java 8, and want to provide something of similar spirit
 that makes it even more fun to write Go code.
 
 Philosophy
@@ -87,11 +87,10 @@ DOCS
 
 API CHANGES
 * Error reporting for fn.Seq.Array()? Tricky since Array is not a struct, but a just slice type alias
-* ?? Array.Reverse() Seq[T], zero-copy reversed Array (just reversed view on arr). Currently modifies in place.
+* Add Seq.Split(FuncSplit) Seq[Seq[T]]
 
 FEATURES (in order of prio)
 * WIP A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
-* seq.Split(pred) Seq[Seq[T]] (including or excluding the separator? We need both modes)
 * fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)
 * fnio.LinesOf(io.Reader)
 * seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
@@ -105,6 +104,8 @@ FEATURES (in order of prio)
 * Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
 * MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
 * Compound FuncCollect, CollectorOf[S,T any](funcs ... FuncCollect[S,T]) FuncCollect[S,[]T]
+* Seq[Arithmetic] producing random numbers?
+* Seq for *sql.Rows, with some type safe mechanism for reading rows
 
 OPTIMIZATIONS
 * Seq of single element (see SingletOf(t))
@@ -133,6 +134,7 @@ fn.Go() to execute a Seq in N goroutines and collect the results into another Se
 Special "error seq" that can be returned from IO ops and anything that can fail at runtime
 RangeOf Seqs always have a well-defined length. Works for unsigned types as well
 A bunch of helper predicates like Is(), IsNot(), IsZero(), IsGreaterThan(), etc
+SplitOf(seq, pred) Seq[Seq[T]] (including or excluding the separator), reverse with FlattenOf
 ```
 
 Performance

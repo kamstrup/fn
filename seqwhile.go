@@ -46,13 +46,20 @@ func (w whileSeq[T]) Take(n int) (Array[T], Seq[T]) {
 		return []T{}, w
 	}
 
-	i := 0
-	var arr []T
-	for fst, tail := w.First(); !fst.Empty() && i < n; fst, tail = tail.First() {
+	var (
+		arr  []T
+		fst  Opt[T]
+		tail Seq[T] = w
+	)
+
+	for i := 0; i < n; i++ {
+		fst, tail = tail.First()
+		if fst.Empty() {
+			return arr, tail
+		}
 		arr = append(arr, fst.val)
-		i++
 	}
-	return arr, SeqEmpty[T]()
+	return arr, tail
 }
 
 func (w whileSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
@@ -96,7 +103,7 @@ func (w whileSeq[T]) While(pred Predicate[T]) Seq[T] {
 func (w whileSeq[T]) First() (Opt[T], Seq[T]) {
 	fst, tail := w.seq.First()
 	if fst.Empty() || !w.pred(fst.val) {
-		return OptEmpty[T](), SeqEmpty[T]()
+		return OptEmpty[T](), SeqEmpty[T]() // FIXME: check for error in tail, and return if so -- but tail may not be empty!
 	}
 	return fst, whileSeq[T]{
 		seq:  tail,

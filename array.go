@@ -1,6 +1,9 @@
 package fn
 
-import "sort"
+import (
+	"math/rand"
+	"sort"
+)
 
 type Array[T any] []T
 
@@ -139,6 +142,7 @@ func (a Array[T]) Sort(less FuncLess[T]) Array[T] {
 }
 
 // Reverse is special for Array Seqs since it is done in place.
+// Returns the array receiver again for easy chaining.
 // Generally functions and methods in the fn() library leaves all data structures immutable,
 // but this is an exception. Caveat Emptor!
 func (a Array[T]) Reverse() Seq[T] {
@@ -148,6 +152,17 @@ func (a Array[T]) Reverse() Seq[T] {
 		swapIdx := len(a) - 1 - i
 		a[i], a[swapIdx] = a[swapIdx], a[i]
 	}
+	return a
+}
+
+// Shuffle pseudo-randomizes the elements in the Array in place.
+// Returns the array receiver again for easy chaining.
+// Generally functions and methods in the fn() library leaves all data structures immutable,
+// but this is an exception. Caveat Emptor!
+func (a Array[T]) Shuffle() Seq[T] {
+	rand.Shuffle(len(a), func(i, j int) {
+		a[i], a[j] = a[j], a[i]
+	})
 	return a
 }
 

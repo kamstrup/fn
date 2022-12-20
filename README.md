@@ -1,5 +1,8 @@
 Fn(), Functional Programming for Golang
 ====
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/kamstrup/fn)](https://goreportcard.com/report/github.com/kamstrup/fn) [![PkgGoDev](https://pkg.go.dev/badge/github.com/kamstrup/fn)](https://pkg.go.dev/github.com/kamstrup/fn)
+
 Fn is library for golang that enables you to blend functional programming techniques
 with standard idiomatic Go code.
 

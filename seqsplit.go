@@ -23,6 +23,10 @@ type splitSeq[T any] struct {
 }
 
 // SplitOf splits a Seq into sub-seqs based on a FuncSplit.
+// The splitting algorithm implemented is only "semi-lazy" in the following way:
+// Each split is read eagerly into an Array, but the tail is not executed.
+// The split seq needs to work in this semi-lazy way in order to guarantee
+// that methods from the Seq interface returning a tail indeed returns a valid tail.
 func SplitOf[T any](seq Seq[T], splitter FuncSplit[T]) Seq[Seq[T]] {
 	return splitSeq[T]{
 		seq:   seq,

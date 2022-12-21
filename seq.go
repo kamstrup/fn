@@ -53,3 +53,10 @@ type Seq[T any] interface {
 	// since Go does not support type parameters on methods.
 	Map(funcMap FuncMap[T, T]) Seq[T]
 }
+
+func errOrEmpty[T any](seq Seq[T]) Seq[T] {
+	if err := Error(seq); err != nil {
+		return ErrorOf[T](err)
+	}
+	return SeqEmpty[T]()
+}

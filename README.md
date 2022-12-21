@@ -89,6 +89,7 @@ DOCS
 * Put examples in this README
 
 API CHANGES
+* Opt needs an API overhaul 
 * Error reporting for fn.Seq.Array()? Tricky since Array is not a struct, but a just slice type alias
 * Add Seq.Split(FuncSplit) Seq[Seq[T]]
 
@@ -138,6 +139,7 @@ Special "error seq" that can be returned from IO ops and anything that can fail 
 RangeOf Seqs always have a well-defined length. Works for unsigned types as well
 A bunch of helper predicates like Is(), IsNot(), IsZero(), IsGreaterThan(), etc
 SplitOf(seq, pred) Seq[Seq[T]] (including or excluding the separator), reverse with FlattenOf
+Simple IO helpers for using an io.Reader as a Seq, or interpreting tokens from a bufio.Scanner as a Seq (see fx LinesOf)
 ```
 
 Performance

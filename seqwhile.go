@@ -15,21 +15,29 @@ func WhileOf[T any](seq Seq[T], pred Predicate[T]) Seq[T] {
 }
 
 func (w whileSeq[T]) ForEach(f Func1[T]) Seq[T] {
-	for fst, tail := w.First(); !fst.Empty(); fst, tail = tail.First() {
+	var (
+		fst  Opt[T]
+		tail Seq[T]
+	)
+	for fst, tail = w.First(); !fst.Empty(); fst, tail = tail.First() {
 		f(fst.val)
 	}
 
-	return SeqEmpty[T]()
+	return tail
 }
 
 func (w whileSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
-	i := 0
-	for fst, tail := w.First(); !fst.Empty(); fst, tail = tail.First() {
+	var (
+		fst  Opt[T]
+		tail Seq[T]
+		i    int
+	)
+	for fst, tail = w.First(); !fst.Empty(); fst, tail = tail.First() {
 		f(i, fst.val)
 		i++
 	}
 
-	return SeqEmpty[T]()
+	return tail
 }
 
 func (w whileSeq[T]) Len() (int, bool) {
@@ -103,7 +111,7 @@ func (w whileSeq[T]) While(pred Predicate[T]) Seq[T] {
 func (w whileSeq[T]) First() (Opt[T], Seq[T]) {
 	fst, tail := w.seq.First()
 	if fst.Empty() || !w.pred(fst.val) {
-		return OptEmpty[T](), SeqEmpty[T]() // FIXME: check for error in tail, and return if so -- but tail may not be empty!
+		return OptEmpty[T](), errOrEmpty(tail)
 	}
 	return fst, whileSeq[T]{
 		seq:  tail,
@@ -116,4 +124,8 @@ func (w whileSeq[K]) Map(shaper FuncMap[K, K]) Seq[K] {
 		f:   shaper,
 		seq: w,
 	}
+}
+
+func (w whileSeq[K]) Error() error {
+	return Error(w.seq)
 }

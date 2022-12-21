@@ -19,20 +19,26 @@ type mappedSeq[S, T any] struct {
 }
 
 func (m mappedSeq[S, T]) ForEach(f Func1[T]) Seq[T] {
-	m.seq.ForEach(func(s S) {
+	res := m.seq.ForEach(func(s S) {
 		t := m.f(s)
 		f(t)
 	})
 
+	if err := Error(res); err != nil {
+		return ErrorOf[T](err)
+	}
 	return SeqEmpty[T]()
 }
 
 func (m mappedSeq[S, T]) ForEachIndex(f Func2[int, T]) Seq[T] {
-	m.seq.ForEachIndex(func(i int, s S) {
+	res := m.seq.ForEachIndex(func(i int, s S) {
 		t := m.f(s)
 		f(i, t)
 	})
 
+	if err := Error(res); err != nil {
+		return ErrorOf[T](err)
+	}
 	return SeqEmpty[T]()
 }
 
@@ -61,12 +67,14 @@ func (m mappedSeq[S, T]) Take(n int) (Array[T], Seq[T]) {
 		head Array[S]
 		tail Seq[S]
 	)
+	// Note: we are not calling m.f on the skipped elements
 	head, tail = m.seq.Take(n)
 	return MapOf[S, T](head, m.f).Array(), MapOf(tail, m.f)
 }
 
 func (m mappedSeq[S, T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
-	// TODO: does not really to alloc a slice, if we had a "pulling seq"
+	// TODO: does not really need to alloc a slice, if we had a "pulling seq"
+	// FIXME: does double alloc with TakeWhile+append, maybe just While+Do?
 	var arr []T
 	_, tail := m.seq.TakeWhile(func(s S) bool {
 		t := m.f(s)
@@ -107,4 +115,8 @@ func (m mappedSeq[S, T]) Map(shaper FuncMap[T, T]) Seq[T] {
 		f:   shaper,
 		seq: m,
 	}
+}
+
+func (m mappedSeq[S, T]) Error() error {
+	return Error(m.seq)
 }

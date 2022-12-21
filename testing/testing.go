@@ -210,7 +210,7 @@ func (ts Suite[S]) seqIsForEach(t *testing.T, ss []S) {
 	})
 
 	if lenOk && sz != i {
-		t.Errorf("Number of elements in ForEachIndex incorrect. Expected %d, found %d",
+		t.Errorf("Number of elements in ForEach incorrect. Expected %d, found %d",
 			sz, i)
 	}
 
@@ -462,7 +462,7 @@ func (ts Suite[S]) seqIsWhere(t *testing.T, ss []S) {
 			t.Errorf("Unexpected number of elements in Seq.Where(true). Expected %d, got %d", len(ss), len(arr))
 		}
 		if !reflect.DeepEqual(arr.AsSlice(), ss) {
-			t.Errorf("Array elements mismatch. Expected %v, got %v", ss, arr)
+			t.Errorf("Array elements mismatch.\nExpected %v,\ngot      %v", ss, arr)
 		}
 	})
 

@@ -4,7 +4,7 @@ type errorSeq[T any] struct {
 	error
 }
 
-// Error returns an error, if there is an error associated with a Seq.
+// Error returns an error if there is an error associated with a Seq.
 // A sequence has an associated error if it has a method Error() that returns an error.
 func Error[T any](seq Seq[T]) error {
 	if errSeq, ok := seq.(interface {

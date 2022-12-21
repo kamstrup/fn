@@ -8,22 +8,25 @@ import (
 	"github.com/kamstrup/fn"
 )
 
-type readerSeq struct {
+type BufferSeq = fn.Seq[[]byte]
+type BufferArray = fn.Array[[]byte]
+
+type Reader struct {
 	r   io.Reader
 	buf []byte
 }
 
-func ReaderOf(r io.Reader, buf []byte) fn.Seq[[]byte] {
+func ReaderOf(r io.Reader, buf []byte) BufferSeq {
 	if len(buf) == 0 {
 		buf = make([]byte, 4096)
 	}
-	return readerSeq{
+	return Reader{
 		r:   r,
 		buf: buf,
 	}
 }
 
-func (r readerSeq) ForEach(f fn.Func1[[]byte]) fn.Seq[[]byte] {
+func (r Reader) ForEach(f fn.Func1[[]byte]) BufferSeq {
 	for {
 		n, err := r.r.Read(r.buf)
 		if err == io.EOF && n == 0 {
@@ -31,15 +34,17 @@ func (r readerSeq) ForEach(f fn.Func1[[]byte]) fn.Seq[[]byte] {
 		} else if err != nil {
 			return fn.ErrorOf[[]byte](err)
 		}
-		f(r.buf[:n])
+
+		f(r.buf[:n]) // might or might not steal r.buf, we have to be defensive!
+		r.buf = make([]byte, len(r.buf))
 	}
 
 	return fn.SeqEmpty[[]byte]()
 }
 
 // ForEachIndex on a Reader sequence passes the stream offset, not the iteration index to f.
-func (r readerSeq) ForEachIndex(f fn.Func2[int, []byte]) fn.Seq[[]byte] {
-	offset := 0
+func (r Reader) ForEachIndex(f fn.Func2[int, []byte]) BufferSeq {
+	i := 0
 	for {
 		n, err := r.r.Read(r.buf)
 		if err == io.EOF && n == 0 {
@@ -47,17 +52,31 @@ func (r readerSeq) ForEachIndex(f fn.Func2[int, []byte]) fn.Seq[[]byte] {
 		} else if err != nil {
 			return fn.ErrorOf[[]byte](err)
 		}
-		f(offset, r.buf[:n])
-		offset += n
+		f(i, r.buf[:n]) // might or might not steal r.buf, we have to be defensive!
+		r.buf = make([]byte, len(r.buf))
+		i++
 	}
 
 	return fn.SeqEmpty[[]byte]()
 }
 
 // Len on a Reader is unknown, unless the underlying io.Reader is an *os.File
+// or something with a Len() int method, in which case it returns the number of buffers
+// this Seq will produce when executed.
+func (r Reader) Len() (int, bool) {
+	if sz, ok := r.ByteLen(); ok {
+		if rem := sz % len(r.buf); rem != 0 {
+			return sz/len(r.buf) + 1, true
+		}
+		return sz / len(r.buf), true
+	}
+	return fn.LenUnknown, false
+}
+
+// ByteLen on a Reader is unknown, unless the underlying io.Reader is an *os.File
 // in which case it reports the file length, or if it is a something with a Len() int method,
 // like a bytes.Buffer.
-func (r readerSeq) Len() (int, bool) {
+func (r Reader) ByteLen() (int, bool) {
 	// Check if reader is a File
 	if f, ok := r.r.(*os.File); ok {
 		if st, err := f.Stat(); err != nil {
@@ -75,82 +94,82 @@ func (r readerSeq) Len() (int, bool) {
 	return fn.LenUnknown, false
 }
 
-// Array redas the full stream and returns it in a byte array.
-func (r readerSeq) Array() fn.Array[[]byte] {
-	res := r.prepBuffer(0)
+func (r Reader) Array() BufferArray {
+	// TODO: if size is well-defined: alloc 1 continuous stride and do 1 read call, and sub-divide into buffers via slicing
 
-	// FIXME: error reporting!?
-	fn.Into[[]byte, *bytes.Buffer](res, fn.MakeBytes, r)
-	return fn.ArrayAsArgs(res.Bytes())
+	return fn.Into[[]byte, [][]byte](nil, fn.Append[[]byte], r)
 }
 
-func (r readerSeq) Take(n int) (fn.Array[[]byte], fn.Seq[[]byte]) {
-	res := r.prepBuffer(n)
+func (r Reader) Take(n int) (BufferArray, BufferSeq) {
+	var (
+		res  [][]byte
+		tail = r
+	)
 
-	for n > 0 {
-		reqSz := n
-		if reqSz > len(r.buf) {
-			reqSz = len(r.buf)
-		}
-
-		numRead, err := r.r.Read(r.buf[:reqSz])
+	for i := 0; i < n; i++ {
+		numRead, err := r.r.Read(r.buf)
 		if err == io.EOF && numRead == 0 {
-			return fn.ArrayAsArgs(res.Bytes()), fn.SeqEmpty[[]byte]()
+			return res, fn.SeqEmpty[[]byte]()
 		} else if err != nil {
-			return fn.ArrayAsArgs(res.Bytes()), fn.ErrorOf[[]byte](err)
+			return res, fn.ErrorOf[[]byte](err)
 		}
 
-		_, _ = res.Write(r.buf[:numRead])
-		n -= numRead
+		res = append(res, r.buf[:numRead])
+		r.buf = make([]byte, len(r.buf))
 	}
 
-	return fn.ArrayAsArgs(res.Bytes()), fn.SeqEmpty[[]byte]()
+	return res, tail
 }
 
-func (r readerSeq) TakeWhile(pred fn.Predicate[[]byte]) (fn.Array[[]byte], fn.Seq[[]byte]) {
-	res := &bytes.Buffer{} // we can't pre-alloc -- we really don't know what size buffer we need, could be 0!
+func (r Reader) TakeWhile(pred fn.Predicate[[]byte]) (BufferArray, BufferSeq) {
+	var res [][]byte // we can't pre-alloc -- we really don't know what size buffer we need, could be 0!
 
 	for {
 		numRead, err := r.r.Read(r.buf)
 		if err == io.EOF && numRead == 0 {
-			return fn.ArrayAsArgs(res.Bytes()), fn.SeqEmpty[[]byte]()
+			return res, fn.SeqEmpty[[]byte]()
 		} else if err != nil {
-			return fn.ArrayAsArgs(res.Bytes()), fn.ErrorOf[[]byte](err)
+			return res, fn.ErrorOf[[]byte](err)
 		}
 
-		if pred(r.buf) {
-			_, _ = res.Write(r.buf[:numRead])
+		if pred(r.buf[:numRead]) {
+			res = append(res, r.buf[:numRead])
+			r.buf = make([]byte, len(r.buf))
 		} else {
 			// DANGER: We "unread" r.buf here. We end up in a state where the singlet and r share r.buf.
 			// This works out as long as the caller does not user r further, since r will not use the buffer
 			// before the singlet is exhausted. We might need to copy the r.buf if this is problematic in practice.
 			tail := fn.ConcatOf[[]byte](fn.SingletOf(r.buf), r)
-			return fn.ArrayAsArgs(res.Bytes()), tail
+			return res, tail
 		}
 	}
 
-	return fn.ArrayAsArgs(res.Bytes()), fn.SeqEmpty[[]byte]()
+	return res, fn.SeqEmpty[[]byte]()
 }
 
-func (r readerSeq) Skip(n int) fn.Seq[[]byte] {
-	_, err := io.Copy(io.Discard, io.LimitReader(r.r, int64(n)))
+func (r Reader) Skip(n int) BufferSeq {
+	// Skip n buffers
+	_, err := io.Copy(io.Discard, io.LimitReader(r.r, int64(n*len(r.buf))))
 	if err != nil {
 		return fn.ErrorOf[[]byte](err)
 	}
 	return r
 }
 
-func (r readerSeq) Where(pred fn.Predicate[[]byte]) fn.Seq[[]byte] {
+func (r Reader) Where(pred fn.Predicate[[]byte]) BufferSeq {
 	return fn.WhereOf[[]byte](r, pred)
 }
 
-func (r readerSeq) While(pred fn.Predicate[[]byte]) fn.Seq[[]byte] {
+func (r Reader) While(pred fn.Predicate[[]byte]) BufferSeq {
 	return fn.WhileOf[[]byte](r, pred)
 }
 
-func (r readerSeq) First() (fn.Opt[[]byte], fn.Seq[[]byte]) {
+func (r Reader) First() (fn.Opt[[]byte], BufferSeq) {
 	n, err := r.r.Read(r.buf)
 	if err == io.EOF {
+		if n == 0 {
+			return fn.OptEmpty[[]byte](), fn.SeqEmpty[[]byte]()
+		}
 		return fn.OptOf[[]byte](r.buf[:n]), fn.SeqEmpty[[]byte]()
 	} else if err != nil {
 		return fn.OptErr[[]byte](err), fn.ErrorOf[[]byte](err)
@@ -159,14 +178,14 @@ func (r readerSeq) First() (fn.Opt[[]byte], fn.Seq[[]byte]) {
 	return fn.OptOf(r.buf[:n]), r
 }
 
-func (r readerSeq) Map(shaper fn.FuncMap[[]byte, []byte]) fn.Seq[[]byte] {
+func (r Reader) Map(shaper fn.FuncMap[[]byte, []byte]) BufferSeq {
 	return fn.MapOf[[]byte](r, shaper)
 }
 
 // prepBuffer prepares a buffer of a given size. Pass n=0 for sensible default.
-func (r readerSeq) prepBuffer(n int) *bytes.Buffer {
+func (r Reader) prepBuffer(n int) *bytes.Buffer {
 	buf := &bytes.Buffer{}
-	if sz, ok := r.Len(); ok {
+	if sz, ok := r.ByteLen(); ok {
 		if n > 0 && sz > n {
 			sz = n
 		}

@@ -57,7 +57,7 @@ func (ws whereSeq[T]) Take(n int) (Array[T], Seq[T]) {
 		return Array[T](nil), SeqEmpty[T]()
 	}
 
-	// TODO: does not really to alloc a slice, if we had a "pulling seq"
+	// FIXME: TakeWhile + append() does double alloc! Should just be While() + Do()
 	var (
 		sz  = 0
 		arr []T
@@ -132,7 +132,7 @@ func (ws whereSeq[T]) First() (Opt[T], Seq[T]) {
 	for fst, tail = ws.seq.First(); ; fst, tail = tail.First() {
 		// seek until we find a First element that is true for ws.pred()
 		if fst.Empty() {
-			return fst, SeqEmpty[T]()
+			return fst, errOrEmpty(tail)
 		}
 		if ws.pred(fst.val) {
 			return fst, whereSeq[T]{tail, ws.pred}
@@ -145,4 +145,8 @@ func (ws whereSeq[K]) Map(shaper FuncMap[K, K]) Seq[K] {
 		f:   shaper,
 		seq: ws,
 	}
+}
+
+func (ws whereSeq[K]) Error() error {
+	return Error(ws.seq)
 }

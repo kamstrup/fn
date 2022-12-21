@@ -314,14 +314,35 @@ func IntoErr[S any, T any](into T, collector FuncCollectErr[S, T], seq Seq[S]) (
 		return t, err
 	}
 
-	seq.TakeWhile(func(s S) bool {
+	while := seq.While(func(s S) bool {
 		into, err = collector(into, s)
 		if err != nil {
 			return false
 		}
 		return true
 	})
-	return into, err
+
+	seqErr := Do(while) // execute the While loop
+
+	// Check for error from collector in the While loop
+	if err != nil {
+		return into, err
+	}
+
+	// Check for error from the underlying seq
+	if errSeq := Error(seqErr); errSeq != nil {
+		return into, errSeq
+	}
+
+	return into, nil
+}
+
+// Do executes a Seq. The main use case is when you are primarily interested in triggering side effects.
+// For parallel execution of Seqs please look at Go.
+// In all normal applications the returned Seq will be empty. If ht e Seq is doing IO or other things
+// with possibilities of runtime failures you may need to check it for errors with the Error function.
+func Do[T any](seq Seq[T]) Seq[T] {
+	return seq.ForEach(func(_ T) {})
 }
 
 // Any executes the Seq up to a point where the predicate returns true.

@@ -6,6 +6,9 @@ import "sync"
 // It runs numJobs parallel goroutines of the task() function,
 // and returns a Seq[T] that receives the results as they come in.
 // This function returns immediately and the results are computed in the background.
+//
+// If you just want to execute a Seq for the sake of triggering side effects
+// you can use the much simpler Do function.
 func Go[S, T any](seq Seq[S], numJobs int, task FuncMap[S, T]) Seq[T] {
 	chS := make(chan S, numJobs)
 	chT := make(chan T, numJobs)

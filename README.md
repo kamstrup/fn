@@ -85,8 +85,9 @@ slices and maps of the correct size, which can make a big difference in performa
 TODO
 ---
 ```
-DOCS
+CHORES
 * Put examples in this README
+* Tests for error propagation in fnio
 
 API CHANGES
 * Opt needs an API overhaul 
@@ -96,7 +97,6 @@ API CHANGES
 FEATURES (in order of prio)
 * WIP A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
 * fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)
-* fnio.LinesOf(io.Reader)
 * seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
 * RunesOf(string) Seq[rune]
 * A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
@@ -104,7 +104,7 @@ FEATURES (in order of prio)
 * MultiChan() Seq that selects on multiple chan T?
 * Something for context.Context? Support cancel() cb and Done() chans? fncontext package...
 * fn.GoErr(seq, numTasks, FuncMapErr) -- or some version of fn.Go() with cancellation and error handling. 
-* Seq.Last() maybe? 
+* Seq.Last(), or fn.Last(seq) maybe? 
 * Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
 * MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
 * Compound FuncCollect, CollectorOf[S,T any](funcs ... FuncCollect[S,T]) FuncCollect[S,[]T]
@@ -114,6 +114,7 @@ FEATURES (in order of prio)
 OPTIMIZATIONS
 * Seq of single element (see SingletOf(t))
 * EmptySeq impl. (currently just wraps an empty slice), but an empty struct{} would do even better
+* Look for allocating buffers of right size where we can
 ```
 
 DONE

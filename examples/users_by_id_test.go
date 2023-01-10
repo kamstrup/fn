@@ -28,7 +28,7 @@ func (u *User) String() string {
 	return fmt.Sprintf("%s(%s)", u.name, u.id)
 }
 
-func TestUsersById(t *testing.T) {
+func TestExampleUsersById(t *testing.T) {
 	// Assume we have collected a slice of Users from somewhere, a DB query maybe
 	users := []*User{
 		{

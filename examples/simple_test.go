@@ -58,3 +58,22 @@ func TestExampleUserSerial(t *testing.T) {
 	}), tups)
 	fmt.Println("User serials from", names, "\n", userSerials)
 }
+
+func TestExampleParallelDownloader(t *testing.T) {
+	// In this example simulate a massive parallel download
+	// of a bunch of files named numerically 0.txt ... 1027.txt.
+	// Keeping 100 items in-flight all the time
+	fetchItem := func(num int) int {
+		fmt.Printf("Downloading %d.txt\n", num) // not really, just a dummy
+		return num
+	}
+
+	ids := fn.RangeOf(0, 1027)
+	tasks := fn.Go(ids, 100, fetchItem)
+	result := fn.Do(tasks)
+
+	if err := fn.Error(result); err != nil {
+		t.Fatal(err) // Not going to happen in this test, but might in real apps
+	}
+	fmt.Println("All done")
+}

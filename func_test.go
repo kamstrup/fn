@@ -223,3 +223,55 @@ func TestPredicates(t *testing.T) {
 		t.Errorf("\"\" should be zero")
 	}
 }
+
+func TestAny(t *testing.T) {
+	if fn.Any(fn.ArrayOfArgs(1, 2, 3), fn.IsZero[int]) {
+		t.Fatal("should not find zero")
+	}
+
+	if !fn.Any(fn.ArrayOfArgs(0, 1), fn.IsNonZero[int]) {
+		t.Fatal("should find non-zero")
+	}
+}
+
+func TestAll(t *testing.T) {
+	if fn.All(fn.ArrayOfArgs(0, 0, 1), fn.IsZero[int]) {
+		t.Fatal("should find no.zero")
+	}
+
+	if !fn.All(fn.ArrayOfArgs(0, 0), fn.IsZero[int]) {
+		t.Fatal("should be all zeroes")
+	}
+}
+
+func TestLast(t *testing.T) {
+	o := fn.Last(fn.ArrayOfArgs(0, 0, 1))
+	if o.Error() != nil {
+		t.Fatal("should not error", o.Error())
+	}
+	if o.Must() != 1 {
+		t.Fatal("should be 1", o.Must())
+	}
+
+	o = fn.Last(fn.ArrayOfArgs(0))
+	if o.Error() != nil {
+		t.Fatal("should not error", o.Error())
+	}
+	if o.Must() != 0 {
+		t.Fatal("should be 0", o.Must())
+	}
+
+	o = fn.Last(fn.SeqEmpty[int]())
+	if !o.Empty() {
+		t.Fatal("should be empty", o.Must())
+	}
+
+	theError := errors.New("the error")
+	o = fn.Last(fn.ErrorOf[int](theError))
+	if !o.Empty() || o.Ok() {
+		t.Fatal("should be empty", o.Must())
+	}
+	if o.Error() != theError {
+		t.Fatal("should be 'the error'", o.Error())
+	}
+}

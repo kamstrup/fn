@@ -92,16 +92,14 @@ API CHANGES
 * Opt needs an API overhaul 
 
 FEATURES (in order of prio)
-* WIP A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
 * fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)
+* Special seqs for Assoc.Keys() and Assoc.Values()
 * seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
 * RunesOf(string) Seq[rune]
 * A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
-* Special seqs for Assoc.Keys() and Assoc.Values()
 * MultiChan() Seq that selects on multiple chan T?
 * Something for context.Context? Support cancel() cb and Done() chans? fncontext package...
 * fn.GoErr(seq, numTasks, FuncMapErr) -- or some version of fn.Go() with cancellation and error handling. 
-* Seq.Last(), or fn.Last(seq) maybe? 
 * Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
 * MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
 * Compound FuncCollect, CollectorOf[S,T any](funcs ... FuncCollect[S,T]) FuncCollect[S,[]T]
@@ -128,7 +126,7 @@ Infinite Seqs from source functions
 Zip 2 Seqs into a Seq of Tuples
 RangeOf(from, to) in both directions
 Concat(Seq[Seq[T]]), and ConcatOfArgs(seqs ... Seq[T])
-seq.Any() and seq.All()
+fn.Any(seq, pred), fn.All(seq, pred), and fn.Last(seq)
 Seq length is optional. sz, ok := seq.Len() and can be finite, infinite, or unknown 
 Seq over a channel
 Seq[byte] of a string

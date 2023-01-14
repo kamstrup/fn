@@ -357,3 +357,20 @@ func All[T any](seq Seq[T], pred Predicate[T]) bool {
 	fstMismatch, _ := seq.Where(Not(pred)).First()
 	return fstMismatch.Empty()
 }
+
+// Last executes the Seq and returns the last element or an empty Opt.
+func Last[T any](seq Seq[T]) Opt[T] {
+	var last T
+	var i int
+	tail := seq.ForEach(func(t T) {
+		last = t
+		i++
+	})
+	if i > 0 {
+		return OptOf(last)
+	}
+	if err := Error(tail); err != nil {
+		return OptErr[T](err)
+	}
+	return OptEmpty[T]()
+}

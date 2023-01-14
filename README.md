@@ -82,6 +82,130 @@ and an empty tail seq.
 unknown, or infinite. Making these distinctions opens the possibility of pre-allocating
 slices and maps of the correct size, which can make a big difference in performance critical code.
 
+API By Example
+---
+### Creating Seqs
+We follow the convention that functions for creating a Seq is named with an "Of"-suffix.
+Ie `StringOf()`, `ArrayOf` etc. They always return a `Seq[T]`. Functions with an "As"-suffix
+return a specific Seq implementation that allows you to perform type specific operations.
+Fx. like sorting an `Array`. It is a known limitattion of the Go compiler (v1.19) that it 
+can not determine that generic structs implement generic interfaces. So in order to use
+an `Array`, `Assoc`, `Set`, or `String` as a Seq you need to call `.Seq()` on the instance.
+Seq creation funcs that take a variadic sets of arguments have a "OfArgs"-suffix.
+
+#### From Standard Go Types
+```.go
+arr := fn.ArrayOfArgs(1,2,3) // also: ArrayOf(), ArrayAs(), ArrayAsArgs()
+ass := fn.AssocOf(map[string]int{"foo": 27, "bar": 68}) // also: AssocAs()
+set := fn.SetOf(map[string]struct{}{"foo", {}, "bar": {}}) // also: SetAs()
+str := fn.StringOf("hello world") // also: StringAs()
+```
+
+#### Numeric Ranges
+```.go
+zero := fn.Constant(0)
+nums := fn.RangeOf(0, 10)
+evenNums := fn.RangeStepOf(0, 10, 2)
+infinite := fn.NumbersFrom(0)
+```
+
+### Iterating over a Seq
+Functions that execute the Seq, ie actively traverse it include:
+```.go
+seq.ForEach(func(elem T) {
+   // use elem
+})
+seq.ForEachIndex(func (i int, elem T) {
+   // use index and elem
+})
+tenFirst, tailSeq := seq.Take(10)
+tenFirst, tailSeq := TakeWhile(func(i int) bool { i < 10 == 0})
+```
+There are also some helper functions included in Fn for executing a Seq for various purposes.
+See the [Operations on Seqs](#operations-on-seqs).
+
+Functions that do not execute the Seq, but return a new lazy Seq include:
+```.go
+while := seq.While(predicate)
+where := seq.Where(predicate)
+mappedSameType := seq.Map(func (val T) T { ... }) // the Seq method Map() can only produce a seq of the same type
+mappedOtherType := fn.MapOf(seq, func(val T) S {}) // becomes a Seq[S]
+```
+
+### Transforming Seqs
+Where, While, TakeWhile, Map, MapOf, Split, Concat, Flatten
+
+### Predicates
+Predicates that can be used directly on any ordered type T:
+```.go
+fn.IsZero[T] // matching the zero value of a type T 
+fn.IsNonZero[T]() // matching any non-zero value of a type T
+fn.GreaterThanZero[T] // > zero values for T
+fn.LessThanZero[T] // < zero value for T
+```
+
+Functions that can help you create a predicate:
+```.go
+fn.Is(x) // val == x
+fn.IsNot(x) // val != x
+fn.Not(pred) // !pred(val)
+fn.GreaterThan(x) // val > x
+fn.LessThan(x) // val < x
+```
+
+### Collecting Results
+fn.Into, with collectors GroupBy, UpdateAssoc, MakeAssoc, etc
+
+See also Seq methods: Array, Take, TakeWhile, First
+
+### Operations on Seqs
+To check if a Seq contains some given element you can use `fn.Any(seq, pred)`:
+```.go
+nums := fn.RangeOf(0, 10)
+hasEvenNum := fn.Any(seq, func (n int) bool { return n % 2 == 0})
+```
+You can also check if all elements satisfy some criteria with `fn.All(seq, pred)`.
+
+Similar to how you can retrieve the first element in a Seq with `head, tail := seq.First()`
+you can get the last element with `last := fn.Last(seq)`.
+
+Executing a Seq for side effects, fx. printing all elements, can be done with `fn.Do()`:
+```.go
+nums := fn.RangeOf(0, 10).
+   Map(func (n int) int {
+      fmt.Println(n)
+      return n
+   })
+
+// Nothing is printed since 'nums' is lazy.
+// We can force it to execute with:
+fn.Do(nums)
+// prints numbers from [0..9]
+```
+
+### Parallel Execution
+You can execute a Seq in N goroutines mapping the results into a new Seq with `fn.Go()`:
+```.go
+func fetchItem(id int) Opt[T] {
+   // do something slow and calculate t
+   return fn.OptOf(t) // or maybe an error
+}
+
+// Execute fetchItem of 1027 ids in 100 parallel goroutines
+ids := fn.RangeOf(0, 1027)
+result := fn.Go(ids, 100, fetchItem)
+
+// result is a Seq[Opt[T]], let's print the successes and errors 
+result.ForEach(func (opt Opt[T]) {
+   t, err := opt.Error()
+   if err != nil {
+      fmt.Println("Oh no, an error!", err)
+   } else {
+      fmt.Println("Nice, got one T:", t)
+   }
+})
+```
+
 TODO
 ---
 ```

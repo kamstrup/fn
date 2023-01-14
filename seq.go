@@ -46,6 +46,7 @@ type Seq[T any] interface {
 	// This library ships with a few in-built predicates, like fx, IsZero and IsNonZero.
 	While(predicate Predicate[T]) Seq[T]
 	// First executes the first element and returns an Opt with it. The tail is returned as a Seq.
+	// To retrieve the last element in a Seq you can use Last.
 	First() (Opt[T], Seq[T])
 	// Map lazily converts elements of the Seq into a value of the same type.
 	// Classic examples would be to convert strings to lowercase, multiply a range of numbers by Pi, and similar.

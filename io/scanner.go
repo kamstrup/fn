@@ -112,6 +112,9 @@ func (s scannerSeq) First() (fn.Opt[[]byte], BufferSeq) {
 		tok := append([]byte{}, s.scanner.Bytes()...) // scanner owns Bytes() buffer
 		return fn.OptOf(tok), s
 	}
+	if err := s.scanner.Err(); err != nil {
+		return fn.OptErr[[]byte](err), fn.ErrorOf[[]byte](err)
+	}
 	return fn.OptEmpty[[]byte](), s
 }
 

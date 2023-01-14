@@ -215,6 +215,13 @@ func (c concatSeq[T]) Map(shaper FuncMap[T, T]) Seq[T] {
 	}
 }
 
+func (c concatSeq[T]) Error() error {
+	if c.head != nil {
+		return Error(c.head)
+	}
+	return Error(c.tail)
+}
+
 // seq is just a cast helper, to make the Go compiler happy
 func (c concatSeq[T]) seq() Seq[T] {
 	return c

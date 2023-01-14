@@ -1,6 +1,7 @@
 package fn_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/kamstrup/fn"
@@ -62,4 +63,13 @@ func TestWhereWhile(t *testing.T) {
 
 	odds = fn.NumbersFrom(0).Where(isOdd).While(func(i int) bool { return i < 2 })
 	fntesting.TestOf(t, odds).Is(1)
+}
+
+func TestWhereError(t *testing.T) {
+	theError := errors.New("the error")
+	wh := fn.ErrorOf[int](theError).Where(fn.IsNonZero[int])
+
+	if err := fn.Error(wh); err != theError {
+		t.Fatalf("Expected 'the error', found: %s", err)
+	}
 }

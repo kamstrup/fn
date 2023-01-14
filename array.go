@@ -170,3 +170,11 @@ func (a Array[T]) Shuffle() Seq[T] {
 func (a Array[T]) AsSlice() []T {
 	return a
 }
+
+func (a Array[T]) Error() error {
+	if len(a) == 0 {
+		return nil
+	}
+
+	return Error(a[0])
+}

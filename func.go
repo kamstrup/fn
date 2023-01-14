@@ -102,7 +102,7 @@ func MakeBytes(into *bytes.Buffer, b []byte) *bytes.Buffer {
 
 // MakeAssoc is a FuncCollect that can take a Seq of Tuple elements and store them in a standard Go map.
 // This function works with nil or a pre-built map[K]V as initial value.
-func MakeAssoc[K comparable, V any](into map[K]V, t Tuple[K, V]) map[K]V {
+func MakeAssoc[K comparable, V any](into map[K]V, t Tuple[K, V]) map[K]V { // FIXME MAYBE USE ASSOC instead of map
 	if into == nil {
 		into = make(map[K]V)
 	}

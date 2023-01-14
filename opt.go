@@ -72,6 +72,10 @@ func (o Opt[T]) Must() T {
 	return o.val
 }
 
+func (o Opt[T]) Error() error {
+	return o.err
+}
+
 func (o Opt[T]) OnErr(errFn func(err error) T) T {
 	if o.err != nil && o.err != ErrEmpty {
 		return errFn(o.err)

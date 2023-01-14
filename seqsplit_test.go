@@ -1,6 +1,7 @@
 package fn_test
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 
@@ -59,5 +60,15 @@ func TestSplitSuite(t *testing.T) {
 		}).
 		Is(fn.SingletOf[byte]('h'), fn.SingletOf[byte]('e'), fn.SingletOf[byte]('l'),
 			fn.SingletOf[byte]('l'), fn.SingletOf[byte]('o'))
+}
 
+func TestSplitError(t *testing.T) {
+	theError := errors.New("the error")
+	split := fn.SplitOf(fn.ErrorOf[int](theError), func(_ int) fn.SplitChoice {
+		return fn.SplitKeep
+	})
+
+	if err := fn.Error(split); err != theError {
+		t.Fatalf("Expected 'the error', found: %s", err)
+	}
 }

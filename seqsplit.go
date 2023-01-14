@@ -177,3 +177,7 @@ func (s splitSeq[T]) Map(m FuncMap[Seq[T], Seq[T]]) Seq[Seq[T]] {
 		seq: s,
 	}
 }
+
+func (s splitSeq[T]) Error() error {
+	return Error(s.seq)
+}

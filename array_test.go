@@ -1,6 +1,7 @@
 package fn_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/kamstrup/fn"
@@ -75,4 +76,13 @@ func TestArraySuite(t *testing.T) {
 		return fn.ArrayOfArgs(1, 2, 3, 4)
 	}
 	fntesting.SuiteOf(t, createArr).Is(1, 2, 3, 4)
+}
+
+func TestArrayError(t *testing.T) {
+	theError := errors.New("the error")
+	arr := fn.ArrayOfArgs(fn.ErrorOf[int](theError))
+
+	if err := fn.Error(arr); err != theError {
+		t.Fatalf("Expected 'the error', found: %s", err)
+	}
 }

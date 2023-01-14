@@ -198,3 +198,10 @@ func (z zipSeq[X, Y]) Map(shaper FuncMap[Tuple[X, Y], Tuple[X, Y]]) Seq[Tuple[X,
 		seq: z,
 	}
 }
+
+func (z zipSeq[X, Y]) Error() error {
+	if errX := Error(z.sx); errX != nil {
+		return errX
+	}
+	return Error(z.sy)
+}

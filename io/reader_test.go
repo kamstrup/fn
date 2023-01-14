@@ -2,10 +2,22 @@ package fnio
 
 import (
 	"bytes"
+	"errors"
+	"io"
 	"testing"
 
+	"github.com/kamstrup/fn"
 	fntesting "github.com/kamstrup/fn/testing"
 )
+
+var _ io.Reader = errReader{}
+var readError = errors.New("read error")
+
+type errReader struct{}
+
+func (er errReader) Read(p []byte) (n int, err error) {
+	return 0, readError
+}
 
 func TestReaderSuite(t *testing.T) {
 	createSeq := func() BufferSeq {
@@ -20,4 +32,20 @@ func TestReaderSuite(t *testing.T) {
 
 	fntesting.SuiteOf(t, createSeq).Is(
 		data1, data2, data3)
+}
+
+func TestReaderError(t *testing.T) {
+	r := ReaderOf(errReader{}, nil)
+
+	if err := fn.Error(r); err != nil {
+		t.Fatal("we should not see an error before we read", err)
+	}
+
+	opt, tail := r.First()
+	if err := fn.Error(opt); err != readError {
+		t.Fatal("opt result must be a read error", err)
+	}
+	if err := fn.Error(tail); err != readError {
+		t.Fatal("tail result must be a read error", err)
+	}
 }

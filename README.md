@@ -87,12 +87,9 @@ TODO
 ```
 CHORES
 * Put examples in this README
-* Tests for error propagation in fnio
 
 API CHANGES
 * Opt needs an API overhaul 
-* Error reporting for fn.Seq.Array()? Tricky since Array is not a struct, but a just slice type alias
-* Add Seq.Split(FuncSplit) Seq[Seq[T]]
 
 FEATURES (in order of prio)
 * WIP A small IO package "fnio" to help walking an io.Reader as a Seq[[]byte], and same for writing?
@@ -141,6 +138,7 @@ RangeOf Seqs always have a well-defined length. Works for unsigned types as well
 A bunch of helper predicates like Is(), IsNot(), IsZero(), IsGreaterThan(), etc
 SplitOf(seq, pred) Seq[Seq[T]] (including or excluding the separator), reverse with FlattenOf
 Simple IO helpers for using an io.Reader as a Seq, or interpreting tokens from a bufio.Scanner as a Seq (see fx LinesOf)
+fn.SplitOf(FuncSplit) Seq[Seq[T]]
 ```
 
 Performance

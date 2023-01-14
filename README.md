@@ -3,7 +3,7 @@ Fn(), Functional Programming for Golang
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/kamstrup/fn)](https://goreportcard.com/report/github.com/kamstrup/fn) [![PkgGoDev](https://pkg.go.dev/badge/github.com/kamstrup/fn)](https://pkg.go.dev/github.com/kamstrup/fn)
 
-Fn is library for golang that enables you to blend functional programming techniques
+Fn is library for golang that enable you to blend functional programming techniques
 with standard idiomatic Go code.
 
 We are inspired by Clojure and the Java Streams APIs that were
@@ -85,13 +85,13 @@ slices and maps of the correct size, which can make a big difference in performa
 API By Example
 ---
 ### Creating Seqs
-We follow the convention that functions for creating a Seq is named with an "Of"-suffix.
+We follow the convention that functions for creating a Seq are named with an "Of"-suffix.
 Ie `StringOf()`, `ArrayOf` etc. They always return a `Seq[T]`. Functions with an "As"-suffix
 return a specific Seq implementation that allows you to perform type specific operations.
 Fx. like sorting an `Array`. It is a known limitattion of the Go compiler (v1.19) that it 
 can not determine that generic structs implement generic interfaces. So in order to use
 an `Array`, `Assoc`, `Set`, or `String` as a Seq you need to call `.Seq()` on the instance.
-Seq creation funcs that take a variadic sets of arguments have a "OfArgs"-suffix.
+Seq creation funcs that take a variadic list of arguments have an "OfArgs"-suffix.
 
 #### From Standard Go Types
 ```.go
@@ -99,14 +99,15 @@ arr := fn.ArrayOfArgs(1,2,3) // also: ArrayOf(), ArrayAs(), ArrayAsArgs()
 ass := fn.AssocOf(map[string]int{"foo": 27, "bar": 68}) // also: AssocAs()
 set := fn.SetOf(map[string]struct{}{"foo", {}, "bar": {}}) // also: SetAs()
 str := fn.StringOf("hello world") // also: StringAs()
+ch := fn.ChanOf(make(chan T))
 ```
 
 #### Numeric Ranges
 ```.go
-zero := fn.Constant(0)
+zero := fn.Constant(0) // infinite
 nums := fn.RangeOf(0, 10)
 evenNums := fn.RangeStepOf(0, 10, 2)
-infinite := fn.NumbersFrom(0)
+toInfinity := fn.NumbersFrom(0) 
 ```
 
 ### Iterating over a Seq
@@ -119,7 +120,7 @@ seq.ForEachIndex(func (i int, elem T) {
    // use index and elem
 })
 tenFirst, tailSeq := seq.Take(10)
-tenFirst, tailSeq := TakeWhile(func(i int) bool { i < 10 == 0})
+goodArray, tailSeq := TakeWhile(func(elem T) bool { return isGood(elem)})
 ```
 There are also some helper functions included in Fn for executing a Seq for various purposes.
 See the [Operations on Seqs](#operations-on-seqs).
@@ -133,7 +134,7 @@ mappedOtherType := fn.MapOf(seq, func(val T) S {}) // becomes a Seq[S]
 ```
 
 ### Transforming Seqs
-Where, While, TakeWhile, Map, MapOf, Split, Concat, Flatten
+Where, While, TakeWhile, Map, MapOf, Split, Concat, Flatten, Zip
 
 ### Predicates
 Predicates that can be used directly on any ordered type T:
@@ -206,14 +207,28 @@ result.ForEach(func (opt Opt[T]) {
 })
 ```
 
+### Error Handling
+When operating on in-memory structures like slices, maps, channels and so forth error handling is
+normally not relevant. But if you do IO or some other operation that can error on runtime Fn provides
+a few ways to handle it.
+
+The `fn.Error(seq)` function returns an `error` if there is an error associated with a Seq or Opt.
+When you execute a Seq the "empty" tail Seq from ForEach() and other operations will capture any
+errors.
+
+Alternatively you can wrap results in `Opt[T]` which can also capture an error.
+
 TODO
 ---
 ```
 CHORES
 * Put examples in this README
+* Make chanSeq public and add ChanAs()
 
 API CHANGES
 * Opt needs an API overhaul 
+* Order of args / type params in fn.Into() and FuncCollect?
+* Into() error reporting from tail seq?!
 
 FEATURES (in order of prio)
 * fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)

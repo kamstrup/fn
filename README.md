@@ -111,7 +111,9 @@ toInfinity := fn.NumbersFrom(0)
 ```
 
 #### From Functions or Closures
+```.go
 src := fn.SourceOf(func T { ... }) // infinite
+```
 
 ### Iterating over a Seq
 Functions that execute the Seq, ie actively traverse it include:

@@ -163,7 +163,8 @@ See also Seq methods: Array, Take, TakeWhile, First
 To check if a Seq contains some given element you can use `fn.Any(seq, pred)`:
 ```.go
 nums := fn.RangeOf(0, 10)
-hasEvenNum := fn.Any(seq, func (n int) bool { return n % 2 == 0})
+hasEvenNum := fn.Any(nums, func (n int) bool { return n % 2 == 0})
+hasSeven := fn.Any(nums, fn.Is(7))
 ```
 You can also check if all elements satisfy some criteria with `fn.All(seq, pred)`.
 

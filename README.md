@@ -110,6 +110,9 @@ evenNums := fn.RangeStepOf(0, 10, 2)
 toInfinity := fn.NumbersFrom(0) 
 ```
 
+#### From Functions or Closures
+src := fn.SourceOf(func T { ... }) // infinite
+
 ### Iterating over a Seq
 Functions that execute the Seq, ie actively traverse it include:
 ```.go

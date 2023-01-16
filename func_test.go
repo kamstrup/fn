@@ -68,7 +68,7 @@ func TestCollectCount(t *testing.T) {
 
 func TestCollectAppend(t *testing.T) {
 	arr := fn.ArrayOfArgs[int](1, 2, 3)
-	cpy := fn.Into[int](nil, fn.Append[int], arr)
+	cpy := fn.Into(nil, fn.Append[int], arr)
 	exp := []int{1, 2, 3}
 	if !reflect.DeepEqual(cpy, exp) {
 		t.Errorf("expected %v, got %v", exp, cpy)

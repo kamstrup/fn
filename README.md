@@ -288,12 +288,10 @@ TODO
 ---
 ```
 CHORES
-* Put examples in this README
 * Make chanSeq public and add ChanAs()
 
 API CHANGES
-* Opt needs an API overhaul 
-* Order of args / type params in fn.Into() and FuncCollect?
+* Opt needs an API overhaul
 * Into() error reporting from tail seq?!
 * move TryXX into try package?
 

@@ -27,13 +27,13 @@ type FuncMapErr[S, T any] func(S) (T, error)
 // Think of it as a generic form of the standard append() function in go.
 // The order of the method arguments also follow the convention from append() and copy(),
 // having the target destination as first argument.
-type FuncCollect[S, T any] func(T, S) T
+type FuncCollect[T, E any] func(T, E) T
 
 // FuncCollectErr is used to aggregate data and return the updated aggregation.
 // Think of it as a generic form of the standard append() function in go.
 // This is a variation of FuncCollect that can return an error,
 // which should cause aggregation to stop.
-type FuncCollectErr[S, T any] func(T, S) (T, error)
+type FuncCollectErr[T, E any] func(T, E) (T, error)
 
 type FuncSource[T any] func() T
 
@@ -159,7 +159,7 @@ func GroupBy[K comparable, V any](into map[K][]V, tup Tuple[K, V]) map[K][]V {
 // Prints:
 //
 //	map[alan:2 bob:3 scotty:1]
-func UpdateAssoc[K comparable, V any](updater FuncUpdate[V]) FuncCollect[Tuple[K, V], map[K]V] {
+func UpdateAssoc[K comparable, V any](updater FuncUpdate[V]) FuncCollect[map[K]V, Tuple[K, V]] {
 	return func(into map[K]V, tup Tuple[K, V]) map[K]V {
 		if into == nil {
 			into = make(map[K]V)
@@ -175,7 +175,7 @@ func UpdateAssoc[K comparable, V any](updater FuncUpdate[V]) FuncCollect[Tuple[K
 // It looks at the elements in the index specified by Tuple.X(), ensures that the slice is big enough
 // (growing it if needed), and updates the value at that index with the provided FuncUpdate.
 // Classic update functions could be Max, Min, or Sum.
-func UpdateArray[I Integer, V any](updater FuncUpdate[V]) FuncCollect[Tuple[I, V], []V] {
+func UpdateArray[I Integer, V any](updater FuncUpdate[V]) FuncCollect[[]V, Tuple[I, V]] {
 	return func(into []V, tup Tuple[I, V]) []V {
 		idx := int(tup.Key())
 
@@ -299,17 +299,17 @@ func TupleWithKey[K comparable, V any](keySelector FuncMap[V, K]) func(V) Tuple[
 // This library ships with a suite of standard collector functions.
 // These include Append, MakeAssoc, MakeSet, MakeString, MakeBytes, Sum, Count, Min, Max,
 // GroupBy, UpdateAssoc, UpdateArray.
-func Into[S any, T any](into T, collector FuncCollect[S, T], seq Seq[S]) T {
+func Into[T, E any](into T, collector FuncCollect[T, E], seq Seq[E]) T {
 	// FIXME: error reporting?
-	seq.ForEach(func(s S) {
-		into = collector(into, s)
+	seq.ForEach(func(elem E) {
+		into = collector(into, elem)
 	})
 	return into
 }
 
 // IntoErr is like Into() but the collector function can return an error,
 // causing collection to stop and the error returned.
-func IntoErr[S any, T any](into T, collector FuncCollectErr[S, T], seq Seq[S]) (T, error) {
+func IntoErr[T, E any](into T, collector FuncCollectErr[T, E], seq Seq[E]) (T, error) {
 	var err error
 
 	if err = Error(seq); err != nil {
@@ -317,8 +317,8 @@ func IntoErr[S any, T any](into T, collector FuncCollectErr[S, T], seq Seq[S]) (
 		return t, err
 	}
 
-	while := seq.While(func(s S) bool {
-		into, err = collector(into, s)
+	while := seq.While(func(elem E) bool {
+		into, err = collector(into, elem)
 		if err != nil {
 			return false
 		}

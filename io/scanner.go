@@ -47,10 +47,10 @@ func (s scannerSeq) Len() (int, bool) {
 }
 
 func (s scannerSeq) Array() BufferArray {
-	tokens := fn.Into[[]byte, [][]byte](nil, func(tokens [][]byte, tok []byte) [][]byte {
+	tokens := fn.Into(nil, func(tokens [][]byte, tok []byte) [][]byte {
 		dupTok := append([]byte{}, tok...) // scanner owns tok, so we copy it
 		return append(tokens, dupTok)
-	}, s)
+	}, s.seq())
 	return fn.ArrayAs(tokens)
 }
 
@@ -132,4 +132,8 @@ func (s scannerSeq) errOrEmpty() BufferSeq {
 		return fn.ErrorOf[[]byte](err)
 	}
 	return fn.SeqEmpty[[]byte]()
+}
+
+func (s scannerSeq) seq() BufferSeq {
+	return s
 }

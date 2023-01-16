@@ -100,6 +100,8 @@ ass := fn.AssocOf(map[string]int{"foo": 27, "bar": 68}) // also: AssocAs()
 set := fn.SetOf(map[string]struct{}{"foo", {}, "bar": {}}) // also: SetAs()
 str := fn.StringOf("hello world") // also: StringAs()
 ch := fn.ChanOf(make(chan T))
+twentySeven := fn.SingletOf(27) // single element Seq
+empty := fn.EmptySeq[int]()
 ```
 
 #### Numeric Ranges
@@ -125,7 +127,7 @@ seq.ForEachIndex(func (i int, elem T) {
    // use index and elem
 })
 tenFirst, tailSeq := seq.Take(10)
-goodArray, tailSeq := TakeWhile(func(elem T) bool { return isGood(elem)})
+goodArray, tailSeq := seq.TakeWhile(func(elem T) bool { return isGood(elem)})
 ```
 There are also some helper functions included in Fn for executing a Seq for various purposes.
 See the [Operations on Seqs](#operations-on-seqs).

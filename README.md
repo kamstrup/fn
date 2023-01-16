@@ -164,7 +164,8 @@ The simplest way to collect results from a Seq is to call `seq.Array()`.
 It is often desirable to collect the elements into another structure that is not
 just a slice. Maybe some sort of map, buffer, or completely custom data type.
 
-To this end Fn has the functions `Into()` and `IntoErr()`.
+To this end Fn has the functions `Into()` and `IntoErr()`. This is often
+also known as "reduce" or "fold" in functional programming terminology.
 
 #### Building a string with Into()
 ```go

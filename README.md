@@ -141,7 +141,35 @@ mappedOtherType := fn.MapOf(seq, func(val T) S {}) // becomes a Seq[S]
 ```
 
 ### Transforming Seqs
-Where, While, TakeWhile, Map, MapOf, Split, Concat, Flatten, Zip
+Limiting the elements seen in a Seq is done with:
+```go
+seq.Where(predicate)
+seq.While(predicate)
+seq.TakeWhile(predicate) // if you also need the tail
+```
+Transforming elements, mapping them 1-1 is done with
+```go
+seq.Map(func(t T) T { ... })
+seqT := fn.MapOf(seqS, func(s S) T { ... })
+```
+You can split a `Seq[T]` into sub-seqs with
+```go
+subs := fn.SplitOf(seq, splitterFunc)
+```
+and you can join seqs together with
+```go
+longSeq := fn.ConcatOf(seq1, seq2, ... )
+longSeq := fn.FlattenOf(seqOfSeqs)
+```
+
+If you have 2 seqs that you want to traverse in parallel as pairs of elements
+you can use `ZipOf`:
+```go
+ints := fn.ArrayOfArgs(1,2,3)
+strs := fn.ArrayOfArgs("one", "two", "three")
+pairs := fn.ZipOf(ints, strs)
+// pairs is a Seq[Tuple[int,string]]
+```
 
 ### Predicates
 Predicates that can be used directly on any ordered type T:
@@ -189,7 +217,7 @@ In order to use `MakeAssoc` to build a map we need a Seq of
 via mapping your seq with `TupleWithKey`, or via `ZipOf`.
 
 This example uses `TupleWithKey` on a `*User` to build a
-Seq of `Tuple[UserId, *User]` and collect that into a `map[UserID]*User`:
+Seq of `Tuple[UserID, *User]` and collect that into a `map[UserID]*User`:
 ```go
 type UserID uint64
 type User struct { ID UserID ... }
@@ -300,6 +328,7 @@ FEATURES (in order of prio)
 * Special seqs for Assoc.Keys() and Assoc.Values()
 * seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
 * RunesOf(string) Seq[rune]
+* MakeChan collector func for Into()?
 * A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
 * MultiChan() Seq that selects on multiple chan T?
 * Something for context.Context? Support cancel() cb and Done() chans? fncontext package...

@@ -42,13 +42,13 @@ The Seq API is designed to work on top of immutable structures,
 thus there is no stateful "iterator". Walking through a Seq is done similarly 
 to how you `append()` elements to a slice in Go, but inversely.
 
-```
+```go
 ints = append(ints, i)
 // OR if we call the slice "tail" and the element "head":
 tail = append(tail, head)
 ```
 The "inverse" of this operation looks like:
-```
+```go
 head, tail = tail.First() // pops the first element and returns a new tail
 ```
 There are many easier ways to walk a Seq though. For example via `seq.ForEach()`
@@ -94,7 +94,7 @@ an `Array`, `Assoc`, `Set`, or `String` as a Seq you need to call `.Seq()` on th
 Seq creation funcs that take a variadic list of arguments have an "OfArgs"-suffix.
 
 #### From Standard Go Types
-```.go
+```go
 arr := fn.ArrayOfArgs(1,2,3) // also: ArrayOf(), ArrayAs(), ArrayAsArgs()
 ass := fn.AssocOf(map[string]int{"foo": 27, "bar": 68}) // also: AssocAs()
 set := fn.SetOf(map[string]struct{}{"foo", {}, "bar": {}}) // also: SetAs()
@@ -103,7 +103,7 @@ ch := fn.ChanOf(make(chan T))
 ```
 
 #### Numeric Ranges
-```.go
+```go
 zero := fn.Constant(0) // infinite
 nums := fn.RangeOf(0, 10)
 evenNums := fn.RangeStepOf(0, 10, 2)
@@ -111,13 +111,13 @@ toInfinity := fn.NumbersFrom(0)
 ```
 
 #### From Functions or Closures
-```.go
+```go
 src := fn.SourceOf(func T { ... }) // infinite
 ```
 
 ### Iterating over a Seq
 Functions that execute the Seq, ie actively traverse it include:
-```.go
+```go
 seq.ForEach(func(elem T) {
    // use elem
 })
@@ -131,7 +131,7 @@ There are also some helper functions included in Fn for executing a Seq for vari
 See the [Operations on Seqs](#operations-on-seqs).
 
 Functions that do not execute the Seq, but return a new lazy Seq include:
-```.go
+```go
 while := seq.While(predicate)
 where := seq.Where(predicate)
 mappedSameType := seq.Map(func (val T) T { ... }) // the Seq method Map() can only produce a seq of the same type
@@ -143,15 +143,15 @@ Where, While, TakeWhile, Map, MapOf, Split, Concat, Flatten, Zip
 
 ### Predicates
 Predicates that can be used directly on any ordered type T:
-```.go
+```go
 fn.IsZero[T] // matching the zero value of a type T 
-fn.IsNonZero[T]() // matching any non-zero value of a type T
+fn.IsNonZero[T] // matching any non-zero value of a type T
 fn.GreaterThanZero[T] // > zero values for T
 fn.LessThanZero[T] // < zero value for T
 ```
 
 Functions that can help you create a predicate:
-```.go
+```go
 fn.Is(x) // val == x
 fn.IsNot(x) // val != x
 fn.Not(pred) // !pred(val)
@@ -160,13 +160,70 @@ fn.LessThan(x) // val < x
 ```
 
 ### Collecting Results
-fn.Into, with collectors GroupBy, UpdateAssoc, MakeAssoc, etc
+The simplest way to collect results from a Seq is to call `seq.Array()`.
+It is often desirable to collect the elements into another structure that is not
+just a slice. Maybe some sort of map, buffer, or completely custom data type.
 
-See also Seq methods: Array, Take, TakeWhile, First
+To this end Fn has the functions `Into()` and `IntoErr()`.
+
+#### Building a string with Into()
+```go
+strs := fn.ArrayOfArgs("one", "two")
+res := fn.Into(nil, fn.MakeString, strs)
+// res is a standard Go string "onetwo"
+```
+
+#### Collector Functions For fn.Into()
+The second argument to `Into()` is a *collector function*.
+Fn ships with a suite of standard collectors including:
+`Append`, `MakeAssoc`, `MakeSet`, `MakeString`, `MakeBytes`,
+`Sum`, `Count`, `Min`, `Max`, and `GroupBy`. There
+are 2 more advanced collection helpers `UpdateAssoc`, `UpdateArray`.
+
+#### Building a Map with MakeAssoc and TupleWithKey
+In order to use `MakeAssoc` to build a map we need a Seq of
+`fn.Tuple`. The 2 easiest ways to obtain a Seq of tuples are
+via mapping your seq with `TupleWithKey`, or via `ZipOf`.
+
+This example uses `TupleWithKey` on a `*User` to build a
+Seq of `Tuple[UserId, *User]` and collect that into a `map[UserID]*User`:
+```go
+type UserID uint64
+type User struct { ID UserID ... }
+usersSlice := []*User { ... }
+
+users := fn.ArrayOf(usersSlice)
+userTuples := fn.MapOf(users, fn.TupleWithKey(u *User) UserID {
+   return u.ID
+})
+usersByID := fn.Into(nil, fn.MakeAssoc, userTuples)
+// usersByID is a map[UserID]*User
+```
+
+#### Counting Unique Names with UpdateAssoc
+`UpdateAssoc` and `UpdateArray` can be used in conjunction with
+an *updater* function to create a collector. The updater function
+tells the collector what to do if there is an existing value in a slot.
+
+In this example we count the number of occurrences of names in a Seq.
+We do this by mapping to names onto a seq of `{name, 1}` tuples and then
+instructing the `UpdateAssoc` to sum the values every time it merges an
+element into the map:
+```go
+names := fn.ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
+tups := fn.ZipOf[string, int](names, fn.Constant(1))
+res := fn.Into(nil, fn.UpdateAssoc[string, int](fn.Sum[int]), tups)
+// res is now:
+// map[string]int{
+//   "bob":    3,
+//   "alan":   2,
+//   "scotty": 1,
+// }
+```
 
 ### Operations on Seqs
 To check if a Seq contains some given element you can use `fn.Any(seq, pred)`:
-```.go
+```go
 nums := fn.RangeOf(0, 10)
 hasEvenNum := fn.Any(nums, func (n int) bool { return n % 2 == 0})
 hasSeven := fn.Any(nums, fn.Is(7))
@@ -235,6 +292,7 @@ API CHANGES
 * Opt needs an API overhaul 
 * Order of args / type params in fn.Into() and FuncCollect?
 * Into() error reporting from tail seq?!
+* move TryXX into try package?
 
 FEATURES (in order of prio)
 * fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)

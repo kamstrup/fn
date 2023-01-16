@@ -283,19 +283,22 @@ func Not[T any](pred Predicate[T]) Predicate[T] {
 }
 
 // TupleWithKey creates a FuncMap to use with MapOf or OptMap.
-// The returned function yields Tuples keyed by the keySelectors return value.
-// Usually used in conjunction with Into and MakeAssoc to build a map[X]Y.
-func TupleWithKey[X comparable, Y any](keySelector FuncMap[Y, X]) func(Y) Tuple[X, Y] {
-	return func(y Y) Tuple[X, Y] {
-		return TupleOf(keySelector(y), y)
+// The returned function yields Tuples keyed by the keySelector's return value.
+// Usually used in conjunction with Into and MakeAssoc to build a map[K]V.
+func TupleWithKey[K comparable, V any](keySelector FuncMap[V, K]) func(V) Tuple[K, V] {
+	return func(v V) Tuple[K, V] {
+		return TupleOf(keySelector(v), v)
 	}
 }
 
 // Into executes a Seq, collecting the results via a collection function (FuncCollect).
 // The method signature follows append() and copy() conventions,
 // having the destination to put data into first.
-// Typical collection functions are Append, MakeAssoc, MakeSet, Sum, Count, MakeString, or MakeBytes.
 // In other languages and libraries this function is also known as "reduce" or "fold".
+//
+// This library ships with a suite of standard collector functions.
+// These include Append, MakeAssoc, MakeSet, MakeString, MakeBytes, Sum, Count, Min, Max,
+// GroupBy, UpdateAssoc, UpdateArray.
 func Into[S any, T any](into T, collector FuncCollect[S, T], seq Seq[S]) T {
 	// FIXME: error reporting?
 	seq.ForEach(func(s S) {

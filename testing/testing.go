@@ -114,6 +114,15 @@ func (to TestOpt[S]) IsEmpty() {
 	}
 }
 
+func (to TestOpt[S]) IsError(expectErr any) {
+	to.t.Helper()
+
+	val, err := to.opt.Return()
+	if !reflect.DeepEqual(err, expectErr) {
+		to.t.Errorf("unexpected error: %v (value: %v)", err, val)
+	}
+}
+
 func (ts Suite[S]) WithEqual(eq func(s1, s2 S) bool) Suite[S] {
 	return Suite[S]{
 		t:         ts.t,

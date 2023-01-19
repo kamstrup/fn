@@ -28,40 +28,13 @@ func OptEmpty[T any]() Opt[T] {
 	return Opt[T]{err: ErrEmpty}
 }
 
-func TryOf[T any](t T, err error) Opt[T] {
-	return Opt[T]{t, err}
-}
-
-func Try[T any](f FuncSourceErr[T]) Opt[T] {
-	t, err := f()
-	return Opt[T]{t, err}
-}
-
-func TryRecover[T any](f FuncSourceErr[T]) (opt Opt[T]) {
-	defer func() {
-		if r := recover(); r != nil {
-			opt.err = ErrPanic{V: r}
-		}
-	}()
-
-	opt.val, opt.err = f()
-	return
-}
-
-func TryMap[S any, T any](f FuncMapErr[S, T], s S) Opt[T] {
-	t, err := f(s)
-	return Opt[T]{t, err}
-}
-
-func TryMapRecover[S any, T any](f FuncMapErr[S, T], s S) (opt Opt[T]) {
-	defer func() {
-		if r := recover(); r != nil {
-			opt.err = ErrPanic{V: r}
-		}
-	}()
-
-	opt.val, opt.err = f(s)
-	return
+// Map applies a function to the value of the Opt, unless the Opt is empty.
+// If you need to change the type inside the Opt you will have to use OptMap.
+func (o Opt[T]) Map(f FuncMap[T, T]) Opt[T] {
+	if o.Empty() {
+		return o
+	}
+	return OptOf(f(o.val))
 }
 
 func (o Opt[T]) Must() T {

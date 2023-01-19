@@ -33,7 +33,7 @@ Philosophy
 are definitely super useful and would fit well in some extension library for Fn().
 (or perhaps a sub-package, let's see <3)
 
-Fn() Quick Start
+Terminology
 ---
 For starters let's get some terminology in place.
 
@@ -52,11 +52,13 @@ The "inverse" of this operation looks like:
 head, tail = tail.First() // pops the first element and returns a new tail
 ```
 There are many easier ways to walk a Seq though. For example via `seq.ForEach()`
-, `seq.Take()`, and `fn.Into()`
+, `seq.Take()`, and `fn.Into()`. See [Iterating Over a Seq](#iterating-over-a-seq).
 
 Generally seqs are immutable. Any exception to this will be clearly documented. 
 
-[Check the interface definition for Seq here](https://github.com/kamstrup/fn/blob/main/seq.go). 
+[Check the interface definition for Seq here](https://github.com/kamstrup/fn/blob/main/seq.go).
+There many ways to create seqs from standard Go structures. You can find most of them in 
+the section [Creating Seqs](#creating-seqs).
 
 **Array:** Standard Go slices `[]T` are wrapped in the `fn.Array[T]` type.
 The `Array` type is a public subtype of `[]T` so you can do numeric indexing on an `Array`.
@@ -65,10 +67,6 @@ Arrays are seqs, but also add some extra methods like `Sort()` and `Reverse()`.
 **Assoc:** Because "map" is an overloaded word in functional programming,
 Fn() uses the word "assoc" instead of `map[K]V` (pronounced with a soft "ch" at the end).
 The word "map" is reserved for the mapping operation used to convert a Seq to something else.
-
-**Creating a Seq**: A new Seq is obtained by one of the included constructor methods,
-such as `ArrayOf()`, `ArrayOfArgs()`, `AssocOf()`, `MapOf()`, `ConcatOf()`, `ConcatOfArgs()`,
-`RangeOf()`, `SetOf()`, `SourceOf()`, `ZipOf()`, and `StringOf()`.
 
 **Tuple:** Or "pair". Represents two data points. A helper mainly used when working with assocs,
 where the tuple captures a key and a value. Assocs can be interpreted as a seq of tuples, or if you
@@ -321,7 +319,6 @@ CHORES
 API CHANGES
 * Opt needs an API overhaul
 * Into() error reporting from tail seq?!
-* move TryXX into try package?
 
 FEATURES (in order of prio)
 * fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)
@@ -370,6 +367,7 @@ A bunch of helper predicates like Is(), IsNot(), IsZero(), IsGreaterThan(), etc
 SplitOf(seq, pred) Seq[Seq[T]] (including or excluding the separator), reverse with FlattenOf
 Simple IO helpers for using an io.Reader as a Seq, or interpreting tokens from a bufio.Scanner as a Seq (see fx LinesOf)
 fn.SplitOf(FuncSplit) Seq[Seq[T]]
+Small package fntry that can help with wrapping function calls as Opts.
 ```
 
 Performance

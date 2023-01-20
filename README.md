@@ -290,7 +290,17 @@ opt.Map(func(val T) T { ... }) // Converts the value to something of the same ty
 OptMap(opt, func(val T) S)     // Converts the opt into another type
 
 opt.Seq() // Interprets the option as a single-valued Seq
+
+opt.Error() // Returns nil, fn.ErrEmpty, or any captured error
+opt.OnErr(func (error) T { ... }) // Returns the opt value T, or invokes a callback with the error
 ```
+
+**Opt Misconceptions and Pitfalls**: Opts should be passed by value, on the stack.
+If you use pointers, `*Opt` or `&opt`, something is wrong. They have a bit of memory overhead
+and should not be stored in arrays or slices. You *can* use them in seqs because they are
+lazily created 1 by 1 and kept short-lived on the stack.
+An Opt is not a "promise" or "future" - they capture an existing result. 
+
 
 ### Parallel Execution
 You can execute a Seq in N goroutines mapping the results into a new Seq with `fn.Go()`:
@@ -325,11 +335,18 @@ When you execute a Seq the "empty" tail Seq from ForEach() and other operations 
 errors.
 
 Alternatively you can wrap results in `Opt[T]` which can also capture an error.
+Any error encountered via `seq.First()` or `fn.Into()` are reported via opts.
+
+## Performance
+If the foundational functional data structures and algorithms is not done carefully,
+execution speed and memory usage will suffer. Fn() is designed to make the best of what
+the Go runtime can provide. Initial benchmarks puts it as a top contender among Golang
+functional libraries. See benchmarks here https://github.com/mariomac/go-stream-benchmarks/pull/1
 
 TODO
 ---
 ```
-FEATURES (in order of prio)
+POTENTIAL FUTURE FEATURES (in order of prio)
 * fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)
 * Special seqs for Assoc.Keys() and Assoc.Values()
 * seq.Limit(n) Seq[T], lazy counterpart to seq.Take(n)
@@ -344,45 +361,11 @@ FEATURES (in order of prio)
 * Compound FuncCollect, CollectorOf[S,T any](funcs ... FuncCollect[S,T]) FuncCollect[S,[]T]
 * Seq[Arithmetic] producing random numbers?
 * Seq for *sql.Rows, with some type safe mechanism for reading rows
+* Promises or Futures that work nicely with Seq and Opt?
 
-OPTIMIZATIONS
+POTENTIAL FUTURE OPTIMIZATIONS
 * Seq of single element (see SingletOf(t))
 * EmptySeq impl. (currently just wraps an empty slice), but an empty struct{} would do even better
 * Look for allocating buffers of right size where we can
 * Can we do some clever allocations in fn.Into() when seed is nil?
 ```
-
-DONE
----
-```
-Seqs of slices (Array) and maps (Assoc and Set).
-Into() and various Collector funcs for it to aggregate Seqs into numbers or new collections
-Tuples for help with building maps
-Lazily evaluated Where(), While(), and MapOf()
-Opt with Try() and Must()
-Some simple helpers to write testing.T tests using Seqs.
-Sorting with some pre-declared generic helpers
-Infinite Seqs from source functions
-Zip 2 Seqs into a Seq of Tuples
-RangeOf(from, to) in both directions
-Concat(Seq[Seq[T]]), and ConcatOfArgs(seqs ... Seq[T])
-fn.Any(seq, pred), fn.All(seq, pred), and fn.Last(seq)
-Seq length is optional. sz, ok := seq.Len() and can be finite, infinite, or unknown 
-Seq over a channel
-Seq[byte] of a string
-fn.Go() to execute a Seq in N goroutines and collect the results into another Seq
-Special "error seq" that can be returned from IO ops and anything that can fail at runtime
-RangeOf Seqs always have a well-defined length. Works for unsigned types as well
-A bunch of helper predicates like Is(), IsNot(), IsZero(), IsGreaterThan(), etc
-SplitOf(seq, pred) Seq[Seq[T]] (including or excluding the separator), reverse with FlattenOf
-Simple IO helpers for using an io.Reader as a Seq, or interpreting tokens from a bufio.Scanner as a Seq (see fx LinesOf)
-fn.SplitOf(FuncSplit) Seq[Seq[T]]
-Small package fntry that can help with wrapping function calls as Opts.
-```
-
-Performance
-----
-If the foundational functional data structures and algorithms is not done carefully,
-execution speed and memory usage will suffer. Fn() is designed to make the best of what
-the Go runtime can provide. Initial benchmarks puts it as a top contender among Golang
-functional libraries. See benchmarks here https://github.com/mariomac/go-stream-benchmarks/pull/1

@@ -77,7 +77,10 @@ and an empty tail seq.
 unknown, or infinite. Making these distinctions opens the possibility of pre-allocating
 slices and maps of the correct size, which can make a big difference in performance critical code.
 
-## API By Example
+## API Overview
+If you just want to jump in and see some code you can check out
+[the simple examples](https://github.com/kamstrup/fn/blob/main/examples/simple_test.go).
+Otherwise here follows a brief overview.
 
 ### Creating Seqs
 We follow the convention that functions for creating a Seq are named with an "Of"-suffix.
@@ -346,6 +349,9 @@ functional libraries. See benchmarks here https://github.com/mariomac/go-stream-
 TODO
 ---
 ```
+API CHANGES:
+* Do we need to change fn.Go() to enable better error handling?
+
 POTENTIAL FUTURE FEATURES (in order of prio)
 * fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)
 * Special seqs for Assoc.Keys() and Assoc.Values()

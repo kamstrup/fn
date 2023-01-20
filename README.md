@@ -1,5 +1,4 @@
-Fn(), Functional Programming for Golang
-====
+# Fn(), Functional Programming for Golang
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/kamstrup/fn)](https://goreportcard.com/report/github.com/kamstrup/fn) [![PkgGoDev](https://pkg.go.dev/badge/github.com/kamstrup/fn)](https://pkg.go.dev/github.com/kamstrup/fn)
 
@@ -10,8 +9,7 @@ We are inspired by Clojure and the Java Streams APIs that were
 introduced back in Java 8, and want to provide something of similar spirit
 that makes it even more fun to write Go code.
 
-Philosophy
-----
+## Philosophy
  * Be pragmatic. Fn() is not idealistic, academic, or purely functional.
    The aim is blend cleanly in to existing Go programs, not to invent
    a new paradigm for Go. While most of Fn() is built on immutable functional
@@ -33,8 +31,7 @@ Philosophy
 are definitely super useful and would fit well in some extension library for Fn().
 (or perhaps a sub-package, let's see <3)
 
-Terminology
----
+## Terminology
 For starters let's get some terminology in place.
 
 **Seq:** The core data structure is `Seq[T]`. It is short for Sequence.
@@ -80,8 +77,8 @@ and an empty tail seq.
 unknown, or infinite. Making these distinctions opens the possibility of pre-allocating
 slices and maps of the correct size, which can make a big difference in performance critical code.
 
-API By Example
----
+## API By Example
+
 ### Creating Seqs
 We follow the convention that functions for creating a Seq are named with an "Of"-suffix.
 Ie `StringOf()`, `ArrayOf` etc. They always return a `Seq[T]`. Functions with an "As"-suffix
@@ -199,7 +196,7 @@ also known as "reduce" or "fold" in functional programming terminology.
 ```go
 strs := fn.ArrayOfArgs("one", "two")
 res := fn.Into(nil, fn.MakeString, strs)
-// res is a standard Go string "onetwo"
+// res is a Opt[string] with the value "onetwo"
 ```
 
 #### Collector Functions For fn.Into()
@@ -225,8 +222,8 @@ users := fn.ArrayOf(usersSlice)
 userTuples := fn.MapOf(users, fn.TupleWithKey(u *User) UserID {
    return u.ID
 })
-usersByID := fn.Into(nil, fn.MakeAssoc, userTuples)
-// usersByID is a map[UserID]*User
+usersByID := fn.Into(nil, fn.MakeAssoc, userTuples).Or(nil)
+// usersByID is a map[UserID]*User, the '.Or(nil)' above converts the Opt result to nil if there are errors
 ```
 
 #### Counting Unique Names with UpdateAssoc
@@ -242,7 +239,7 @@ element into the map:
 names := fn.ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 tups := fn.ZipOf[string, int](names, fn.Constant(1))
 res := fn.Into(nil, fn.UpdateAssoc[string, int](fn.Sum[int]), tups)
-// res is now:
+// res is an Opt[map[string,int]] with the value:
 // map[string]int{
 //   "bob":    3,
 //   "alan":   2,
@@ -274,6 +271,25 @@ nums := fn.RangeOf(0, 10).
 // We can force it to execute with:
 fn.Do(nums)
 // prints numbers from [0..9]
+```
+
+### Opts
+Some operations return `Opt[T]`, notably `seq.First()` and `Into()`.
+Opts are used to represent a value that might not be there (if the seq is empty), or capture potential errors.
+An opt with a captured error is considered empty, and empty opts will report the error `fn.ErrEmpty`.
+
+They have a range of helper API that allows for easy chaining:
+```go
+opt.Must()   // Returns T or panics if the if the opt is empty
+opt.Empty()  // True if there was an error or no value is captured
+opt.Ok()     // Opposite of Empty()
+opt.Return() // Unpacks into standard "T, error" pair
+opt.Or(val)  // Returns val if opt is empty, or the option's own value if non-empty
+
+opt.Map(func(val T) T { ... }) // Converts the value to something of the same type
+OptMap(opt, func(val T) S)     // Converts the opt into another type
+
+opt.Seq() // Interprets the option as a single-valued Seq
 ```
 
 ### Parallel Execution
@@ -313,9 +329,6 @@ Alternatively you can wrap results in `Opt[T]` which can also capture an error.
 TODO
 ---
 ```
-API CHANGES
-* Into() error reporting from tail seq?!
-
 FEATURES (in order of prio)
 * fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)
 * Special seqs for Assoc.Keys() and Assoc.Values()
@@ -336,6 +349,7 @@ OPTIMIZATIONS
 * Seq of single element (see SingletOf(t))
 * EmptySeq impl. (currently just wraps an empty slice), but an empty struct{} would do even better
 * Look for allocating buffers of right size where we can
+* Can we do some clever allocations in fn.Into() when seed is nil?
 ```
 
 DONE

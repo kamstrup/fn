@@ -15,7 +15,7 @@ func TestSeqAssoc(t *testing.T) {
 	fntesting.TestOf(t, as).LenIs(3)
 	m2 := fn.Into(nil, fn.MakeAssoc[string, int], as)
 
-	if !reflect.DeepEqual(m, m2) {
+	if !reflect.DeepEqual(m, m2.Must()) {
 		t.Errorf("Expected %v, found %v", m, m2)
 	}
 
@@ -35,7 +35,7 @@ func TestSeqAssocWhere(t *testing.T) {
 
 	m2 := fn.Into(nil, fn.MakeAssoc[string, int], as)
 
-	if !reflect.DeepEqual(map[string]int{"one": 1}, m2) {
+	if !reflect.DeepEqual(map[string]int{"one": 1}, m2.Must()) {
 		t.Errorf("Expected %v, found %v", m, m2)
 	}
 }
@@ -45,20 +45,20 @@ func TestSeqAssocSkip(t *testing.T) {
 
 	as := fn.AssocOf(m).Skip(0)
 	m2 := fn.Into(nil, fn.MakeAssoc[string, int], as)
-	if !reflect.DeepEqual(m, m2) {
+	if !reflect.DeepEqual(m, m2.Must()) {
 		t.Errorf("Expected %v, found %v", m, m2)
 	}
 
 	as = fn.AssocOf(m).Skip(1)
 	m2 = fn.Into(nil, fn.MakeAssoc[string, int], as)
-	if !(reflect.DeepEqual(map[string]int{"one": 1}, m2) || reflect.DeepEqual(map[string]int{"two": 2}, m2)) {
+	if !(reflect.DeepEqual(map[string]int{"one": 1}, m2.Must()) || reflect.DeepEqual(map[string]int{"two": 2}, m2.Must())) {
 		t.Errorf("Expected {'one':1} or {'two': 2}, found %v", m2)
 	}
 
 	as = fn.AssocOf(m).Skip(123)
 	m2 = fn.Into(nil, fn.MakeAssoc[string, int], as)
-	if len(m2) != 0 {
-		t.Errorf("Expected empty map, found %v", m2)
+	if !m2.Empty() {
+		t.Errorf("Expected empty map, found %v", m2.Must())
 	}
 }
 

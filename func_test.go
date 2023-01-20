@@ -19,36 +19,45 @@ func TestZeroes(t *testing.T) {
 func TestCollectSum(t *testing.T) {
 	var arr fn.Seq[int] = fn.ArrayOfArgs(1, 2, 3)
 	sum := fn.Into(0, fn.Sum[int], arr)
-	if sum != 6 {
+	if sum.Must() != 6 {
 		t.Errorf("expected sum 6: %d", sum)
 	}
 
 	sum = fn.Into(27, fn.Sum[int], fn.SeqEmpty[int]())
-	if sum != 27 {
-		t.Errorf("expected sum 6: %d", sum)
+	if !sum.Empty() || sum.Ok() {
+		t.Errorf("expected empty sum: %v", sum)
+	}
+	if val, err := sum.Return(); val == 27 || err != fn.ErrEmpty {
+		t.Errorf("expected empty sum: %v", sum)
 	}
 }
 
 func TestCollectMinMax(t *testing.T) {
 	arr := fn.ArrayOfArgs(1, 2, 3, 2, -1, 1)
 	min := fn.Into(0, fn.Min[int], arr)
-	if min != -1 {
+	if min.Must() != -1 {
 		t.Errorf("expected min -1: %d", min)
 	}
 
 	min = fn.Into(27, fn.Min[int], fn.SeqEmpty[int]())
-	if min != 27 {
-		t.Errorf("expected min 27: %d", min)
+	if !min.Empty() || min.Ok() {
+		t.Errorf("expected empty min: %v", min)
+	}
+	if val, err := min.Return(); val == 27 || err != fn.ErrEmpty {
+		t.Errorf("expected empty min: %v", min)
 	}
 
 	max := fn.Into(0, fn.Max[int], arr)
-	if max != 3 {
+	if max.Must() != 3 {
 		t.Errorf("expected max 3: %d", max)
 	}
 
 	max = fn.Into(27, fn.Max[int], fn.SeqEmpty[int]())
-	if max != 27 {
-		t.Errorf("expected max 27: %d", max)
+	if !max.Empty() || max.Ok() {
+		t.Errorf("expected empty max: %v", min)
+	}
+	if val, err := max.Return(); val == 27 || err != fn.ErrEmpty {
+		t.Errorf("expected empty max: %v", max)
 	}
 }
 
@@ -56,13 +65,16 @@ func TestCollectCount(t *testing.T) {
 	arr := fn.ArrayOfArgs[int](1, 2, 3)
 
 	count := fn.Into(0, fn.Count[int], arr)
-	if count != 3 {
+	if count.Must() != 3 {
 		t.Errorf("expected count 3: %d", count)
 	}
 
 	count = fn.Into(0, fn.Count[int], fn.SeqEmpty[int]())
-	if count != 0 {
-		t.Errorf("expected count 0: %d", count)
+	if !count.Empty() || count.Ok() {
+		t.Errorf("expected empty count: %v", count)
+	}
+	if val, err := count.Return(); val == 27 || err != fn.ErrEmpty {
+		t.Errorf("expected empty count: %v", count)
 	}
 }
 
@@ -70,14 +82,16 @@ func TestCollectAppend(t *testing.T) {
 	arr := fn.ArrayOfArgs[int](1, 2, 3)
 	cpy := fn.Into(nil, fn.Append[int], arr)
 	exp := []int{1, 2, 3}
-	if !reflect.DeepEqual(cpy, exp) {
+	if !reflect.DeepEqual(cpy.Must(), exp) {
 		t.Errorf("expected %v, got %v", exp, cpy)
 	}
 
-	cpy = fn.Into([]int{27}, fn.Append[int], fn.SeqEmpty[int]())
-	exp = []int{27}
-	if !reflect.DeepEqual(cpy, exp) {
-		t.Errorf("expected %v, got %v", exp, cpy)
+	ints := fn.Into([]int{27}, fn.Append[int], fn.SeqEmpty[int]())
+	if !ints.Empty() || ints.Ok() {
+		t.Errorf("expected empty min: %v", ints)
+	}
+	if val, err := ints.Return(); len(val) != 0 || err != fn.ErrEmpty {
+		t.Errorf("expected empty ints: %v", ints)
 	}
 }
 
@@ -92,7 +106,7 @@ func TestCollectAssoc(t *testing.T) {
 	exp := map[string]int{
 		"1": 1, "3": 3,
 	}
-	if !reflect.DeepEqual(res, exp) {
+	if !reflect.DeepEqual(res.Must(), exp) {
 		t.Errorf("expected %v, got %v", exp, res)
 	}
 }
@@ -103,7 +117,7 @@ func TestCollectSet(t *testing.T) {
 	exp := map[int]struct{}{
 		1: {}, 2: {}, 3: {},
 	}
-	if !reflect.DeepEqual(res, exp) {
+	if !reflect.DeepEqual(res.Must(), exp) {
 		t.Errorf("expected %v, got %v", exp, res)
 	}
 }
@@ -112,7 +126,7 @@ func TestCollectString(t *testing.T) {
 	strs := fn.ArrayOfArgs("one", "two")
 	res := fn.Into(nil, fn.MakeString, strs)
 	exp := "onetwo"
-	if exp != res.String() {
+	if exp != res.Must().String() {
 		t.Errorf("expected %v, got %v", exp, res)
 	}
 }
@@ -127,7 +141,7 @@ func TestCollectGroupBy(t *testing.T) {
 		"scotty": {3},
 	}
 
-	if !reflect.DeepEqual(exp, res) {
+	if !reflect.DeepEqual(exp, res.Must()) {
 		t.Errorf("expected %v, got %v", exp, res)
 	}
 }
@@ -142,7 +156,7 @@ func TestCollectUpdateAssoc(t *testing.T) {
 		"scotty": 1,
 	}
 
-	if !reflect.DeepEqual(exp, res) {
+	if !reflect.DeepEqual(exp, res.Must()) {
 		t.Errorf("expected %v, got %v", exp, res)
 	}
 }
@@ -163,28 +177,18 @@ func TestCollectUpdateArray(t *testing.T) {
 		"hej verden",
 	}
 
-	if !reflect.DeepEqual(exp, res) {
-		t.Errorf("expected %v, got %v", exp, res)
+	if !reflect.DeepEqual(exp, res.Must()) {
+		t.Errorf("expected %v, got %v", exp, res.Must())
 	}
 }
 
-func TestCollectErr(t *testing.T) {
-	expErr := errors.New("the error")
-	var nums fn.Seq[int]
-	nums = fn.ArrayOfArgs(1, 2, 3)
-	res, err := fn.IntoErr(0, func(into, n int) (int, error) {
-		if into >= 2 {
-			return 27, expErr
-		}
-		return into + 1, nil
-	}, nums)
+func TestCollectError(t *testing.T) {
+	theError := errors.New("the error")
+	errSeq := fn.ErrorOf[int](theError)
+	res := fn.Into(0, fn.Sum[int], errSeq)
 
-	if res != 27 {
-		t.Errorf("expected 27, got %d", res)
-	}
-
-	if err != expErr {
-		t.Errorf("did not get expected error: %v", expErr)
+	if res.Error() != theError || res.Ok() {
+		t.Errorf("expected 'the error': %v", res)
 	}
 }
 

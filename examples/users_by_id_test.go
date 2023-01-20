@@ -69,7 +69,7 @@ func TestExampleUsersById(t *testing.T) {
 	// First we create a Seq of Tuples(userId, User)
 	usersWithIDs := fn.MapOf(fn.ArrayOf(users), fn.TupleWithKey((*User).ID))
 	// Now flush that Seq of tuples into the MakeAssoc collector
-	usersByIDs := fn.Into(nil, fn.MakeAssoc[string, *User], usersWithIDs)
+	usersByIDs := fn.Into(nil, fn.MakeAssoc[string, *User], usersWithIDs).Or(nil)
 
 	// usersById is now a map[string]*User. Let's look up some users
 	fmt.Println("User with ID(xyz123):", usersByIDs["xyz123"]) // no one, nil

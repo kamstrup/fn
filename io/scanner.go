@@ -50,8 +50,8 @@ func (s scannerSeq) Array() BufferArray {
 	tokens := fn.Into(nil, func(tokens [][]byte, tok []byte) [][]byte {
 		dupTok := append([]byte{}, tok...) // scanner owns tok, so we copy it
 		return append(tokens, dupTok)
-	}, s.seq())
-	return fn.ArrayAs(tokens)
+	}, s.seq()).Or(nil) // careful: errors silently dropped
+	return tokens
 }
 
 func (s scannerSeq) Take(n int) (BufferArray, BufferSeq) {

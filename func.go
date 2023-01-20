@@ -29,12 +29,6 @@ type FuncMapErr[S, T any] func(S) (T, error)
 // having the target destination as first argument.
 type FuncCollect[T, E any] func(T, E) T
 
-// FuncCollectErr is used to aggregate data and return the updated aggregation.
-// Think of it as a generic form of the standard append() function in go.
-// This is a variation of FuncCollect that can return an error,
-// which should cause aggregation to stop.
-type FuncCollectErr[T, E any] func(T, E) (T, error)
-
 type FuncSource[T any] func() T
 
 type FuncLess[T any] func(T, T) bool
@@ -297,45 +291,27 @@ func TupleWithKey[K comparable, V any](keySelector FuncMap[V, K]) func(V) Tuple[
 // This library ships with a suite of standard collector functions.
 // These include Append, MakeAssoc, MakeSet, MakeString, MakeBytes, Sum, Count, Min, Max,
 // GroupBy, UpdateAssoc, UpdateArray.
-func Into[T, E any](into T, collector FuncCollect[T, E], seq Seq[E]) T {
-	// FIXME: error reporting?
-	seq.ForEach(func(elem E) {
+//
+// The first argument, "into", can often be left as nil. It is the initial state for the collector.
+// If you want to pre-allocate or reuse a buffer you can pass it in here. Or if you want to have
+// a certain prefix on a string you can pass in a strings.Builder where you have added the prefix.
+//
+// If the seq produces and error the returned Opt will capture it, similarly if the seq is empty
+// the returned Opt will be empty.
+func Into[T, E any](into T, collector FuncCollect[T, E], seq Seq[E]) Opt[T] {
+	empty := true
+	tail := seq.ForEach(func(elem E) {
 		into = collector(into, elem)
-	})
-	return into
-}
-
-// IntoErr is like Into() but the collector function can return an error,
-// causing collection to stop and the error returned.
-func IntoErr[T, E any](into T, collector FuncCollectErr[T, E], seq Seq[E]) (T, error) {
-	var err error
-
-	if err = Error(seq); err != nil {
-		var t T
-		return t, err
-	}
-
-	while := seq.While(func(elem E) bool {
-		into, err = collector(into, elem)
-		if err != nil {
-			return false
-		}
-		return true
+		empty = false
 	})
 
-	seqErr := Do(while) // execute the While loop
-
-	// Check for error from collector in the While loop
-	if err != nil {
-		return into, err
+	if err := Error(tail); err != nil {
+		return OptErr[T](err)
+	} else if empty {
+		return OptEmpty[T]()
 	}
 
-	// Check for error from the underlying seq
-	if errSeq := Error(seqErr); errSeq != nil {
-		return into, errSeq
-	}
-
-	return into, nil
+	return OptOf(into)
 }
 
 // Do executes a Seq. The main use case is when you are primarily interested in triggering side effects.

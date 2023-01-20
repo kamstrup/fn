@@ -97,7 +97,7 @@ func (r Reader) ByteLen() (int, bool) {
 func (r Reader) Array() BufferArray {
 	// TODO: if size is well-defined: alloc 1 continuous stride and do 1 read call, and sub-divide into buffers via slicing
 
-	return fn.Into(nil, fn.Append[[]byte], r.seq())
+	return fn.Into(nil, fn.Append[[]byte], r.seq()).Or(nil) // careful: errors silently dropped
 }
 
 func (r Reader) Take(n int) (BufferArray, BufferSeq) {

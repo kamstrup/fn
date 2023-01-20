@@ -75,7 +75,7 @@ func (c concatSeq[T]) Array() Array[T] {
 		buf = make([]T, 0, sz)
 	}
 
-	buf = Into(buf, Append[T], c.seq())
+	buf = Into(buf, Append[T], c.seq()).Or(nil) // careful: errors silently dropped
 	return buf
 }
 

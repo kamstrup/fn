@@ -1,13 +1,13 @@
 package fn
 
-type chanSeq[T any] <-chan T
+type Chan[T any] <-chan T
 
 // ChanOf returns a Seq that reads a channel until it is closed.
 func ChanOf[T any](ch <-chan T) Seq[T] {
-	return chanSeq[T](ch)
+	return Chan[T](ch)
 }
 
-func (c chanSeq[T]) ForEach(f Func1[T]) Seq[T] {
+func (c Chan[T]) ForEach(f Func1[T]) Seq[T] {
 	for t := range c {
 		f(t)
 	}
@@ -15,7 +15,7 @@ func (c chanSeq[T]) ForEach(f Func1[T]) Seq[T] {
 	return SeqEmpty[T]()
 }
 
-func (c chanSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
+func (c Chan[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 	i := 0
 	for t := range c {
 		f(i, t)
@@ -25,15 +25,15 @@ func (c chanSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 	return SeqEmpty[T]()
 }
 
-func (c chanSeq[T]) Len() (int, bool) {
+func (c Chan[T]) Len() (int, bool) {
 	return LenUnknown, false
 }
 
-func (c chanSeq[T]) Array() Array[T] {
-	return Into(nil, Append[T], c.seq())
+func (c Chan[T]) Array() Array[T] {
+	return Into(nil, Append[T], c.Seq())
 }
 
-func (c chanSeq[T]) Take(n int) (Array[T], Seq[T]) {
+func (c Chan[T]) Take(n int) (Array[T], Seq[T]) {
 	if n == 0 {
 		return []T{}, c
 	}
@@ -52,13 +52,13 @@ func (c chanSeq[T]) Take(n int) (Array[T], Seq[T]) {
 	return head, SeqEmpty[T]()
 }
 
-func (c chanSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
+func (c Chan[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 	var arr []T
 	for t := range c {
 		if pred(t) {
 			arr = append(arr, t)
 		} else {
-			return arr, ConcatOf(SingletOf(t), c.seq())
+			return arr, ConcatOf(SingletOf(t), c.Seq())
 		}
 	}
 
@@ -66,7 +66,7 @@ func (c chanSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 	return arr, SeqEmpty[T]()
 }
 
-func (c chanSeq[T]) Skip(n int) Seq[T] {
+func (c Chan[T]) Skip(n int) Seq[T] {
 	if n == 0 {
 		return c
 	}
@@ -82,21 +82,21 @@ func (c chanSeq[T]) Skip(n int) Seq[T] {
 	return SeqEmpty[T]() // if we get here c was closed
 }
 
-func (c chanSeq[T]) Where(pred Predicate[T]) Seq[T] {
+func (c Chan[T]) Where(pred Predicate[T]) Seq[T] {
 	return whereSeq[T]{
 		seq:  c,
 		pred: pred,
 	}
 }
 
-func (c chanSeq[T]) While(pred Predicate[T]) Seq[T] {
+func (c Chan[T]) While(pred Predicate[T]) Seq[T] {
 	return whileSeq[T]{
 		seq:  c,
 		pred: pred,
 	}
 }
 
-func (c chanSeq[T]) First() (Opt[T], Seq[T]) {
+func (c Chan[T]) First() (Opt[T], Seq[T]) {
 	t, ok := <-c
 	if !ok {
 		return OptEmpty[T](), SeqEmpty[T]()
@@ -104,13 +104,13 @@ func (c chanSeq[T]) First() (Opt[T], Seq[T]) {
 	return OptOf(t), c
 }
 
-func (c chanSeq[T]) Map(shaper FuncMap[T, T]) Seq[T] {
+func (c Chan[T]) Map(shaper FuncMap[T, T]) Seq[T] {
 	return mappedSeq[T, T]{
 		f:   shaper,
 		seq: c,
 	}
 }
 
-func (c chanSeq[T]) seq() Seq[T] {
+func (c Chan[T]) Seq() Seq[T] {
 	return c
 }

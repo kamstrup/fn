@@ -313,11 +313,7 @@ Alternatively you can wrap results in `Opt[T]` which can also capture an error.
 TODO
 ---
 ```
-CHORES
-* Make chanSeq public and add ChanAs()
-
 API CHANGES
-* Opt needs an API overhaul
 * Into() error reporting from tail seq?!
 
 FEATURES (in order of prio)

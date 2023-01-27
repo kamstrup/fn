@@ -82,6 +82,9 @@ If you just want to jump in and see some code you can check out
 [the simple examples](https://github.com/kamstrup/fn/blob/main/examples/simple_test.go).
 Otherwise here follows a brief overview.
 
+Fn also bundles a [very simple sub-library called Fx](#the-fx-package---simplified-fn)
+that you can use to do 1-line functional constructs.
+
 ### Creating Seqs
 We follow the convention that functions for creating a Seq are named with an "Of"-suffix.
 Ie `StringOf()`, `ArrayOf` etc. They always return a `Seq[T]`. Functions with an "As"-suffix
@@ -339,6 +342,15 @@ errors.
 
 Alternatively you can wrap results in `Opt[T]` which can also capture an error.
 Any error encountered via `seq.First()` or `fn.Into()` are reported via opts.
+
+## The Fx Package - Simplified Fn
+Fn includes a minimal sub-library called Fx that works directly on standard Go
+slices and maps and does not use seqs at all. The functions in Fx are intended
+for doing one-shot conversions and mapping elements 1-1.
+
+You can find a few [examples of how to use Fx](https://github.com/kamstrup/fn/blob/main/examples/fx_test.go)
+in the "examples" folder.
+.
 
 ## Performance
 If the foundational functional data structures and algorithms is not done carefully,

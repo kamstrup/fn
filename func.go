@@ -3,6 +3,8 @@ package fn
 import (
 	"bytes"
 	"strings"
+
+	"github.com/kamstrup/fn/constraints"
 )
 
 type Func0 func()
@@ -41,12 +43,12 @@ type PredicateErr[T any] func(T) (bool, error)
 type FuncUpdate[T any] func(old, new_ T) T
 
 // Sum is a FuncCollect and a FuncUpdate, for use with Into or UpdateAt, that sums up the elements it sees.
-func Sum[T Arithmetic](into, t T) T {
+func Sum[T constraints.Arithmetic](into, t T) T {
 	return into + t
 }
 
 // Max is a FuncCollect and a FuncUpdate, for use with Into or UpdateAssoc, that returns the maximal element.
-func Max[T Ordered](s, t T) T {
+func Max[T constraints.Ordered](s, t T) T {
 	if s > t {
 		return s
 	}
@@ -54,7 +56,7 @@ func Max[T Ordered](s, t T) T {
 }
 
 // Min is a FuncCollect and a FuncUpdate, for use with Into or UpdateAssoc, that returns the minimal element.
-func Min[T Ordered](s, t T) T {
+func Min[T constraints.Ordered](s, t T) T {
 	if s < t {
 		return s
 	}
@@ -167,7 +169,7 @@ func UpdateAssoc[K comparable, V any](updater FuncUpdate[V]) FuncCollect[map[K]V
 // It looks at the elements in the index specified by Tuple.X(), ensures that the slice is big enough
 // (growing it if needed), and updates the value at that index with the provided FuncUpdate.
 // Classic update functions could be Max, Min, or Sum.
-func UpdateArray[I Integer, V any](updater FuncUpdate[V]) FuncCollect[[]V, Tuple[I, V]] {
+func UpdateArray[I constraints.Integer, V any](updater FuncUpdate[V]) FuncCollect[[]V, Tuple[I, V]] {
 	return func(into []V, tup Tuple[I, V]) []V {
 		idx := int(tup.Key())
 
@@ -192,22 +194,22 @@ func UpdateArray[I Integer, V any](updater FuncUpdate[V]) FuncCollect[[]V, Tuple
 }
 
 // OrderAsc is a FuncLess that can be used with Array.Sort
-func OrderAsc[T Ordered](t1, t2 T) bool {
+func OrderAsc[T constraints.Ordered](t1, t2 T) bool {
 	return t1 < t2
 }
 
 // OrderDesc is a FuncLess that can be used with Array.Sort
-func OrderDesc[T Ordered](t1, t2 T) bool {
+func OrderDesc[T constraints.Ordered](t1, t2 T) bool {
 	return t1 > t2
 }
 
 // OrderTupleAsc is a FuncLess that can be used with Array.Sort
-func OrderTupleAsc[K Ordered, V any](t1, t2 Tuple[K, V]) bool {
+func OrderTupleAsc[K constraints.Ordered, V any](t1, t2 Tuple[K, V]) bool {
 	return t1.Key() < t2.Key()
 }
 
 // OrderTupleDesc is a FuncLess that can be used with Array.Sort
-func OrderTupleDesc[K Ordered, V any](t1, t2 Tuple[K, V]) bool {
+func OrderTupleDesc[K constraints.Ordered, V any](t1, t2 Tuple[K, V]) bool {
 	return t1.Key() > t2.Key()
 }
 
@@ -242,26 +244,26 @@ func IsNot[T comparable](val T) Predicate[T] {
 }
 
 // GreaterThanZero is a Predicate
-func GreaterThanZero[T Ordered](t T) bool {
+func GreaterThanZero[T constraints.Ordered](t T) bool {
 	var zero T
 	return t > zero
 }
 
 // LessThanZero is a Predicate
-func LessThanZero[T Ordered](t T) bool {
+func LessThanZero[T constraints.Ordered](t T) bool {
 	var zero T
 	return t < zero
 }
 
 // GreaterThan returns a Predicate. If you compare against zero then GreaterThanZero is more efficient.
-func GreaterThan[T Ordered](val T) Predicate[T] {
+func GreaterThan[T constraints.Ordered](val T) Predicate[T] {
 	return func(other T) bool {
 		return other > val
 	}
 }
 
 // LessThan returns a Predicate. If you compare against zero then LessThanZero is more efficient.
-func LessThan[T Ordered](val T) Predicate[T] {
+func LessThan[T constraints.Ordered](val T) Predicate[T] {
 	return func(other T) bool {
 		return other < val
 	}

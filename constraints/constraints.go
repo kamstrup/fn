@@ -7,7 +7,7 @@
 // This package was called "constriants" and was removed from the Go standard library
 // before the 1.18 release, but is reproduced here inside the fn library because we
 // need the numeric types. See https://github.com/golang/go/issues/50792
-package fn
+package constraints
 
 // Signed is a constraint that permits any signed integer type.
 type Signed interface {

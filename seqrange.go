@@ -1,6 +1,8 @@
 package fn
 
-type rangeSeq[N Integer] struct {
+import "github.com/kamstrup/fn/constraints"
+
+type rangeSeq[N constraints.Integer] struct {
 	from N
 	to   N
 	step N // we have to work with a positive step in order to support unsigned ints
@@ -8,7 +10,7 @@ type rangeSeq[N Integer] struct {
 
 // RangeStepOf returns a Seq that counts from one number to another, in increments of some given step.
 // It can count both up or down. Range Seqs have a well-defined length.
-func RangeStepOf[N Integer](from, to, step N) Seq[N] {
+func RangeStepOf[N constraints.Integer](from, to, step N) Seq[N] {
 	if step == 0 {
 		panic("range step must be non-zero")
 	}
@@ -30,7 +32,7 @@ func RangeStepOf[N Integer](from, to, step N) Seq[N] {
 
 // RangeOf returns a Seq that counts from one number to another.
 // It can count both up or down. Range Seqs have a well-defined length.
-func RangeOf[N Integer](from, to N) Seq[N] {
+func RangeOf[N constraints.Integer](from, to N) Seq[N] {
 	return RangeStepOf(from, to, 1)
 }
 

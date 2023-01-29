@@ -1,6 +1,7 @@
 package fn_test
 
 import (
+	"math"
 	"testing"
 
 	"github.com/kamstrup/fn"
@@ -40,4 +41,31 @@ func TestRangeOfUintSuite(t *testing.T) {
 	fntesting.SuiteOf(t, func() fn.Seq[uint32] {
 		return fn.RangeStepOf(uint32(10), uint32(0), uint32(3))
 	}).Is(10, 7, 4, 1)
+}
+
+func TestRangeFromLen(t *testing.T) {
+	sz, ok := fn.RangeFrom(0).Len()
+	if !ok || sz != math.MaxInt {
+		t.Fatalf("bad len: %d, %v", sz, ok)
+	}
+
+	sz, ok = fn.RangeFrom(int8(0)).Len()
+	if !ok || sz != math.MaxInt8 {
+		t.Fatalf("bad len: %d, %v", sz, ok)
+	}
+
+	sz, ok = fn.RangeFrom(uint8(0)).Len()
+	if !ok || sz != math.MaxUint8 {
+		t.Fatalf("bad len: %d, %v", sz, ok)
+	}
+
+	sz, ok = fn.RangeFrom(uint16(0)).Len()
+	if !ok || sz != math.MaxUint16 {
+		t.Fatalf("bad len: %d, %v", sz, ok)
+	}
+
+	sz, ok = fn.RangeFrom(uint(0)).Len()
+	if !ok || sz != math.MaxInt {
+		t.Fatalf("bad len: %d, %v", sz, ok)
+	}
 }

@@ -8,57 +8,13 @@ import (
 	"testing"
 
 	"github.com/kamstrup/fn"
+	fnmath "github.com/kamstrup/fn/math"
 	"github.com/kamstrup/fn/testing"
 )
 
 func TestZeroes(t *testing.T) {
 	fntesting.TestOf(t, fn.MapOf(fn.ArrayOfArgs(-1, 0, 1, 10), fn.IsZero[int])).Is(false, true, false, false)
 	fntesting.TestOf(t, fn.MapOf(fn.ArrayOfArgs(-1, 0, 1, 10), fn.IsNonZero[int])).Is(true, false, true, true)
-}
-
-func TestCollectSum(t *testing.T) {
-	var arr fn.Seq[int] = fn.ArrayOfArgs(1, 2, 3)
-	sum := fn.Into(0, fn.Sum[int], arr)
-	if sum.Must() != 6 {
-		t.Errorf("expected sum 6: %d", sum)
-	}
-
-	sum = fn.Into(27, fn.Sum[int], fn.SeqEmpty[int]())
-	if !sum.Empty() || sum.Ok() {
-		t.Errorf("expected empty sum: %v", sum)
-	}
-	if val, err := sum.Return(); val == 27 || err != fn.ErrEmpty {
-		t.Errorf("expected empty sum: %v", sum)
-	}
-}
-
-func TestCollectMinMax(t *testing.T) {
-	arr := fn.ArrayOfArgs(1, 2, 3, 2, -1, 1)
-	min := fn.Into(0, fn.Min[int], arr)
-	if min.Must() != -1 {
-		t.Errorf("expected min -1: %d", min)
-	}
-
-	min = fn.Into(27, fn.Min[int], fn.SeqEmpty[int]())
-	if !min.Empty() || min.Ok() {
-		t.Errorf("expected empty min: %v", min)
-	}
-	if val, err := min.Return(); val == 27 || err != fn.ErrEmpty {
-		t.Errorf("expected empty min: %v", min)
-	}
-
-	max := fn.Into(0, fn.Max[int], arr)
-	if max.Must() != 3 {
-		t.Errorf("expected max 3: %d", max)
-	}
-
-	max = fn.Into(27, fn.Max[int], fn.SeqEmpty[int]())
-	if !max.Empty() || max.Ok() {
-		t.Errorf("expected empty max: %v", min)
-	}
-	if val, err := max.Return(); val == 27 || err != fn.ErrEmpty {
-		t.Errorf("expected empty max: %v", max)
-	}
 }
 
 func TestCollectCount(t *testing.T) {
@@ -133,7 +89,7 @@ func TestCollectString(t *testing.T) {
 
 func TestCollectGroupBy(t *testing.T) {
 	names := fn.ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
-	tups := fn.ZipOf[string, int](names, fn.NumbersFrom(0))
+	tups := fn.ZipOf[string, int](names, fn.RangeFrom(0))
 	res := fn.Into(nil, fn.GroupBy[string, int], tups)
 	exp := map[string][]int{
 		"bob":    {0, 2, 4},
@@ -149,7 +105,7 @@ func TestCollectGroupBy(t *testing.T) {
 func TestCollectUpdateAssoc(t *testing.T) {
 	names := fn.ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 	tups := fn.ZipOf[string, int](names, fn.Constant(1))
-	res := fn.Into(nil, fn.UpdateAssoc[string, int](fn.Sum[int]), tups)
+	res := fn.Into(nil, fn.UpdateAssoc[string, int](fnmath.Sum[int]), tups)
 	exp := map[string]int{
 		"bob":    3,
 		"alan":   2,
@@ -185,7 +141,7 @@ func TestCollectUpdateArray(t *testing.T) {
 func TestCollectError(t *testing.T) {
 	theError := errors.New("the error")
 	errSeq := fn.ErrorOf[int](theError)
-	res := fn.Into(0, fn.Sum[int], errSeq)
+	res := fn.Into(0, fnmath.Sum[int], errSeq)
 
 	if res.Error() != theError || res.Ok() {
 		t.Errorf("expected 'the error': %v", res)

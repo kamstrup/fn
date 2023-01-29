@@ -33,35 +33,35 @@ func TestWhereSkip(t *testing.T) {
 }
 
 func TestWhereTake(t *testing.T) {
-	odds, _ := fn.NumbersFrom(0).Where(isOdd).Take(4)
+	odds, _ := fn.RangeFrom(0).Where(isOdd).Take(4)
 	fntesting.TestOf(t, odds.Seq()).Is(1, 3, 5, 7)
 
-	odds, _ = fn.NumbersFrom(0).Where(isOdd).Take(0)
+	odds, _ = fn.RangeFrom(0).Where(isOdd).Take(0)
 	fntesting.TestOf(t, odds.Seq()).IsEmpty()
 
-	odds, _ = fn.NumbersFrom(0).Where(isOdd).Take(1)
+	odds, _ = fn.RangeFrom(0).Where(isOdd).Take(1)
 	fntesting.TestOf(t, odds.Seq()).Is(1)
 }
 
 func TestWhereTakeWhile(t *testing.T) {
-	odds, _ := fn.NumbersFrom(0).Where(isOdd).TakeWhile(func(i int) bool { return i < 5 })
+	odds, _ := fn.RangeFrom(0).Where(isOdd).TakeWhile(func(i int) bool { return i < 5 })
 	fntesting.TestOf(t, odds.Seq()).Is(1, 3)
 
-	odds, _ = fn.NumbersFrom(0).Where(isOdd).TakeWhile(func(_ int) bool { return false })
+	odds, _ = fn.RangeFrom(0).Where(isOdd).TakeWhile(func(_ int) bool { return false })
 	fntesting.TestOf(t, odds.Seq()).IsEmpty()
 
-	odds, _ = fn.NumbersFrom(0).Where(isOdd).TakeWhile(func(i int) bool { return i < 2 })
+	odds, _ = fn.RangeFrom(0).Where(isOdd).TakeWhile(func(i int) bool { return i < 2 })
 	fntesting.TestOf(t, odds.Seq()).Is(1)
 }
 
 func TestWhereWhile(t *testing.T) {
-	odds := fn.NumbersFrom(0).Where(isOdd).While(func(i int) bool { return i < 5 })
+	odds := fn.RangeFrom(0).Where(isOdd).While(func(i int) bool { return i < 5 })
 	fntesting.TestOf(t, odds).Is(1, 3)
 
-	odds = fn.NumbersFrom(0).Where(isOdd).While(func(_ int) bool { return false })
+	odds = fn.RangeFrom(0).Where(isOdd).While(func(_ int) bool { return false })
 	fntesting.TestOf(t, odds).IsEmpty()
 
-	odds = fn.NumbersFrom(0).Where(isOdd).While(func(i int) bool { return i < 2 })
+	odds = fn.RangeFrom(0).Where(isOdd).While(func(i int) bool { return i < 2 })
 	fntesting.TestOf(t, odds).Is(1)
 }
 

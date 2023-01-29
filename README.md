@@ -5,7 +5,8 @@
 Fn is library for golang that enable you to blend functional programming techniques
 with standard idiomatic Go code.
 
-We are inspired by Clojure and the Java Streams APIs that were
+We are inspired by [Clojure](https://github.com/clojure/clojure),
+[Vavr](https://github.com/vavr-io/vavr), and the Java Streams APIs that were
 introduced back in Java 8, and want to provide something of similar spirit
 that makes it even more fun to write Go code.
 
@@ -361,6 +362,9 @@ functional libraries. See benchmarks here https://github.com/mariomac/go-stream-
 TODO
 ---
 ```
+CHORES:
+* doc.go files
+
 API CHANGES:
 * Do we need to change fn.Go() to enable better error handling?
 

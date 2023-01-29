@@ -37,7 +37,7 @@ func TestExampleContains(t *testing.T) {
 func TestExampleUserIndexes(t *testing.T) {
 	// In this example we examine a sequence of usernames, and record the index of each occurrence
 	names := fn.ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
-	tups := fn.ZipOf[string, int](names, fn.NumbersFrom(0))
+	tups := fn.ZipOf[string, int](names, fn.RangeFrom(0))
 	userIndexes := fn.Into(nil, fn.GroupBy[string, int], tups)
 	fmt.Println("Indexes of user names from", names, "\n", userIndexes)
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Package fn defines a set of useful constraints to be used
+// Package constraints defines a set of useful constraints to be used
 // with type parameters.
 // This package was called "constriants" and was removed from the Go standard library
 // before the 1.18 release, but is reproduced here inside the fn library because we

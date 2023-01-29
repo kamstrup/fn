@@ -10,12 +10,15 @@ const LenUnknown = -1
 const LenInfinite = -2
 
 // Seq is the primary interface for the fn() library.
-// Seqs should be thought of a lazily computed collections of elements.
+// Seqs should be thought of as a stateless lazily computed collection of elements.
 // Operations that force traversing or computation of the Seq are said to "execute" the Seq.
 // As a rule of thumb any method that returns an Array will execute that part of the Seq.
 // For example, seq.Take(7) executes the first 7 elements and returns them in an Array,
 // and the rest of the Seq is untouched and returned as a tail Seq.
 // Any method that executes the Seq must document it explicitly.
+//
+// Seq implementations that are not stateless or lazy must explicitly document that
+// they are stateful and/or eager.
 type Seq[T any] interface {
 	// ForEach executes the Seq and calls f on each element.
 	// Returns an empty Seq. If the Seq has capabilities for errors,

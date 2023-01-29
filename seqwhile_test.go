@@ -9,7 +9,7 @@ import (
 )
 
 func TestWhile(t *testing.T) {
-	nums := fn.NumbersFrom(0).
+	nums := fn.RangeFrom(0).
 		While(func(i int) bool { return i < 10 }).
 		Array().Seq()
 	fntesting.TestOf(t, nums).Is(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
@@ -17,7 +17,7 @@ func TestWhile(t *testing.T) {
 
 func TestWhileSuite(t *testing.T) {
 	createSeq := func() fn.Seq[int] {
-		return fn.NumbersFrom(0).
+		return fn.RangeFrom(0).
 			While(func(i int) bool { return i < 10 })
 	}
 

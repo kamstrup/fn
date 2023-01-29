@@ -42,27 +42,6 @@ type PredicateErr[T any] func(T) (bool, error)
 // FuncUpdate is used to update an existing 'old' value compared to a 'new_' value, and returning the updated result.
 type FuncUpdate[T any] func(old, new_ T) T
 
-// Sum is a FuncCollect and a FuncUpdate, for use with Into or UpdateAt, that sums up the elements it sees.
-func Sum[T constraints.Arithmetic](into, t T) T {
-	return into + t
-}
-
-// Max is a FuncCollect and a FuncUpdate, for use with Into or UpdateAssoc, that returns the maximal element.
-func Max[T constraints.Ordered](s, t T) T {
-	if s > t {
-		return s
-	}
-	return t
-}
-
-// Min is a FuncCollect and a FuncUpdate, for use with Into or UpdateAssoc, that returns the minimal element.
-func Min[T constraints.Ordered](s, t T) T {
-	if s < t {
-		return s
-	}
-	return t
-}
-
 // Count is a FuncCollect for use with Into, that counts the number of elements it sees.
 func Count[T any](into int, _ T) int {
 	return into + 1
@@ -121,7 +100,7 @@ func MakeSet[K comparable](into map[K]struct{}, k K) map[K]struct{} {
 // Example, grouping serial numbers under a slice of first names:
 //
 //	names := ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
-//	tups := ZipOf[string, int](names, NumbersFrom(0))
+//	tups := ZipOf[string, int](names, RangeFrom(0))
 //	result := Into(nil, GroupBy[string, int], tups)
 //
 // Then the result is
@@ -141,13 +120,13 @@ func GroupBy[K comparable, V any](into map[K][]V, tup Tuple[K, V]) map[K][]V {
 
 // UpdateAssoc is used to build a new FuncCollect that can update a map[K]V in place.
 // It updates the element at Tuple.Key() with the provided FuncUpdate.
-// Classic update functions could be Max, Min, or Sum.
+// Classic update functions could be fnmath.Max, fnmath.Min, or fnmath.Sum.
 //
 // Example, counting the number of unique names in a slice:
 //
 //	names := fn.ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 //	tups := fn.ZipOf[string, int](names, Constant(1))
-//	res := fn.Into(nil, fn.UpdateAssoc[string, int](Sum[int]), tups)
+//	res := fn.Into(nil, fn.UpdateAssoc[string, int](fnmath.Sum[int]), tups)
 //	fmt.Println(res)
 //
 // Prints:
@@ -168,7 +147,7 @@ func UpdateAssoc[K comparable, V any](updater FuncUpdate[V]) FuncCollect[map[K]V
 // UpdateArray is used to build a new FuncCollect that can update a slice []V in place.
 // It looks at the elements in the index specified by Tuple.X(), ensures that the slice is big enough
 // (growing it if needed), and updates the value at that index with the provided FuncUpdate.
-// Classic update functions could be Max, Min, or Sum.
+// Classic update functions could be fnmath.Max, fnmath.Min, or fnmath.Sum.
 func UpdateArray[I constraints.Integer, V any](updater FuncUpdate[V]) FuncCollect[[]V, Tuple[I, V]] {
 	return func(into []V, tup Tuple[I, V]) []V {
 		idx := int(tup.Key())
@@ -291,8 +270,8 @@ func TupleWithKey[K comparable, V any](keySelector FuncMap[V, K]) func(V) Tuple[
 // In other languages and libraries this function is also known as "reduce" or "fold".
 //
 // This library ships with a suite of standard collector functions.
-// These include Append, MakeAssoc, MakeSet, MakeString, MakeBytes, Sum, Count, Min, Max,
-// GroupBy, UpdateAssoc, UpdateArray.
+// These include Append, MakeAssoc, MakeSet, MakeString, MakeBytes, Count,
+// GroupBy, UpdateAssoc, UpdateArray, fnmath.Sum, fnmath.Min, fnmath.Max,.
 //
 // The first argument, "into", can often be left as nil. It is the initial state for the collector.
 // If you want to pre-allocate or reuse a buffer you can pass it in here. Or if you want to have

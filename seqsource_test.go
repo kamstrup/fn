@@ -8,7 +8,7 @@ import (
 )
 
 func TestSource(t *testing.T) {
-	nums, tail := fn.NumbersFrom(0).
+	nums, tail := fn.RangeFrom(0).
 		Map(func(i int) int { return i * 2 }).
 		Take(3)
 	fntesting.TestOf(t, nums.Seq()).Is(0, 2, 4)

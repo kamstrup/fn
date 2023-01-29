@@ -11,6 +11,8 @@ type scannerSeq struct {
 	scanner *bufio.Scanner
 }
 
+// ScannerOf creates a stateful seq splits a io.Reader into delimited chunks.
+// If you want to split a reader into lines you can use LinesOf.
 func ScannerOf(r io.Reader, split bufio.SplitFunc, buf []byte, maxBuf int) BufferSeq {
 	scanner := bufio.NewScanner(r)
 	if split != nil {
@@ -22,6 +24,7 @@ func ScannerOf(r io.Reader, split bufio.SplitFunc, buf []byte, maxBuf int) Buffe
 	return scannerSeq{scanner: scanner}
 }
 
+// LinesOf returns a stateful seq splitting an io.Reader into lines using a standard bufio.Scanner.
 func LinesOf(r io.Reader) BufferSeq {
 	return scannerSeq{
 		scanner: bufio.NewScanner(r),

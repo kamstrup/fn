@@ -16,6 +16,11 @@ type Reader struct {
 	buf []byte
 }
 
+// ReaderOf creates a stateful fn.Seq wrapping an io.Reader.
+// A buffer to use may optionally be provided.
+//
+// Errors can be detected be using fn.Error() on seqs and opts
+// returned from the reader's methods.
 func ReaderOf(r io.Reader, buf []byte) BufferSeq {
 	if len(buf) == 0 {
 		buf = make([]byte, 4096)
@@ -74,8 +79,7 @@ func (r Reader) Len() (int, bool) {
 }
 
 // ByteLen on a Reader is unknown, unless the underlying io.Reader is an *os.File
-// in which case it reports the file length, or if it is a something with a Len() int method,
-// like a bytes.Buffer.
+// or if it is a something with a Len() int method, like a bytes.Buffer.
 func (r Reader) ByteLen() (int, bool) {
 	// Check if reader is a File
 	if f, ok := r.r.(*os.File); ok {

@@ -1,6 +1,10 @@
 package fn
 
-import "github.com/kamstrup/fn/constraints"
+import (
+	"math"
+
+	"github.com/kamstrup/fn/constraints"
+)
 
 type rangeSeq[N constraints.Integer] struct {
 	from N
@@ -32,8 +36,17 @@ func RangeStepOf[N constraints.Integer](from, to, step N) Seq[N] {
 
 // RangeOf returns a Seq that counts from one number to another.
 // It can count both up or down. Range Seqs have a well-defined length.
+// If you need to control the step size you can use RangeStepOf.
 func RangeOf[N constraints.Integer](from, to N) Seq[N] {
 	return RangeStepOf(from, to, 1)
+}
+
+// RangeFrom returns a Seq starting from n counting one up on every invocation until the maximum value for the integer type.
+// The returned seq will have a well-defined length.
+//
+// If the type is uint64 or uint the length will be limited to math.MaxInt64 and math.MaxInt respectively.
+func RangeFrom[N constraints.Integer](n N) Seq[N] {
+	return RangeOf(n, N(maxLen(n)))
 }
 
 func (r rangeSeq[N]) ForEach(f Func1[N]) Seq[N] {
@@ -200,5 +213,32 @@ func (r rangeSeq[N]) Map(shaper FuncMap[N, N]) Seq[N] {
 	return mappedSeq[N, N]{
 		f:   shaper,
 		seq: r,
+	}
+}
+
+func maxLen(n any) uint {
+	switch n.(type) {
+	case int8:
+		return math.MaxInt8
+	case int16:
+		return math.MaxInt16
+	case int32:
+		return math.MaxInt32
+	case int64:
+		return math.MaxInt64
+	case int:
+		return math.MaxInt
+	case uint8:
+		return math.MaxUint8
+	case uint16:
+		return math.MaxUint16
+	case uint32:
+		return math.MaxUint32
+	case uint64:
+		return math.MaxInt64 // maxuint64 does not fit in int for Len()
+	case uint:
+		return math.MaxInt // maxuint does not fit in int for Len()
+	default:
+		panic("unexpected integer type")
 	}
 }

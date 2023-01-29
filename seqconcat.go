@@ -5,6 +5,8 @@ type concatSeq[T any] struct {
 	tail Seq[Seq[T]]
 }
 
+// FlattenOf returns a lazy Seq that steps through elements in a collection of seqs as though it was one big seq.
+// See also ConcatOf.
 func FlattenOf[T any](seqs Seq[Seq[T]]) Seq[T] {
 	return concatSeq[T]{
 		head: nil,
@@ -12,6 +14,8 @@ func FlattenOf[T any](seqs Seq[Seq[T]]) Seq[T] {
 	}
 }
 
+// ConcatOf wraps a collection of seqs as one contiguous lazy seq.
+// See also FlattenOf.
 func ConcatOf[T any](seqs ...Seq[T]) Seq[T] {
 	return concatSeq[T]{
 		head: nil,

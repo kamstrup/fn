@@ -1,7 +1,5 @@
 package fn
 
-import "github.com/kamstrup/fn/constraints"
-
 type sourceSeq[T any] struct {
 	f FuncSource[T]
 }
@@ -12,26 +10,6 @@ type sourceSeq[T any] struct {
 // may matter.
 func SourceOf[T any](f FuncSource[T]) Seq[T] {
 	return sourceSeq[T]{f}
-}
-
-// NumbersFrom returns an infinite Seq that starts from n and count one up on every invocation.
-func NumbersFrom[N constraints.Arithmetic](n N) Seq[N] {
-	counter := n - 1
-
-	return SourceOf(func() N {
-		counter += 1
-		return counter
-	})
-}
-
-// NumbersBelow returns an infinite Seq that starts from n and count one down on every invocation.
-func NumbersBelow[N constraints.Arithmetic](n N) Seq[N] {
-	counter := n + 1
-
-	return SourceOf(func() N {
-		counter -= 1
-		return counter
-	})
 }
 
 // Constant returns an infinite Seq that repeats the same value.

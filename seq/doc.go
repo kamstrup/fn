@@ -1,11 +1,11 @@
-// Package fn provides functions and data structures for incorporating
+// Package seq provides functions and data structures for incorporating
 // functional programming ideas into standard Go programs.
 //
 // The key data structure is the Seq, which is short for "sequence".
 // Seqs are generally lazy and stateless. All methods return a new Seq
 // that you must work on, similar to how append() works.
 //
-// Another important interface is the Opt which is short for "option".
+// Another important interface is opt.Opt which is short for "option".
 // Opts represent a value that may or may not be there. They may also
 // encapsulate an error.
 //

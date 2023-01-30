@@ -4,10 +4,13 @@ import (
 	"errors"
 )
 
+// ErrEmpty is a constant error value used to signify when an Opt is empty.
 var ErrEmpty = errors.New("empty")
 
 // Opt is a light wrapper around a value or an error.
-// Opts should always be passed by value. If you see *Opt anywhere something is wrong.
+// Opts should always be passed by value. If you see a pointer to an Opt anywhere something is wrong.
+//
+// The zero Opt structure holds the default value for T and no error, and is *not* considered empty.
 type Opt[T any] struct {
 	val T
 	err error
@@ -75,6 +78,7 @@ func (o Opt[T]) Return() (T, error) {
 	return o.val, o.err
 }
 
+// Empty returns true if the option holds ErrEmpty or any other error.
 func (o Opt[T]) Empty() bool {
 	return o.err != nil
 }

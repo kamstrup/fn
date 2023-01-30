@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/seq"
 )
 
 type User struct {
@@ -54,22 +54,22 @@ func TestExampleUsersById(t *testing.T) {
 	}
 
 	// Let's check if they all have a valid "name" field
-	everyOneHasName := fn.All(fn.SliceOf(users), (*User).HasName)
+	everyOneHasName := seq.All(seq.SliceOf(users), (*User).HasName)
 	fmt.Println("Does everyone have a name?", everyOneHasName)
 
 	// Now let's print the IDs of the users without names, sorted reverse alphabetically
-	usersWithEmptyNames := fn.SliceOf(users).
-		Where(fn.Not((*User).HasName))
-	idsWithEmptyNames := fn.MapOf(usersWithEmptyNames, (*User).ID).
+	usersWithEmptyNames := seq.SliceOf(users).
+		Where(seq.Not((*User).HasName))
+	idsWithEmptyNames := seq.MapOf(usersWithEmptyNames, (*User).ID).
 		Values().
-		Sort(fn.OrderDesc[string])
+		Sort(seq.OrderDesc[string])
 	fmt.Println("These user IDs do not have a name:", idsWithEmptyNames)
 
 	// Let's create a map[userID]*User:
 	// First we create a Seq of Tuples(userId, User)
-	usersWithIDs := fn.MapOf(fn.SliceOf(users), fn.TupleWithKey((*User).ID))
+	usersWithIDs := seq.MapOf(seq.SliceOf(users), seq.TupleWithKey((*User).ID))
 	// Now flush that Seq of tuples into the MakeAssoc collector
-	usersByIDs := fn.Into(nil, fn.MakeAssoc[string, *User], usersWithIDs).Or(nil)
+	usersByIDs := seq.Into(nil, seq.MakeAssoc[string, *User], usersWithIDs).Or(nil)
 
 	// usersById is now a map[string]*User. Let's look up some users
 	fmt.Println("User with ID(xyz123):", usersByIDs["xyz123"]) // no one, nil
@@ -88,8 +88,8 @@ func TestExampleUsersById(t *testing.T) {
 	}
 
 	// Let's get a combined list of Users sorted by name
-	allUsers := fn.ConcatOf(fn.AssocOf(usersByIDs), fn.AssocOf(newUsers)) // AssocOf handles maps as Seqs of Tuples
-	allUsersSorted := fn.MapOf(allUsers, fn.TupleValue[string, *User]).
+	allUsers := seq.ConcatOf(seq.AssocOf(usersByIDs), seq.AssocOf(newUsers)) // AssocOf handles maps as Seqs of Tuples
+	allUsersSorted := seq.MapOf(allUsers, seq.TupleValue[string, *User]).
 		Values().
 		Sort(func(u1, u2 *User) bool { return u1.name < u2.name })
 

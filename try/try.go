@@ -1,7 +1,6 @@
 package fntry
 
 import (
-	"github.com/kamstrup/fn"
 	"github.com/kamstrup/fn/opt"
 )
 
@@ -34,14 +33,14 @@ func CallRecover[T any](f FuncSourceErr[T]) (op opt.Opt[T]) {
 }
 
 // Apply calls a function with an argument and returns the result wrapped in a fn.Opt.
-func Apply[S any, T any](f fn.FuncMapErr[S, T], s S) opt.Opt[T] {
+func Apply[S any, T any](f func(S) (T, error), s S) opt.Opt[T] {
 	t, err := f(s)
 	return Of(t, err)
 }
 
 // ApplyRecover calls a function with an argument and returns the result wrapped in a fn.Opt.
 // If the function panics it is recovered and returned as ErrPanic.
-func ApplyRecover[S any, T any](f fn.FuncMapErr[S, T], s S) (op opt.Opt[T]) {
+func ApplyRecover[S any, T any](f func(S) (T, error), s S) (op opt.Opt[T]) {
 	defer func() {
 		if r := recover(); r != nil {
 			op = opt.ErrorOf[T](ErrPanic{V: r})

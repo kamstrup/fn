@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/kamstrup/fn"
 	"github.com/kamstrup/fn/fx"
+	"github.com/kamstrup/fn/seq"
 )
 
 func TestFxMapSlice1(t *testing.T) {
@@ -36,7 +36,8 @@ func TestFxAssocSlice(t *testing.T) {
 
 func TestFxIntoStrings(t *testing.T) {
 	// Here join some strings via the fx.Into function
+	// Note that the seq.FuncCollect functions work with fx.Into as well
 	words := []string{"one", "world"}
-	joinedWords := fx.Into(nil, fn.MakeString, words) // note: returns a strings.Builder
+	joinedWords := fx.Into(nil, seq.MakeString, words) // note: returns a strings.Builder
 	fmt.Println("joined words:", joinedWords.String())
 }

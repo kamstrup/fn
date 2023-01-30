@@ -6,8 +6,8 @@ import (
 	"io"
 	"testing"
 
-	"github.com/kamstrup/fn"
-	fntesting "github.com/kamstrup/fn/testing"
+	"github.com/kamstrup/fn/seq"
+	"github.com/kamstrup/fn/testing"
 )
 
 var _ io.Reader = errReader{}
@@ -37,15 +37,15 @@ func TestReaderSuite(t *testing.T) {
 func TestReaderError(t *testing.T) {
 	r := ReaderOf(errReader{}, nil)
 
-	if err := fn.Error(r); err != nil {
+	if err := seq.Error(r); err != nil {
 		t.Fatal("we should not see an error before we read", err)
 	}
 
 	opt, tail := r.First()
-	if err := fn.Error(opt); err != readError {
+	if err := seq.Error(opt); err != readError {
 		t.Fatal("opt result must be a read error", err)
 	}
-	if err := fn.Error(tail); err != readError {
+	if err := seq.Error(tail); err != readError {
 		t.Fatal("tail result must be a read error", err)
 	}
 }

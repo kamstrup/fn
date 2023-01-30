@@ -1,5 +1,7 @@
 package fn
 
+import "github.com/kamstrup/fn/opt"
+
 type String string
 
 func StringOf(s string) Seq[byte] {
@@ -75,11 +77,11 @@ func (s String) While(pred Predicate[byte]) Seq[byte] {
 	}
 }
 
-func (s String) First() (Opt[byte], Seq[byte]) {
+func (s String) First() (opt.Opt[byte], Seq[byte]) {
 	if len(s) == 0 {
-		return OptEmpty[byte](), s
+		return opt.Empty[byte](), s
 	}
-	return OptOf(s[0]), s[1:]
+	return opt.Of(s[0]), s[1:]
 }
 
 func (s String) Map(shaper FuncMap[byte, byte]) Seq[byte] {

@@ -1,5 +1,7 @@
 package fn
 
+import "github.com/kamstrup/fn/opt"
+
 // MapOf creates a new Seq that lazily converts the values, via a FuncMap,
 // into another Seq. The returned Seq has the same Seq.Len() as the input Seq.
 // If you are looking for ways to create a Seq from a Go map[K]V please
@@ -105,9 +107,9 @@ func (m mappedSeq[S, T]) While(pred Predicate[T]) Seq[T] {
 	}
 }
 
-func (m mappedSeq[S, T]) First() (Opt[T], Seq[T]) {
+func (m mappedSeq[S, T]) First() (opt.Opt[T], Seq[T]) {
 	s, tail := m.seq.First()
-	return OptMap(s, m.f), MapOf(tail, m.f)
+	return opt.Map(s, m.f), MapOf(tail, m.f)
 }
 
 func (m mappedSeq[S, T]) Map(shaper FuncMap[T, T]) Seq[T] {

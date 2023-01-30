@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/opt"
 )
 
 type BufferSeq = fn.Seq[[]byte]
@@ -168,18 +169,18 @@ func (r Reader) While(pred fn.Predicate[[]byte]) BufferSeq {
 	return fn.WhileOf[[]byte](r, pred)
 }
 
-func (r Reader) First() (fn.Opt[[]byte], BufferSeq) {
+func (r Reader) First() (opt.Opt[[]byte], BufferSeq) {
 	n, err := r.r.Read(r.buf)
 	if err == io.EOF {
 		if n == 0 {
-			return fn.OptEmpty[[]byte](), fn.SeqEmpty[[]byte]()
+			return opt.Empty[[]byte](), fn.SeqEmpty[[]byte]()
 		}
-		return fn.OptOf[[]byte](r.buf[:n]), fn.SeqEmpty[[]byte]()
+		return opt.Of[[]byte](r.buf[:n]), fn.SeqEmpty[[]byte]()
 	} else if err != nil {
-		return fn.OptErr[[]byte](err), fn.ErrorOf[[]byte](err)
+		return opt.ErrorOf[[]byte](err), fn.ErrorOf[[]byte](err)
 	}
 
-	return fn.OptOf(r.buf[:n]), r
+	return opt.Of(r.buf[:n]), r
 }
 
 func (r Reader) Map(shaper fn.FuncMap[[]byte, []byte]) BufferSeq {

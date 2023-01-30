@@ -1,5 +1,7 @@
 package fn
 
+import "github.com/kamstrup/fn/opt"
+
 // SplitChoice is the return type for FuncSplit used with SplitOf.
 // It determines how FuncSplit splits a Seq into sub-seqs.
 type SplitChoice uint8
@@ -36,23 +38,23 @@ func SplitOf[T any](seq Seq[T], splitter FuncSplit[T]) Seq[Seq[T]] {
 
 func (s splitSeq[T]) ForEach(f Func1[Seq[T]]) Seq[Seq[T]] {
 	var (
-		fst  Opt[Seq[T]]
+		fst  opt.Opt[Seq[T]]
 		tail Seq[Seq[T]]
 	)
 	for fst, tail = s.First(); fst.Ok(); fst, tail = tail.First() {
-		f(fst.val)
+		f(fst.Must())
 	}
 	return tail
 }
 
 func (s splitSeq[T]) ForEachIndex(f Func2[int, Seq[T]]) Seq[Seq[T]] {
 	var (
-		fst  Opt[Seq[T]]
+		fst  opt.Opt[Seq[T]]
 		tail Seq[Seq[T]]
 		i    = 0
 	)
 	for fst, tail = s.First(); fst.Ok(); fst, tail = tail.First() {
-		f(i, fst.val)
+		f(i, fst.Must())
 		i++
 	}
 	return tail
@@ -67,12 +69,12 @@ func (s splitSeq[T]) Len() (int, bool) {
 
 func (s splitSeq[T]) Array() Array[Seq[T]] {
 	var (
-		fst  Opt[Seq[T]]
+		fst  opt.Opt[Seq[T]]
 		tail Seq[Seq[T]]
 		arr  []Seq[T]
 	)
 	for fst, tail = s.First(); fst.Ok(); fst, tail = tail.First() {
-		arr = append(arr, fst.val)
+		arr = append(arr, fst.Must())
 	}
 	return arr
 }
@@ -84,31 +86,33 @@ func (s splitSeq[T]) Take(n int) (Array[Seq[T]], Seq[Seq[T]]) {
 
 	var (
 		arr  []Seq[T]
-		fst  Opt[Seq[T]]
+		fst  opt.Opt[Seq[T]]
 		tail Seq[Seq[T]] = s
 	)
 
 	for i := 0; i < n; i++ {
 		fst, tail = tail.First()
-		if fst.Empty() {
-			return arr, tail
+		headVal, headErr := fst.Return()
+		if headErr != nil {
+			return arr, ErrorOf[Seq[T]](headErr)
 		}
-		arr = append(arr, fst.val)
+		arr = append(arr, headVal)
 	}
 	return arr, tail
 }
 
 func (s splitSeq[T]) TakeWhile(pred Predicate[Seq[T]]) (Array[Seq[T]], Seq[Seq[T]]) {
 	var (
-		fst  Opt[Seq[T]]
+		fst  opt.Opt[Seq[T]]
 		tail Seq[Seq[T]]
 		arr  []Seq[T]
 	)
 	for fst, tail = s.First(); fst.Ok(); fst, tail = tail.First() {
-		if pred(fst.val) {
-			arr = append(arr, fst.val)
+		val := fst.Must()
+		if pred(val) {
+			arr = append(arr, val)
 		} else {
-			return arr, ConcatOf(SingletOf(fst.val), tail)
+			return arr, ConcatOf(SingletOf(val), tail)
 		}
 
 	}
@@ -117,7 +121,7 @@ func (s splitSeq[T]) TakeWhile(pred Predicate[Seq[T]]) (Array[Seq[T]], Seq[Seq[T
 
 func (s splitSeq[T]) Skip(n int) Seq[Seq[T]] {
 	var (
-		fst  Opt[Seq[T]]
+		fst  opt.Opt[Seq[T]]
 		tail Seq[Seq[T]]
 	)
 	for fst, tail = s.First(); fst.Ok() && n > 0; fst, tail = tail.First() {
@@ -140,31 +144,32 @@ func (s splitSeq[T]) While(pred Predicate[Seq[T]]) Seq[Seq[T]] {
 	}
 }
 
-func (s splitSeq[T]) First() (Opt[Seq[T]], Seq[Seq[T]]) {
+func (s splitSeq[T]) First() (opt.Opt[Seq[T]], Seq[Seq[T]]) {
 	// TODO: special case for Array?
 	var (
 		arr  []T
-		fst  Opt[T]
+		fst  opt.Opt[T]
 		tail = s.seq
 	)
 	for {
 		fst, tail = tail.First()
-		if fst.Empty() {
+		val, err := fst.Return()
+		if err != nil {
 			if len(arr) > 0 {
-				return OptOf(ArrayOf(arr)), SeqEmpty[Seq[T]]()
+				return opt.Of(ArrayOf(arr)), ErrorOf[Seq[T]](err)
 			} else {
-				return OptEmpty[Seq[T]](), SeqEmpty[Seq[T]]()
+				return opt.Empty[Seq[T]](), ErrorOf[Seq[T]](err)
 			}
 
 		}
-		switch s.split(fst.val) {
+		switch s.split(val) {
 		case SplitKeep:
-			arr = append(arr, fst.val)
+			arr = append(arr, val)
 		case SplitSeparate:
-			return OptOf(ArrayOf(arr)), splitSeq[T]{seq: tail, split: s.split}
+			return opt.Of(ArrayOf(arr)), splitSeq[T]{seq: tail, split: s.split}
 		case SplitSeparateKeep:
-			arr = append(arr, fst.val)
-			return OptOf(ArrayOf(arr)), splitSeq[T]{seq: tail, split: s.split}
+			arr = append(arr, val)
+			return opt.Of(ArrayOf(arr)), splitSeq[T]{seq: tail, split: s.split}
 		default:
 			panic("fn: invalid SplitChoice")
 		}

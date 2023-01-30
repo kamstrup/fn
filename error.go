@@ -1,5 +1,7 @@
 package fn
 
+import "github.com/kamstrup/fn/opt"
+
 type errorSeq[T any] struct {
 	error
 }
@@ -21,7 +23,11 @@ func Error(x any) error {
 // ErrorOf creates an "error sequence".
 // An error sequence is empty and always returns itself. Calling Seq.First() returns an error Opt.
 // Calling Error() on an error sequence returns the wrapped error.
+// If the error argument is nil or opt.ErrEmpty a non-error empty seq is returned.
 func ErrorOf[T any](err error) Seq[T] {
+	if err == opt.ErrEmpty || err == nil {
+		return SeqEmpty[T]()
+	}
 	return errorSeq[T]{err}
 }
 
@@ -72,8 +78,8 @@ func (e errorSeq[T]) While(pred Predicate[T]) Seq[T] {
 	return e
 }
 
-func (e errorSeq[T]) First() (Opt[T], Seq[T]) {
-	return OptErr[T](e.error), e
+func (e errorSeq[T]) First() (opt.Opt[T], Seq[T]) {
+	return opt.ErrorOf[T](e.error), e
 }
 
 func (e errorSeq[T]) Map(shaper FuncMap[T, T]) Seq[T] {

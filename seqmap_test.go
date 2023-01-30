@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/opt"
 	"github.com/kamstrup/fn/testing"
 )
 
@@ -45,7 +46,7 @@ func TestMapSeqFirst(t *testing.T) {
 		return i * 2
 	})
 
-	var first fn.Opt[int]
+	var first opt.Opt[int]
 	first, arr = arr.First()
 	fntesting.TestOf(t, arr).Is(4, 6)
 	fntesting.OptOf(t, first).Is(2)

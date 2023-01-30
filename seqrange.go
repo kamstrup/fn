@@ -4,6 +4,7 @@ import (
 	"math"
 
 	"github.com/kamstrup/fn/constraints"
+	"github.com/kamstrup/fn/opt"
 )
 
 type rangeSeq[N constraints.Integer] struct {
@@ -195,18 +196,18 @@ func (r rangeSeq[N]) While(pred Predicate[N]) Seq[N] {
 	}
 }
 
-func (r rangeSeq[N]) First() (Opt[N], Seq[N]) {
+func (r rangeSeq[N]) First() (opt.Opt[N], Seq[N]) {
 	if r.from <= r.to {
 		if v := r.from + r.step; v < r.to {
-			return OptOf(r.from), RangeStepOf(v, r.to, r.step)
+			return opt.Of(r.from), RangeStepOf(v, r.to, r.step)
 		}
 	} else {
 		if v := r.from - r.step; v > r.to && v < r.from {
-			return OptOf(r.from), RangeStepOf(v, r.to, r.step)
+			return opt.Of(r.from), RangeStepOf(v, r.to, r.step)
 		}
 	}
 
-	return OptOf(r.from), SeqEmpty[N]()
+	return opt.Of(r.from), SeqEmpty[N]()
 }
 
 func (r rangeSeq[N]) Map(shaper FuncMap[N, N]) Seq[N] {

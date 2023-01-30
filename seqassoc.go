@@ -1,5 +1,7 @@
 package fn
 
+import "github.com/kamstrup/fn/opt"
+
 // Assoc is a type wrapper for Go maps exposing them as a Seq of Tuple[K,V].
 type Assoc[K comparable, V any] map[K]V
 
@@ -170,7 +172,7 @@ func (a Assoc[K, V]) While(pred Predicate[Tuple[K, V]]) Seq[Tuple[K, V]] {
 	}
 }
 
-func (a Assoc[K, V]) First() (Opt[Tuple[K, V]], Seq[Tuple[K, V]]) {
+func (a Assoc[K, V]) First() (opt.Opt[Tuple[K, V]], Seq[Tuple[K, V]]) {
 	head, tail := a.Take(1)
 	first, _ := head.First()
 	return first, tail

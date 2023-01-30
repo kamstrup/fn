@@ -3,16 +3,14 @@ package fn
 import (
 	"math/rand"
 	"sort"
+
+	"github.com/kamstrup/fn/opt"
 )
 
 type Array[T any] []T
 
 func SeqEmpty[T any]() Seq[T] {
 	return Array[T](nil)
-}
-
-func SingletOf[T any](t T) Seq[T] {
-	return Array[T]([]T{t}) // TODO: optimize with a dedicated singletSeq 'type singletSeq[T any] T'
 }
 
 // ArrayOf returns a slice cast as a Seq implemented by Array.
@@ -25,6 +23,11 @@ func ArrayOf[T any](tt []T) Seq[T] {
 	// and the compiler would infer that this is a valid Seq[T].
 	// Alas, as of Go 1.19 this is not possible.
 	// See https://github.com/golang/go/issues/41176
+	if len(tt) == 0 {
+		return SeqEmpty[T]()
+	} else if len(tt) == 1 {
+		return SingletOf(tt[0])
+	}
 	return Array[T](tt)
 }
 
@@ -115,11 +118,11 @@ func (a Array[T]) While(pred Predicate[T]) Seq[T] {
 	}
 }
 
-func (a Array[T]) First() (Opt[T], Seq[T]) {
+func (a Array[T]) First() (opt.Opt[T], Seq[T]) {
 	if len(a) == 0 {
-		return OptEmpty[T](), a
+		return opt.Empty[T](), a
 	}
-	return OptOf(a[0]), ArrayOf(a[1:])
+	return opt.Of(a[0]), a[1:]
 }
 
 func (a Array[T]) Map(shaper FuncMap[T, T]) Seq[T] {

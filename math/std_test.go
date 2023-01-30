@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/opt"
 )
 
 func TestCollectSum(t *testing.T) {
@@ -17,7 +18,7 @@ func TestCollectSum(t *testing.T) {
 	if !sum.Empty() || sum.Ok() {
 		t.Errorf("expected empty sum: %v", sum)
 	}
-	if val, err := sum.Return(); val == 27 || err != fn.ErrEmpty {
+	if val, err := sum.Return(); val == 27 || err != opt.ErrEmpty {
 		t.Errorf("expected empty sum: %v", sum)
 	}
 }
@@ -33,7 +34,7 @@ func TestCollectMinMax(t *testing.T) {
 	if !min.Empty() || min.Ok() {
 		t.Errorf("expected empty min: %v", min)
 	}
-	if val, err := min.Return(); val == 27 || err != fn.ErrEmpty {
+	if val, err := min.Return(); val == 27 || err != opt.ErrEmpty {
 		t.Errorf("expected empty min: %v", min)
 	}
 
@@ -46,7 +47,7 @@ func TestCollectMinMax(t *testing.T) {
 	if !max.Empty() || max.Ok() {
 		t.Errorf("expected empty max: %v", min)
 	}
-	if val, err := max.Return(); val == 27 || err != fn.ErrEmpty {
+	if val, err := max.Return(); val == 27 || err != opt.ErrEmpty {
 		t.Errorf("expected empty max: %v", max)
 	}
 }

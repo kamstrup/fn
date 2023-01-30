@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/opt"
 )
 
 type TestSeq[S comparable] struct {
@@ -21,7 +22,7 @@ type Suite[S any] struct {
 
 type TestOpt[S comparable] struct {
 	t   *testing.T
-	opt fn.Opt[S]
+	opt opt.Opt[S]
 }
 
 func TestOf[S comparable](t *testing.T, seq fn.Seq[S]) TestSeq[S] {
@@ -31,7 +32,7 @@ func TestOf[S comparable](t *testing.T, seq fn.Seq[S]) TestSeq[S] {
 	}
 }
 
-func OptOf[S comparable](t *testing.T, opt fn.Opt[S]) TestOpt[S] {
+func OptOf[S comparable](t *testing.T, opt opt.Opt[S]) TestOpt[S] {
 	return TestOpt[S]{
 		t:   t,
 		opt: opt,
@@ -482,7 +483,7 @@ func (ts Suite[S]) seqIsWhere(t *testing.T, ss []S) {
 			t.Errorf("Must create empty array after dropping everything with where=false")
 		}
 		if !reflect.DeepEqual(head.AsSlice(), ss) {
-			t.Errorf("Array elements mismatch. Expected %v, got %v", ss, head)
+			t.Errorf("Array elements mismatch.\nExpected: %v\nGot     : %v", ss, head)
 		}
 		if fst, _ := tail.First(); fst.Ok() {
 			t.Errorf("Tail should be empty. Got %v", fst.Must())
@@ -501,7 +502,7 @@ func (ts Suite[S]) seqIsFirst(t *testing.T, ss []S) {
 		}
 	}
 
-	var fst fn.Opt[S]
+	var fst opt.Opt[S]
 	idx := 0
 	for fst, seq = seq.First(); fst.Ok(); fst, seq = seq.First() {
 		s := fst.Must()

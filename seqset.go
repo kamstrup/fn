@@ -1,5 +1,7 @@
 package fn
 
+import "github.com/kamstrup/fn/opt"
+
 // Set represents a collection of unique elements, represented as a standard map of empty structs.
 type Set[K comparable] map[K]struct{}
 
@@ -165,7 +167,7 @@ func (s Set[T]) While(pred Predicate[T]) Seq[T] {
 	}
 }
 
-func (s Set[K]) First() (Opt[K], Seq[K]) {
+func (s Set[K]) First() (opt.Opt[K], Seq[K]) {
 	head, tail := s.Take(1)
 	first, _ := head.First()
 	return first, tail

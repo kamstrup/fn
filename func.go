@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/kamstrup/fn/constraints"
+	"github.com/kamstrup/fn/opt"
 )
 
 type Func0 func()
@@ -20,7 +21,7 @@ type Func2[S, T any] func(S, T)
 type Func2Err[S, T any] func(S, T) error
 
 // FuncMap is a function mapping type S to type T.
-// Used with fx. MapOf(), OptMap(), and TupleWithKey().
+// Used with fx. MapOf(), Map(), and TupleWithKey().
 type FuncMap[S, T any] func(S) T
 
 type FuncMapErr[S, T any] func(S) (T, error)
@@ -255,7 +256,7 @@ func Not[T any](pred Predicate[T]) Predicate[T] {
 	}
 }
 
-// TupleWithKey creates a FuncMap to use with MapOf or OptMap.
+// TupleWithKey creates a FuncMap to use with MapOf or Map.
 // The returned function yields Tuples keyed by the keySelector's return value.
 // Usually used in conjunction with Into and MakeAssoc to build a map[K]V.
 func TupleWithKey[K comparable, V any](keySelector FuncMap[V, K]) func(V) Tuple[K, V] {
@@ -279,7 +280,7 @@ func TupleWithKey[K comparable, V any](keySelector FuncMap[V, K]) func(V) Tuple[
 //
 // If the seq produces and error the returned Opt will capture it, similarly if the seq is empty
 // the returned Opt will be empty.
-func Into[T, E any](into T, collector FuncCollect[T, E], seq Seq[E]) Opt[T] {
+func Into[T, E any](into T, collector FuncCollect[T, E], seq Seq[E]) opt.Opt[T] {
 	empty := true
 	tail := seq.ForEach(func(elem E) {
 		into = collector(into, elem)
@@ -287,12 +288,12 @@ func Into[T, E any](into T, collector FuncCollect[T, E], seq Seq[E]) Opt[T] {
 	})
 
 	if err := Error(tail); err != nil {
-		return OptErr[T](err)
+		return opt.ErrorOf[T](err)
 	} else if empty {
-		return OptEmpty[T]()
+		return opt.Empty[T]()
 	}
 
-	return OptOf(into)
+	return opt.Of(into)
 }
 
 // Do executes a Seq. The main use case is when you are primarily interested in triggering side effects.
@@ -317,7 +318,7 @@ func All[T any](seq Seq[T], pred Predicate[T]) bool {
 }
 
 // Last executes the Seq and returns the last element or an empty Opt.
-func Last[T any](seq Seq[T]) Opt[T] {
+func Last[T any](seq Seq[T]) opt.Opt[T] {
 	var last T
 	var i int
 	tail := seq.ForEach(func(t T) {
@@ -325,10 +326,10 @@ func Last[T any](seq Seq[T]) Opt[T] {
 		i++
 	})
 	if i > 0 {
-		return OptOf(last)
+		return opt.Of(last)
 	}
 	if err := Error(tail); err != nil {
-		return OptErr[T](err)
+		return opt.ErrorOf[T](err)
 	}
-	return OptEmpty[T]()
+	return opt.Empty[T]()
 }

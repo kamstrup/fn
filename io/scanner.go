@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/opt"
 )
 
 type scannerSeq struct {
@@ -110,15 +111,15 @@ func (s scannerSeq) While(pred fn.Predicate[[]byte]) BufferSeq {
 	return fn.WhileOf[[]byte](s, pred)
 }
 
-func (s scannerSeq) First() (fn.Opt[[]byte], BufferSeq) {
+func (s scannerSeq) First() (opt.Opt[[]byte], BufferSeq) {
 	if s.scanner.Scan() {
 		tok := append([]byte{}, s.scanner.Bytes()...) // scanner owns Bytes() buffer
-		return fn.OptOf(tok), s
+		return opt.Of(tok), s
 	}
 	if err := s.scanner.Err(); err != nil {
-		return fn.OptErr[[]byte](err), fn.ErrorOf[[]byte](err)
+		return opt.ErrorOf[[]byte](err), fn.ErrorOf[[]byte](err)
 	}
-	return fn.OptEmpty[[]byte](), s
+	return opt.Empty[[]byte](), s
 }
 
 func (s scannerSeq) Map(m fn.FuncMap[[]byte, []byte]) BufferSeq {

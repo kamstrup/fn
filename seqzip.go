@@ -1,5 +1,7 @@
 package fn
 
+import "github.com/kamstrup/fn/opt"
+
 type zipSeq[X comparable, Y any] struct {
 	sx Seq[X]
 	sy Seq[Y]
@@ -17,18 +19,20 @@ func ZipOf[X comparable, Y any](sx Seq[X], sy Seq[Y]) Seq[Tuple[X, Y]] {
 
 func (z zipSeq[X, Y]) ForEach(f Func1[Tuple[X, Y]]) Seq[Tuple[X, Y]] {
 	var (
-		fx Opt[X]
-		fy Opt[Y]
+		fx opt.Opt[X]
+		fy opt.Opt[Y]
 		tx = z.sx
 		ty = z.sy
 	)
 	for {
 		fx, tx = tx.First()
 		fy, ty = ty.First()
-		if fx.Empty() || fy.Empty() {
-			return SeqEmpty[Tuple[X, Y]]() // we are done, at least one Seq drained
+		if fx.Ok() && fy.Ok() {
+			f(Tuple[X, Y]{fx.Must(), fy.Must()})
+		} else {
+			// we are done, at least one Seq drained
+			return zipErrorTail(fx, fy)
 		}
-		f(Tuple[X, Y]{fx.val, fy.val})
 	}
 
 	return SeqEmpty[Tuple[X, Y]]()
@@ -36,18 +40,20 @@ func (z zipSeq[X, Y]) ForEach(f Func1[Tuple[X, Y]]) Seq[Tuple[X, Y]] {
 
 func (z zipSeq[X, Y]) ForEachIndex(f Func2[int, Tuple[X, Y]]) Seq[Tuple[X, Y]] {
 	var (
-		fx Opt[X]
-		fy Opt[Y]
+		fx opt.Opt[X]
+		fy opt.Opt[Y]
 		tx = z.sx
 		ty = z.sy
 	)
 	for i := 0; ; i++ {
 		fx, tx = tx.First()
 		fy, ty = ty.First()
-		if fx.Empty() || fy.Empty() {
-			return SeqEmpty[Tuple[X, Y]]() // we are done, at least one Seq drained
+		if fx.Ok() && fy.Ok() {
+			f(i, Tuple[X, Y]{fx.Must(), fy.Must()})
+		} else {
+			return zipErrorTail(fx, fy) // we are done, at least one Seq drained
 		}
-		f(i, Tuple[X, Y]{fx.val, fy.val})
+
 	}
 
 	return SeqEmpty[Tuple[X, Y]]()
@@ -94,8 +100,8 @@ func (z zipSeq[X, Y]) Array() Array[Tuple[X, Y]] {
 func (z zipSeq[X, Y]) Take(n int) (Array[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 	var (
 		arr []Tuple[X, Y]
-		fx  Opt[X]
-		fy  Opt[Y]
+		fx  opt.Opt[X]
+		fy  opt.Opt[Y]
 		tx  = z.sx
 		ty  = z.sy
 	)
@@ -110,7 +116,7 @@ func (z zipSeq[X, Y]) Take(n int) (Array[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 		for i := 0; i < n; i++ {
 			fx, tx = tx.First()
 			fy, ty = ty.First()
-			arr[i] = Tuple[X, Y]{fx.val, fy.val}
+			arr[i] = Tuple[X, Y]{fx.Must(), fy.Must()}
 		}
 		return arr, zipSeq[X, Y]{sx: tx, sy: ty}
 	}
@@ -119,11 +125,12 @@ func (z zipSeq[X, Y]) Take(n int) (Array[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 	for i := 0; i < n; i++ {
 		fx, tx = tx.First()
 		fy, ty = ty.First()
-		if fx.Empty() || fy.Empty() {
+		if fx.Ok() && fy.Ok() {
+			arr = append(arr, Tuple[X, Y]{fx.Must(), fy.Must()})
+		} else {
 			// we are done, at least one Seq drained
-			return arr, SeqEmpty[Tuple[X, Y]]()
+			return arr, zipErrorTail(fx, fy)
 		}
-		arr = append(arr, Tuple[X, Y]{fx.val, fy.val})
 	}
 
 	return arr, zipSeq[X, Y]{sx: tx, sy: ty}
@@ -132,8 +139,8 @@ func (z zipSeq[X, Y]) Take(n int) (Array[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 func (z zipSeq[X, Y]) TakeWhile(predicate Predicate[Tuple[X, Y]]) (Array[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 	var (
 		arr []Tuple[X, Y]
-		fx  Opt[X]
-		fy  Opt[Y]
+		fx  opt.Opt[X]
+		fy  opt.Opt[Y]
 		tx  = z.sx
 		ty  = z.sy
 	)
@@ -144,18 +151,15 @@ func (z zipSeq[X, Y]) TakeWhile(predicate Predicate[Tuple[X, Y]]) (Array[Tuple[X
 		fy, ty = ty.First()
 		if fx.Empty() || fy.Empty() {
 			// we are done, at least one Seq drained
-			return arr, SeqEmpty[Tuple[X, Y]]()
+			return arr, zipErrorTail(fx, fy)
 		}
-		tup := Tuple[X, Y]{fx.val, fy.val}
+		tup := Tuple[X, Y]{fx.Must(), fy.Must()}
 		if predicate(tup) {
 			arr = append(arr, tup)
 		} else {
 			// pred(tup) is false, so we return.
-			// We already consumed the heads of tx and ty, so we need to "put them back",
-			// we do this by creating a concat() of the consumed tuple with the tail
-			return arr, ConcatOf(
-				SingletOf(TupleOf(fx.val, fy.val)),
-				ZipOf(tx, ty))
+			// We already consumed the heads of tx and ty, so we need to "put them back"
+			return arr, PrependOf(tup, ZipOf(tx, ty))
 		}
 	}
 }
@@ -181,15 +185,16 @@ func (z zipSeq[X, Y]) While(p Predicate[Tuple[X, Y]]) Seq[Tuple[X, Y]] {
 	}
 }
 
-func (z zipSeq[X, Y]) First() (Opt[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
+func (z zipSeq[X, Y]) First() (opt.Opt[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 	fx, tx := z.sx.First()
 	fy, ty := z.sy.First()
-	if fx.Empty() || fy.Empty() {
-		// we are done, at least one Seq drained
-		return OptEmpty[Tuple[X, Y]](), SeqEmpty[Tuple[X, Y]]()
+	if errX := fx.Error(); errX != nil {
+		return opt.ErrorOf[Tuple[X, Y]](errX), ErrorOf[Tuple[X, Y]](errX)
+	} else if errY := fy.Error(); errY != nil {
+		return opt.ErrorOf[Tuple[X, Y]](errY), ErrorOf[Tuple[X, Y]](errY)
 	}
 
-	return OptOf(Tuple[X, Y]{fx.val, fy.val}), zipSeq[X, Y]{tx, ty}
+	return opt.Of(Tuple[X, Y]{fx.Must(), fy.Must()}), zipSeq[X, Y]{tx, ty}
 }
 
 func (z zipSeq[X, Y]) Map(shaper FuncMap[Tuple[X, Y], Tuple[X, Y]]) Seq[Tuple[X, Y]] {
@@ -204,4 +209,13 @@ func (z zipSeq[X, Y]) Error() error {
 		return errX
 	}
 	return Error(z.sy)
+}
+
+func zipErrorTail[X comparable, Y any](fx opt.Opt[X], fy opt.Opt[Y]) Seq[Tuple[X, Y]] {
+	if errX := fx.Error(); errX != nil && errX != opt.ErrEmpty {
+		return ErrorOf[Tuple[X, Y]](errX)
+	} else if errY := fy.Error(); errY != nil && errY != opt.ErrEmpty {
+		return ErrorOf[Tuple[X, Y]](errY)
+	}
+	return SeqEmpty[Tuple[X, Y]]()
 }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/kamstrup/fn"
 	fnmath "github.com/kamstrup/fn/math"
+	"github.com/kamstrup/fn/opt"
 	"github.com/kamstrup/fn/testing"
 )
 
@@ -29,7 +30,7 @@ func TestCollectCount(t *testing.T) {
 	if !count.Empty() || count.Ok() {
 		t.Errorf("expected empty count: %v", count)
 	}
-	if val, err := count.Return(); val == 27 || err != fn.ErrEmpty {
+	if val, err := count.Return(); val == 27 || err != opt.ErrEmpty {
 		t.Errorf("expected empty count: %v", count)
 	}
 }
@@ -46,7 +47,7 @@ func TestCollectAppend(t *testing.T) {
 	if !ints.Empty() || ints.Ok() {
 		t.Errorf("expected empty min: %v", ints)
 	}
-	if val, err := ints.Return(); len(val) != 0 || err != fn.ErrEmpty {
+	if val, err := ints.Return(); len(val) != 0 || err != opt.ErrEmpty {
 		t.Errorf("expected empty ints: %v", ints)
 	}
 }

@@ -1,5 +1,7 @@
 package fn
 
+import "github.com/kamstrup/fn/opt"
+
 type concatSeq[T any] struct {
 	head Seq[T]
 	tail Seq[Seq[T]]
@@ -20,6 +22,14 @@ func ConcatOf[T any](seqs ...Seq[T]) Seq[T] {
 	return concatSeq[T]{
 		head: nil,
 		tail: ArrayOf(seqs),
+	}
+}
+
+// PrependOf returns a seq that starts with t and continues into the provided tail
+func PrependOf[T any](t T, tail Seq[T]) Seq[T] {
+	return concatSeq[T]{
+		head: SingletOf(t),
+		tail: SingletOf(tail),
 	}
 }
 
@@ -47,8 +57,9 @@ func (c concatSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 }
 
 func (c concatSeq[T]) Len() (int, bool) {
+	return LenUnknown, false
 	// fx. if c.tail is an Array we can do a stateless check to see if we can calculate a total length
-	tailArr, tailIsArray := c.tail.(Array[Seq[T]])
+	/*tailArr, tailIsArray := c.tail.(Array[Seq[T]])
 	if !tailIsArray {
 		return LenUnknown, false
 	}
@@ -69,7 +80,7 @@ func (c concatSeq[T]) Len() (int, bool) {
 		}
 	}
 
-	return sz, true
+	return sz, true*/
 }
 
 func (c concatSeq[T]) Array() Array[T] {
@@ -109,16 +120,17 @@ func (c concatSeq[T]) Take(n int) (Array[T], Seq[T]) {
 		// so check if we have a new head in c.tail
 
 		var (
-			headOpt Opt[Seq[T]]
+			headOpt opt.Opt[Seq[T]]
 			headArr Array[T]
 		)
 		headOpt, c.tail = c.tail.First()
-		if headOpt.Empty() {
+		headSeq, headErr := headOpt.Return()
+		if headErr != nil {
 			// No new head, we took the last elements in initial head.Take(n)
-			return arr, SeqEmpty[T]()
+			return arr, ErrorOf[T](headErr)
 		}
 
-		headArr, headTail = headOpt.val.Take(n - len(arr))
+		headArr, headTail = headSeq.Take(n - len(arr))
 		arr = append(arr, headArr...)
 		c.head = headTail
 
@@ -132,20 +144,25 @@ func (c concatSeq[T]) Take(n int) (Array[T], Seq[T]) {
 }
 
 func (c concatSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
-	var arr []T
-	for fst, tail := c.First(); fst.Ok(); fst, tail = tail.First() {
-		if !pred(fst.val) {
-			return arr, ConcatOf(SingletOf(fst.val), tail)
+	var (
+		arr  []T
+		fst  opt.Opt[T]
+		tail Seq[T]
+	)
+	for fst, tail = c.First(); fst.Ok(); fst, tail = tail.First() {
+		val := fst.Must()
+		if !pred(val) {
+			return arr, ConcatOf(SingletOf(val), tail)
 		}
-		arr = append(arr, fst.val)
+		arr = append(arr, val)
 	}
-	return arr, SeqEmpty[T]()
+	return arr, ErrorOf[T](fst.Error())
 }
 
 func (c concatSeq[T]) Skip(n int) Seq[T] {
 	var (
 		i    = 0
-		fst  Opt[T]
+		fst  opt.Opt[T]
 		tail Seq[T]
 	)
 	for fst, tail = c.First(); fst.Ok() && i < n; fst, tail = tail.First() {
@@ -168,9 +185,9 @@ func (c concatSeq[T]) While(pred Predicate[T]) Seq[T] {
 	}
 }
 
-func (c concatSeq[T]) First() (Opt[T], Seq[T]) {
+func (c concatSeq[T]) First() (opt.Opt[T], Seq[T]) {
 	var (
-		fst      Opt[T]
+		fst      opt.Opt[T]
 		headTail Seq[T]
 	)
 
@@ -190,15 +207,17 @@ func (c concatSeq[T]) First() (Opt[T], Seq[T]) {
 		// If we get here, c.head is depleted, and we still need an element,
 		// so check if we have a new head in c.tail
 
-		var headOpt Opt[Seq[T]]
+		var headOpt opt.Opt[Seq[T]]
 		headOpt, c.tail = c.tail.First()
-		if headOpt.Empty() {
+
+		headVal, headErr := headOpt.Return()
+		if headErr != nil {
 			// No new head, we took the last elements in initial head.First()
-			return OptEmpty[T](), SeqEmpty[T]()
+			return opt.ErrorOf[T](headErr), ErrorOf[T](headErr)
 		}
 
-		// We have anew head
-		c.head = headOpt.val
+		// We have a new head
+		c.head = headVal
 		fst, headTail = c.head.First()
 		if fst.Ok() {
 			return fst, concatSeq[T]{

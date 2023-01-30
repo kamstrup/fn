@@ -1,5 +1,7 @@
 package fn
 
+import "github.com/kamstrup/fn/opt"
+
 type Chan[T any] <-chan T
 
 // ChanOf returns a Seq that reads a channel until it is closed.
@@ -96,12 +98,12 @@ func (c Chan[T]) While(pred Predicate[T]) Seq[T] {
 	}
 }
 
-func (c Chan[T]) First() (Opt[T], Seq[T]) {
+func (c Chan[T]) First() (opt.Opt[T], Seq[T]) {
 	t, ok := <-c
 	if !ok {
-		return OptEmpty[T](), SeqEmpty[T]()
+		return opt.Empty[T](), SeqEmpty[T]()
 	}
-	return OptOf(t), c
+	return opt.Of(t), c
 }
 
 func (c Chan[T]) Map(shaper FuncMap[T, T]) Seq[T] {

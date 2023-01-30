@@ -1,5 +1,7 @@
 package fn
 
+import "github.com/kamstrup/fn/opt"
+
 var _ Seq[int] = whileSeq[int]{}
 
 type whileSeq[T any] struct {
@@ -16,11 +18,11 @@ func WhileOf[T any](seq Seq[T], pred Predicate[T]) Seq[T] {
 
 func (w whileSeq[T]) ForEach(f Func1[T]) Seq[T] {
 	var (
-		fst  Opt[T]
+		fst  opt.Opt[T]
 		tail Seq[T]
 	)
-	for fst, tail = w.First(); !fst.Empty(); fst, tail = tail.First() {
-		f(fst.val)
+	for fst, tail = w.First(); fst.Ok(); fst, tail = tail.First() {
+		f(fst.Must())
 	}
 
 	return tail
@@ -28,12 +30,12 @@ func (w whileSeq[T]) ForEach(f Func1[T]) Seq[T] {
 
 func (w whileSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 	var (
-		fst  Opt[T]
+		fst  opt.Opt[T]
 		tail Seq[T]
 		i    int
 	)
-	for fst, tail = w.First(); !fst.Empty(); fst, tail = tail.First() {
-		f(i, fst.val)
+	for fst, tail = w.First(); fst.Ok(); fst, tail = tail.First() {
+		f(i, fst.Must())
 		i++
 	}
 
@@ -56,16 +58,17 @@ func (w whileSeq[T]) Take(n int) (Array[T], Seq[T]) {
 
 	var (
 		arr  []T
-		fst  Opt[T]
+		fst  opt.Opt[T]
 		tail Seq[T] = w
 	)
 
 	for i := 0; i < n; i++ {
 		fst, tail = tail.First()
-		if fst.Empty() {
-			return arr, tail
+		val, err := fst.Return()
+		if err != nil {
+			return arr, ErrorOf[T](err)
 		}
-		arr = append(arr, fst.val)
+		arr = append(arr, val)
 	}
 	return arr, tail
 }
@@ -73,19 +76,26 @@ func (w whileSeq[T]) Take(n int) (Array[T], Seq[T]) {
 func (w whileSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
 	var (
 		arr  []T
-		fst  Opt[T]
+		fst  opt.Opt[T]
 		tail Seq[T]
 	)
-	for fst, tail = w.First(); !fst.Empty() && pred(fst.val); fst, tail = tail.First() {
-		arr = append(arr, fst.val)
+	for fst, tail = w.First(); fst.Ok(); fst, tail = tail.First() {
+		val := fst.Must()
+		if pred(val) {
+			arr = append(arr, val)
+		} else {
+			panic("known bug: while.TakeWhile()") // FIXME(mikkel): below fix causes "instantiation cycle" compile error
+			// return arr, PrependOf(val, tail)
+		}
 	}
+
 	return arr, tail
 }
 
 func (w whileSeq[T]) Skip(n int) Seq[T] {
 	var (
 		i    int
-		fst  Opt[T]
+		fst  opt.Opt[T]
 		tail Seq[T]
 	)
 	for fst, tail = w.First(); !fst.Empty() && i < n; fst, tail = tail.First() {
@@ -108,10 +118,14 @@ func (w whileSeq[T]) While(pred Predicate[T]) Seq[T] {
 	}
 }
 
-func (w whileSeq[T]) First() (Opt[T], Seq[T]) {
+func (w whileSeq[T]) First() (opt.Opt[T], Seq[T]) {
 	fst, tail := w.seq.First()
-	if fst.Empty() || !w.pred(fst.val) {
-		return OptEmpty[T](), errOrEmpty(tail)
+	val, err := fst.Return()
+	if err != nil {
+		return fst, tail
+	}
+	if !w.pred(val) {
+		return opt.Empty[T](), errOrEmpty(tail)
 	}
 	return fst, whileSeq[T]{
 		seq:  tail,

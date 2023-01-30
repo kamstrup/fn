@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/opt"
 	"github.com/kamstrup/fn/testing"
 )
 
@@ -16,7 +17,7 @@ func TestSource(t *testing.T) {
 	nums, tail = tail.Take(1)
 	fntesting.TestOf(t, nums.Seq()).Is(6)
 
-	var first fn.Opt[int]
+	var first opt.Opt[int]
 	first, tail = tail.First()
 	fntesting.OptOf(t, first).Is(8)
 

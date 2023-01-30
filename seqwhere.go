@@ -1,5 +1,7 @@
 package fn
 
+import "github.com/kamstrup/fn/opt"
+
 var _ Seq[int] = whereSeq[int]{}
 
 type whereSeq[T any] struct {
@@ -100,7 +102,7 @@ func (ws whereSeq[T]) Skip(n int) Seq[T] {
 	}
 
 	var (
-		fst  Opt[T]
+		fst  opt.Opt[T]
 		tail Seq[T]
 		i    = 0
 	)
@@ -124,17 +126,18 @@ func (ws whereSeq[T]) While(pred Predicate[T]) Seq[T] {
 	}
 }
 
-func (ws whereSeq[T]) First() (Opt[T], Seq[T]) {
+func (ws whereSeq[T]) First() (opt.Opt[T], Seq[T]) {
 	var (
-		fst  Opt[T]
+		fst  opt.Opt[T]
 		tail Seq[T]
 	)
 	for fst, tail = ws.seq.First(); ; fst, tail = tail.First() {
 		// seek until we find a First element that is true for ws.pred()
-		if fst.Empty() {
-			return fst, errOrEmpty(tail)
+		val, err := fst.Return()
+		if err != nil {
+			return fst, ErrorOf[T](err)
 		}
-		if ws.pred(fst.val) {
+		if ws.pred(val) {
 			return fst, whereSeq[T]{tail, ws.pred}
 		}
 	}

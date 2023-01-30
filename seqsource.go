@@ -1,5 +1,7 @@
 package fn
 
+import "github.com/kamstrup/fn/opt"
+
 type sourceSeq[T any] struct {
 	f FuncSource[T]
 }
@@ -78,8 +80,8 @@ func (s sourceSeq[T]) While(pred Predicate[T]) Seq[T] {
 	}
 }
 
-func (s sourceSeq[T]) First() (Opt[T], Seq[T]) {
-	return OptOf(s.f()), s
+func (s sourceSeq[T]) First() (opt.Opt[T], Seq[T]) {
+	return opt.Of(s.f()), s
 }
 
 func (s sourceSeq[K]) Map(shaper FuncMap[K, K]) Seq[K] {

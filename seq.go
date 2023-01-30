@@ -1,5 +1,7 @@
 package fn
 
+import "github.com/kamstrup/fn/opt"
+
 // LenUnknown is returned by Seq.Len() for Seqs that do not have a well-defined length.
 // A typical example will be a Seq returned by Seq.Where(). Since the Predicate of
 // the resultant Seq is lazily executed the length can not be known up front.
@@ -50,7 +52,7 @@ type Seq[T any] interface {
 	While(predicate Predicate[T]) Seq[T]
 	// First executes the first element and returns an Opt with it. The tail is returned as a Seq.
 	// To retrieve the last element in a Seq you can use Last.
-	First() (Opt[T], Seq[T])
+	First() (opt.Opt[T], Seq[T])
 	// Map lazily converts elements of the Seq into a value of the same type.
 	// Classic examples would be to convert strings to lowercase, multiply a range of numbers by Pi, and similar.
 	// If you need to change the type of the elements you must use the function fn.MapOf(),

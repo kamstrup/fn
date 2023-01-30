@@ -11,5 +11,5 @@
 //
 // If you need to do more complex data transformation, like filtering out subsets of elements,
 // handling errors, or any longer chain of transformations, you will be better off by using
-// fn.Seq from the core package.
+// seq.Seq.
 package fx

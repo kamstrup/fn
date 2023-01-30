@@ -3,9 +3,9 @@ package fx
 // Into collects a slice of elements E into a result of type R.
 // This operation is also known as "fold" or "reduce" in other frameworks.
 //
-// It is a simplified form of fn.Into found in the core package, and works with
-// standard fn.FuncCollect functions like fn.MakeString, fn.MakeBytes, fn.Sum,
-// fn.Max, fn.Min, fn.Count, fn.MakeSet etc.
+// It is a simplified form of seq.Into found in the core package, and works with
+// standard seq.FuncCollect functions like seq.MakeString, seq.MakeBytes, seq.Count,
+// seq.MakeSet, fnmath.Min, fnmath.Max, fnmath.Sum etc.
 //
 // The first argument "result" is the initial state. The second is the collector
 // function. The signature of the collector works like standard append(). The last

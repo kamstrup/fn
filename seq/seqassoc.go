@@ -3,6 +3,12 @@ package seq
 import "github.com/kamstrup/fn/opt"
 
 // Assoc is a type wrapper for Go maps exposing them as a Seq of Tuple[K,V].
+//
+// An Assoc can be used directly as a go map if you instantiate them via AssocAs().
+//
+// Important: Assoc, as all go maps, do not have an intrinsic sort order. Methods
+// returning a subset of the elements will return a random sample. Methods with
+// this caveat include Seq.Take, Seq.TakeWhile, Seq.Skip, and Seq.First.
 type Assoc[K comparable, V any] map[K]V
 
 // AssocOf returns a map cast as a Seq implemented by Assoc.
@@ -10,6 +16,10 @@ type Assoc[K comparable, V any] map[K]V
 // and call Assoc.Seq() when you need to use it as a Seq.
 // The Go compiler can not do the type inference required to use
 // an Assoc as a Seq.
+//
+// Important: Assoc, as all go maps, do not have an intrinsic sort order. Methods
+// returning a subset of the elements will return a random sample. Methods with
+// this caveat include Seq.Take, Seq.TakeWhile, Seq.Skip, and Seq.First.
 func AssocOf[K comparable, V any](m map[K]V) Seq[Tuple[K, V]] {
 	// NOTE: Ideally this function would return Assoc[K,V]
 	// and the compiler would infer that this is a valid Seq[Tuple[K, V]].

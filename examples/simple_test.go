@@ -10,7 +10,7 @@ import (
 
 func TestExampleSimple(t *testing.T) {
 	// This example we find words starting with "S", lowercase them and print them.
-	words := fn.ArrayOfArgs("Reflection", "Collection", "Stream", "Sock").
+	words := fn.SliceOfArgs("Reflection", "Collection", "Stream", "Sock").
 		Where(func(s string) bool { return strings.HasPrefix(s, "S") }).
 		Map(strings.ToLower).
 		Map(func(s string) string {
@@ -28,7 +28,7 @@ func TestExampleSimple(t *testing.T) {
 
 func TestExampleContains(t *testing.T) {
 	// In this example we examine a sequence of names and checks if it contains "lisa"
-	names := fn.ArrayOfArgs("John", "Bobby", "Lisa").
+	names := fn.SliceOfArgs("John", "Bobby", "Lisa").
 		Map(strings.ToLower)
 	hasLisa := fn.Any(names, fn.Is("lisa"))
 	fmt.Println(names, "lower-cased contains 'lisa':", hasLisa)
@@ -36,7 +36,7 @@ func TestExampleContains(t *testing.T) {
 
 func TestExampleUserIndexes(t *testing.T) {
 	// In this example we examine a sequence of usernames, and record the index of each occurrence
-	names := fn.ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
+	names := fn.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 	tups := fn.ZipOf[string, int](names, fn.RangeFrom(0))
 	userIndexes := fn.Into(nil, fn.GroupBy[string, int], tups)
 	fmt.Println("Indexes of user names from", names, "\n", userIndexes)
@@ -45,7 +45,7 @@ func TestExampleUserIndexes(t *testing.T) {
 func TestExampleUserSerial(t *testing.T) {
 	// In this example we examine a sequence of usernames,
 	// skip empty usernames and assign serial number to each unique user.
-	names := fn.ArrayOfArgs("bob", "alan", "bob", "scotty", "", "bob", "alan", "").
+	names := fn.SliceOfArgs("bob", "alan", "bob", "scotty", "", "bob", "alan", "").
 		Where(fn.IsNonZero[string])
 	tups := fn.ZipOf[string, int](names, fn.Constant(-1)) // the tuple seq is needed for UpdateAssoc
 	serial := 0

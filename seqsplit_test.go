@@ -12,13 +12,13 @@ import (
 func compareSplits(t *testing.T, seq fn.Seq[fn.Seq[byte]], words ...string) {
 	t.Helper()
 
-	arr := seq.Array()
+	arr := seq.Values()
 	if len(arr) != len(words) {
 		t.Errorf("expected length %d, got %d", len(words), len(words))
 	}
 
 	for i, w := range words {
-		resultWord := string(arr[i].Array())
+		resultWord := string(arr[i].Values())
 		if resultWord != w {
 			t.Errorf("Expected %q, got %q, at index %d", w, resultWord, i)
 		}
@@ -56,7 +56,7 @@ func TestSplitSuite(t *testing.T) {
 
 	fntesting.SuiteOf(t, createSeq).
 		WithEqual(func(s1, s2 fn.Seq[byte]) bool {
-			return reflect.DeepEqual(s1.Array(), s2.Array())
+			return reflect.DeepEqual(s1.Values(), s2.Values())
 		}).
 		Is(fn.SingletOf[byte]('h'), fn.SingletOf[byte]('e'), fn.SingletOf[byte]('l'),
 			fn.SingletOf[byte]('l'), fn.SingletOf[byte]('o'))

@@ -8,8 +8,8 @@ import (
 )
 
 func TestZip(t *testing.T) {
-	x := fn.ArrayOfArgs(1, 2, 3)
-	y := fn.ArrayOfArgs("one", "two", "three", "four")
+	x := fn.SliceOfArgs(1, 2, 3)
+	y := fn.SliceOfArgs("one", "two", "three", "four")
 
 	z := fn.ZipOf(x, y)
 	fntesting.TestOf(t, z).Is(
@@ -22,7 +22,7 @@ func TestZip(t *testing.T) {
 
 func TestZipSource(t *testing.T) {
 	x := fn.RangeFrom(1)
-	y := fn.ArrayOfArgs("one", "two", "three", "four")
+	y := fn.SliceOfArgs("one", "two", "three", "four")
 
 	z := fn.ZipOf(x, y)
 	fntesting.TestOf(t, z).Is(
@@ -36,7 +36,7 @@ func TestZipSource(t *testing.T) {
 func TestZipSuite(t *testing.T) {
 	createSeq := func() fn.Seq[fn.Tuple[int, string]] {
 		x := fn.RangeFrom(1)
-		y := fn.ArrayOfArgs("one", "two", "three", "four")
+		y := fn.SliceOfArgs("one", "two", "three", "four")
 		return fn.ZipOf(x, y)
 	}
 

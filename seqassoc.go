@@ -53,10 +53,10 @@ func (a Assoc[K, V]) Len() (int, bool) {
 	return len(a), true
 }
 
-func (a Assoc[K, V]) Array() Array[Tuple[K, V]] {
+func (a Assoc[K, V]) Values() Slice[Tuple[K, V]] {
 	sz := len(a)
 	if sz == 0 {
-		return Array[Tuple[K, V]](nil)
+		return Slice[Tuple[K, V]](nil)
 	}
 
 	arr := make([]Tuple[K, V], sz)
@@ -69,7 +69,7 @@ func (a Assoc[K, V]) Array() Array[Tuple[K, V]] {
 	return arr
 }
 
-func (a Assoc[K, V]) Take(n int) (Array[Tuple[K, V]], Seq[Tuple[K, V]]) {
+func (a Assoc[K, V]) Take(n int) (Slice[Tuple[K, V]], Seq[Tuple[K, V]]) {
 	// Taking the "first n elements" from a map[K]V does *almost* never make sense,
 	// since maps in Go a deliberately not ordered consistently.
 	// We provide the feature for completeness.
@@ -101,10 +101,10 @@ func (a Assoc[K, V]) Take(n int) (Array[Tuple[K, V]], Seq[Tuple[K, V]]) {
 		idx++
 	}
 
-	return head, ArrayOf(tail)
+	return head, SliceOf(tail)
 }
 
-func (a Assoc[K, V]) TakeWhile(predicate Predicate[Tuple[K, V]]) (Array[Tuple[K, V]], Seq[Tuple[K, V]]) {
+func (a Assoc[K, V]) TakeWhile(predicate Predicate[Tuple[K, V]]) (Slice[Tuple[K, V]], Seq[Tuple[K, V]]) {
 	// TakeWhile makes a *little* more sense on a map[K]V than Take(n) does,
 	// but not much... For the rare case where someone needs it we provide the feature for completeness.
 	// Example: Collect up to N random values from the map where V has some property.
@@ -126,7 +126,7 @@ func (a Assoc[K, V]) TakeWhile(predicate Predicate[Tuple[K, V]]) (Array[Tuple[K,
 		}
 	}
 
-	return head, ArrayOf(tail)
+	return head, SliceOf(tail)
 }
 
 func (a Assoc[K, V]) Skip(n int) Seq[Tuple[K, V]] {
@@ -155,7 +155,7 @@ func (a Assoc[K, V]) Skip(n int) Seq[Tuple[K, V]] {
 		idx++
 	}
 
-	return ArrayOf(tail)
+	return SliceOf(tail)
 }
 
 func (a Assoc[K, V]) Where(p Predicate[Tuple[K, V]]) Seq[Tuple[K, V]] {

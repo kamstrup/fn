@@ -10,7 +10,7 @@ import (
 )
 
 type BufferSeq = fn.Seq[[]byte]
-type BufferArray = fn.Array[[]byte]
+type BufferArray = fn.Slice[[]byte]
 
 type Reader struct {
 	r   io.Reader
@@ -99,7 +99,7 @@ func (r Reader) ByteLen() (int, bool) {
 	return fn.LenUnknown, false
 }
 
-func (r Reader) Array() BufferArray {
+func (r Reader) Values() BufferArray {
 	// TODO: if size is well-defined: alloc 1 continuous stride and do 1 read call, and sub-divide into buffers via slicing
 
 	return fn.Into(nil, fn.Append[[]byte], r.seq()).Or(nil) // careful: errors silently dropped

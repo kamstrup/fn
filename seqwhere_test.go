@@ -17,18 +17,18 @@ func isEven(i int) bool {
 }
 
 func TestWhere(t *testing.T) {
-	odds := fn.ArrayOfArgs(1, 2, 3, 4).Where(isOdd)
+	odds := fn.SliceOfArgs(1, 2, 3, 4).Where(isOdd)
 	fntesting.TestOf(t, odds).Is(1, 3)
 }
 
 func TestWhereSkip(t *testing.T) {
-	odds := fn.ArrayOfArgs(1, 2, 3, 4, 5, 6).Where(isOdd).Skip(2)
+	odds := fn.SliceOfArgs(1, 2, 3, 4, 5, 6).Where(isOdd).Skip(2)
 	fntesting.TestOf(t, odds).Is(5)
 
-	odds = fn.ArrayOfArgs(1, 2, 3, 4).Where(isOdd).Skip(0)
+	odds = fn.SliceOfArgs(1, 2, 3, 4).Where(isOdd).Skip(0)
 	fntesting.TestOf(t, odds).Is(1, 3)
 
-	odds = fn.ArrayOfArgs(1, 2, 3, 4).Where(isOdd).Skip(100)
+	odds = fn.SliceOfArgs(1, 2, 3, 4).Where(isOdd).Skip(100)
 	fntesting.TestOf(t, odds).IsEmpty()
 }
 

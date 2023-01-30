@@ -14,8 +14,8 @@ const LenInfinite = -2
 // Seq is the primary interface for the fn() library.
 // Seqs should be thought of as a stateless lazily computed collection of elements.
 // Operations that force traversing or computation of the Seq are said to "execute" the Seq.
-// As a rule of thumb any method that returns an Array will execute that part of the Seq.
-// For example, seq.Take(7) executes the first 7 elements and returns them in an Array,
+// As a rule of thumb any method that returns an Slice will execute that part of the Seq.
+// For example, seq.Take(7) executes the first 7 elements and returns them in an Slice,
 // and the rest of the Seq is untouched and returned as a tail Seq.
 // Any method that executes the Seq must document it explicitly.
 //
@@ -34,14 +34,14 @@ type Seq[T any] interface {
 	// If the boolean return value is false, the length is not well-defined and is either
 	// LenUnknown or LenInfinite.
 	Len() (int, bool)
-	// Array executes the Seq and stores all elements in memory as an Array
-	Array() Array[T]
+	// Values executes the Seq and stores all elements in memory as an Slice
+	Values() Slice[T]
 	// Take executes up to the first N elements of the Seq and returns the rest in a tail Seq
-	Take(int) (Array[T], Seq[T])
+	Take(int) (Slice[T], Seq[T])
 	// TakeWhile executes the Seq while Predicate returns true,
-	// then returns those elements in an Array and the rest in a tail Seq.
+	// then returns those elements in an Slice and the rest in a tail Seq.
 	// This library ships with a few in-built predicates, like fx, IsZero and IsNonZero.
-	TakeWhile(predicate Predicate[T]) (Array[T], Seq[T])
+	TakeWhile(predicate Predicate[T]) (Slice[T], Seq[T])
 	// Skip drops (up to) the first N elements in the Seq, executing them, and returns a tail Seq.
 	Skip(int) Seq[T]
 	// Where returns a Seq that only includes elements where Predicate returns true.

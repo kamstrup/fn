@@ -8,7 +8,7 @@ import (
 )
 
 func TestCollectSum(t *testing.T) {
-	var arr fn.Seq[int] = fn.ArrayOfArgs(1, 2, 3)
+	var arr fn.Seq[int] = fn.SliceOfArgs(1, 2, 3)
 	sum := fn.Into(0, Sum[int], arr)
 	if sum.Must() != 6 {
 		t.Errorf("expected sum 6: %d", sum)
@@ -24,7 +24,7 @@ func TestCollectSum(t *testing.T) {
 }
 
 func TestCollectMinMax(t *testing.T) {
-	arr := fn.ArrayOfArgs(1, 2, 3, 2, -1, 1)
+	arr := fn.SliceOfArgs(1, 2, 3, 2, -1, 1)
 	min := fn.Into(0, Min[int], arr)
 	if min.Must() != -1 {
 		t.Errorf("expected min -1: %d", min)

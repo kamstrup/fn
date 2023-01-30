@@ -100,7 +100,7 @@ func (r rangeSeq[N]) Len() (int, bool) {
 	return -sz + remainder, true
 }
 
-func (r rangeSeq[N]) Array() Array[N] {
+func (r rangeSeq[N]) Values() Slice[N] {
 	sz, _ := r.Len()
 	arr := make([]N, sz)
 	i := 0
@@ -119,10 +119,10 @@ func (r rangeSeq[N]) Array() Array[N] {
 	return arr
 }
 
-func (r rangeSeq[N]) Take(n int) (Array[N], Seq[N]) {
+func (r rangeSeq[N]) Take(n int) (Slice[N], Seq[N]) {
 	sz, _ := r.Len()
 	if n >= sz {
-		return r.Array(), SeqEmpty[N]()
+		return r.Values(), SeqEmpty[N]()
 	}
 
 	// n < sz
@@ -140,7 +140,7 @@ func (r rangeSeq[N]) Take(n int) (Array[N], Seq[N]) {
 	}
 }
 
-func (r rangeSeq[N]) TakeWhile(pred Predicate[N]) (Array[N], Seq[N]) {
+func (r rangeSeq[N]) TakeWhile(pred Predicate[N]) (Slice[N], Seq[N]) {
 	sz, _ := r.Len()
 	var arr []N
 	if r.to > r.from {

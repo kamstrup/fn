@@ -9,7 +9,7 @@
 // Opts represent a value that may or may not be there. They may also
 // encapsulate an error.
 //
-// There are seqs for working with slices (see ArrayOf, ArrayOfArgs),
+// There are seqs for working with slices (see SliceOf, SliceOfArgs),
 // maps and sets (see AssocOf and SetOf), channels (see ChanOf), numeric ranges
 // (see RangeOf), or created from generator functions (see SourceOf).
 // Seqs can be joined with ConcatOf and FlattenOf, split with SplitOf,

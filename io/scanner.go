@@ -50,7 +50,7 @@ func (s scannerSeq) Len() (int, bool) {
 	return fn.LenUnknown, false
 }
 
-func (s scannerSeq) Array() BufferArray {
+func (s scannerSeq) Values() BufferArray {
 	tokens := fn.Into(nil, func(tokens [][]byte, tok []byte) [][]byte {
 		dupTok := append([]byte{}, tok...) // scanner owns tok, so we copy it
 		return append(tokens, dupTok)

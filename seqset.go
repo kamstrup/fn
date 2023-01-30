@@ -49,10 +49,10 @@ func (s Set[K]) Len() (int, bool) {
 	return len(s), true
 }
 
-func (s Set[K]) Array() Array[K] {
+func (s Set[K]) Values() Slice[K] {
 	sz := len(s)
 	if sz == 0 {
-		return Array[K](nil)
+		return Slice[K](nil)
 	}
 
 	arr := make([]K, sz)
@@ -65,7 +65,7 @@ func (s Set[K]) Array() Array[K] {
 	return arr
 }
 
-func (s Set[K]) Take(n int) (Array[K], Seq[K]) {
+func (s Set[K]) Take(n int) (Slice[K], Seq[K]) {
 	// Taking the "first n elements" from a map[K]V does *almost* never make sense,
 	// since maps in Go a deliberately not ordered consistently.
 	// We provide the feature for completeness.
@@ -97,10 +97,10 @@ func (s Set[K]) Take(n int) (Array[K], Seq[K]) {
 		idx++
 	}
 
-	return head, ArrayOf(tail)
+	return head, SliceOf(tail)
 }
 
-func (s Set[K]) TakeWhile(predicate Predicate[K]) (Array[K], Seq[K]) {
+func (s Set[K]) TakeWhile(predicate Predicate[K]) (Slice[K], Seq[K]) {
 	// TakeWhile makes a *little* more sense on a map[K]V than Take(n) does,
 	// but not much... For the rare case where someone needs it we provide the feature for completeness.
 	// Example: Collect up to N random values from the map where V has some property.
@@ -121,7 +121,7 @@ func (s Set[K]) TakeWhile(predicate Predicate[K]) (Array[K], Seq[K]) {
 		}
 	}
 
-	return head, ArrayOf(tail)
+	return head, SliceOf(tail)
 }
 
 func (s Set[K]) Skip(n int) Seq[K] {
@@ -150,7 +150,7 @@ func (s Set[K]) Skip(n int) Seq[K] {
 		idx++
 	}
 
-	return ArrayOf(tail)
+	return SliceOf(tail)
 }
 
 func (s Set[K]) Where(p Predicate[K]) Seq[K] {

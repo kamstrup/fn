@@ -36,18 +36,18 @@ func (s String) Len() (int, bool) {
 	return len(s), true
 }
 
-func (s String) Array() Array[byte] {
+func (s String) Values() Slice[byte] {
 	return []byte(s)
 }
 
-func (s String) Take(n int) (Array[byte], Seq[byte]) {
+func (s String) Take(n int) (Slice[byte], Seq[byte]) {
 	if len(s) <= n {
 		return []byte(s), SeqEmpty[byte]()
 	}
 	return []byte(s[:n]), s[n:]
 }
 
-func (s String) TakeWhile(pred Predicate[byte]) (Array[byte], Seq[byte]) {
+func (s String) TakeWhile(pred Predicate[byte]) (Slice[byte], Seq[byte]) {
 	for i := 0; i < len(s); i++ {
 		if !pred(s[i]) {
 			return []byte(s[:i]), s[i:]

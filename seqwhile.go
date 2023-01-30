@@ -46,12 +46,12 @@ func (w whileSeq[T]) Len() (int, bool) {
 	return LenUnknown, false
 }
 
-func (w whileSeq[T]) Array() Array[T] {
+func (w whileSeq[T]) Values() Slice[T] {
 	head, _ := w.seq.TakeWhile(w.pred)
 	return head
 }
 
-func (w whileSeq[T]) Take(n int) (Array[T], Seq[T]) {
+func (w whileSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	if n == 0 {
 		return []T{}, w
 	}
@@ -73,7 +73,7 @@ func (w whileSeq[T]) Take(n int) (Array[T], Seq[T]) {
 	return arr, tail
 }
 
-func (w whileSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
+func (w whileSeq[T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
 	var (
 		arr  []T
 		fst  opt.Opt[T]

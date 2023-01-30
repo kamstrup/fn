@@ -31,11 +31,11 @@ func (c Chan[T]) Len() (int, bool) {
 	return LenUnknown, false
 }
 
-func (c Chan[T]) Array() Array[T] {
+func (c Chan[T]) Values() Slice[T] {
 	return Into(nil, Append[T], c.Seq()).Or(nil) // careful: errors silently dropped
 }
 
-func (c Chan[T]) Take(n int) (Array[T], Seq[T]) {
+func (c Chan[T]) Take(n int) (Slice[T], Seq[T]) {
 	if n == 0 {
 		return []T{}, c
 	}
@@ -54,7 +54,7 @@ func (c Chan[T]) Take(n int) (Array[T], Seq[T]) {
 	return head, SeqEmpty[T]()
 }
 
-func (c Chan[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
+func (c Chan[T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
 	var arr []T
 	for t := range c {
 		if pred(t) {

@@ -48,7 +48,7 @@ func (m mappedSeq[S, T]) Len() (int, bool) {
 	return m.seq.Len()
 }
 
-func (m mappedSeq[S, T]) Array() Array[T] {
+func (m mappedSeq[S, T]) Values() Slice[T] {
 	if sz, ok := m.seq.Len(); ok {
 		arr := make([]T, sz)
 		m.ForEachIndex(func(i int, t T) {
@@ -64,17 +64,17 @@ func (m mappedSeq[S, T]) Array() Array[T] {
 	}
 }
 
-func (m mappedSeq[S, T]) Take(n int) (Array[T], Seq[T]) {
+func (m mappedSeq[S, T]) Take(n int) (Slice[T], Seq[T]) {
 	var (
-		head Array[S]
+		head Slice[S]
 		tail Seq[S]
 	)
 	// Note: we are not calling m.f on the skipped elements
 	head, tail = m.seq.Take(n)
-	return MapOf[S, T](head, m.f).Array(), MapOf(tail, m.f)
+	return MapOf[S, T](head, m.f).Values(), MapOf(tail, m.f)
 }
 
-func (m mappedSeq[S, T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
+func (m mappedSeq[S, T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
 	// TODO: does not really need to alloc a slice, if we had a "pulling seq"
 	// FIXME: does double alloc with TakeWhile+append, maybe just While+Do?
 	var arr []T

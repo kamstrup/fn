@@ -100,7 +100,7 @@ func MakeSet[K comparable](into map[K]struct{}, k K) map[K]struct{} {
 //
 // Example, grouping serial numbers under a slice of first names:
 //
-//	names := ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
+//	names := SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 //	tups := ZipOf[string, int](names, RangeFrom(0))
 //	result := Into(nil, GroupBy[string, int], tups)
 //
@@ -125,7 +125,7 @@ func GroupBy[K comparable, V any](into map[K][]V, tup Tuple[K, V]) map[K][]V {
 //
 // Example, counting the number of unique names in a slice:
 //
-//	names := fn.ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
+//	names := fn.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 //	tups := fn.ZipOf[string, int](names, Constant(1))
 //	res := fn.Into(nil, fn.UpdateAssoc[string, int](fnmath.Sum[int]), tups)
 //	fmt.Println(res)
@@ -173,22 +173,22 @@ func UpdateArray[I constraints.Integer, V any](updater FuncUpdate[V]) FuncCollec
 	}
 }
 
-// OrderAsc is a FuncLess that can be used with Array.Sort
+// OrderAsc is a FuncLess that can be used with Slice.Sort
 func OrderAsc[T constraints.Ordered](t1, t2 T) bool {
 	return t1 < t2
 }
 
-// OrderDesc is a FuncLess that can be used with Array.Sort
+// OrderDesc is a FuncLess that can be used with Slice.Sort
 func OrderDesc[T constraints.Ordered](t1, t2 T) bool {
 	return t1 > t2
 }
 
-// OrderTupleAsc is a FuncLess that can be used with Array.Sort
+// OrderTupleAsc is a FuncLess that can be used with Slice.Sort
 func OrderTupleAsc[K constraints.Ordered, V any](t1, t2 Tuple[K, V]) bool {
 	return t1.Key() < t2.Key()
 }
 
-// OrderTupleDesc is a FuncLess that can be used with Array.Sort
+// OrderTupleDesc is a FuncLess that can be used with Slice.Sort
 func OrderTupleDesc[K constraints.Ordered, V any](t1, t2 Tuple[K, V]) bool {
 	return t1.Key() > t2.Key()
 }

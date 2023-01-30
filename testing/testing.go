@@ -185,8 +185,8 @@ func (ts Suite[S]) IsEmpty() {
 		ts.t.Errorf("Seq is not empty. Length %d", count)
 	}
 
-	if arr := ts.createSeq().Array(); len(arr) != 0 {
-		ts.t.Errorf("Seq.Array is not empty. Length %d", len(arr))
+	if arr := ts.createSeq().Values(); len(arr) != 0 {
+		ts.t.Errorf("Seq.Slice is not empty. Length %d", len(arr))
 	}
 
 	// TODO: more checks for emptiness!
@@ -431,7 +431,7 @@ func (ts Suite[S]) seqIsWhere(t *testing.T, ss []S) {
 
 	t.Run("false/array", func(t *testing.T) {
 		seq := ts.createSeq()
-		wh := seq.Where(func(_ S) bool { return false }).Array()
+		wh := seq.Where(func(_ S) bool { return false }).Values()
 		if l, _ := wh.Len(); l != 0 {
 			t.Errorf("Must create empty array after dropping everything with where=false")
 		}
@@ -466,13 +466,13 @@ func (ts Suite[S]) seqIsWhere(t *testing.T, ss []S) {
 
 	t.Run("true/array", func(t *testing.T) {
 		seq := ts.createSeq()
-		arr := seq.Where(func(_ S) bool { return true }).Array()
+		arr := seq.Where(func(_ S) bool { return true }).Values()
 
 		if len(arr) != len(ss) {
 			t.Errorf("Unexpected number of elements in Seq.Where(true). Expected %d, got %d", len(ss), len(arr))
 		}
 		if !reflect.DeepEqual(arr.AsSlice(), ss) {
-			t.Errorf("Array elements mismatch.\nExpected %v,\ngot      %v", ss, arr)
+			t.Errorf("Slice elements mismatch.\nExpected %v,\ngot      %v", ss, arr)
 		}
 	})
 
@@ -483,7 +483,7 @@ func (ts Suite[S]) seqIsWhere(t *testing.T, ss []S) {
 			t.Errorf("Must create empty array after dropping everything with where=false")
 		}
 		if !reflect.DeepEqual(head.AsSlice(), ss) {
-			t.Errorf("Array elements mismatch.\nExpected: %v\nGot     : %v", ss, head)
+			t.Errorf("Slice elements mismatch.\nExpected: %v\nGot     : %v", ss, head)
 		}
 		if fst, _ := tail.First(); fst.Ok() {
 			t.Errorf("Tail should be empty. Got %v", fst.Must())

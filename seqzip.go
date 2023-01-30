@@ -81,7 +81,7 @@ func (z zipSeq[X, Y]) Len() (int, bool) {
 	return LenUnknown, false
 }
 
-func (z zipSeq[X, Y]) Array() Array[Tuple[X, Y]] {
+func (z zipSeq[X, Y]) Values() Slice[Tuple[X, Y]] {
 	if sz, ok := z.Len(); ok {
 		arr := make([]Tuple[X, Y], sz)
 		z.ForEachIndex(func(i int, t Tuple[X, Y]) {
@@ -97,7 +97,7 @@ func (z zipSeq[X, Y]) Array() Array[Tuple[X, Y]] {
 	return arr
 }
 
-func (z zipSeq[X, Y]) Take(n int) (Array[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
+func (z zipSeq[X, Y]) Take(n int) (Slice[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 	var (
 		arr []Tuple[X, Y]
 		fx  opt.Opt[X]
@@ -108,7 +108,7 @@ func (z zipSeq[X, Y]) Take(n int) (Array[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 	if sz, ok := z.Len(); ok {
 		if sz <= n {
 			// Best case
-			return z.Array(), SeqEmpty[Tuple[X, Y]]()
+			return z.Values(), SeqEmpty[Tuple[X, Y]]()
 		}
 
 		// We know we have at least n elements in both tx and ty
@@ -136,7 +136,7 @@ func (z zipSeq[X, Y]) Take(n int) (Array[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 	return arr, zipSeq[X, Y]{sx: tx, sy: ty}
 }
 
-func (z zipSeq[X, Y]) TakeWhile(predicate Predicate[Tuple[X, Y]]) (Array[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
+func (z zipSeq[X, Y]) TakeWhile(predicate Predicate[Tuple[X, Y]]) (Slice[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 	var (
 		arr []Tuple[X, Y]
 		fx  opt.Opt[X]

@@ -26,22 +26,22 @@ func (s singletSeq[T]) Len() (int, bool) {
 	return 1, true
 }
 
-func (s singletSeq[T]) Array() Array[T] {
-	return Array[T]{s.val}
+func (s singletSeq[T]) Values() Slice[T] {
+	return Slice[T]{s.val}
 }
 
-func (s singletSeq[T]) Take(n int) (Array[T], Seq[T]) {
+func (s singletSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	if n == 0 {
-		return Array[T]{}, s
+		return Slice[T]{}, s
 	}
-	return Array[T]{s.val}, SeqEmpty[T]()
+	return Slice[T]{s.val}, SeqEmpty[T]()
 }
 
-func (s singletSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
+func (s singletSeq[T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
 	if pred(s.val) {
-		return Array[T]{s.val}, SeqEmpty[T]()
+		return Slice[T]{s.val}, SeqEmpty[T]()
 	}
-	return Array[T]{}, s
+	return Slice[T]{}, s
 }
 
 func (s singletSeq[T]) Skip(n int) Seq[T] {

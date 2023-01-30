@@ -21,7 +21,7 @@ func FlattenOf[T any](seqs Seq[Seq[T]]) Seq[T] {
 func ConcatOf[T any](seqs ...Seq[T]) Seq[T] {
 	return concatSeq[T]{
 		head: nil,
-		tail: ArrayOf(seqs),
+		tail: SliceOf(seqs),
 	}
 }
 
@@ -58,8 +58,8 @@ func (c concatSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 
 func (c concatSeq[T]) Len() (int, bool) {
 	return LenUnknown, false
-	// fx. if c.tail is an Array we can do a stateless check to see if we can calculate a total length
-	/*tailArr, tailIsArray := c.tail.(Array[Seq[T]])
+	// fx. if c.tail is an Slice we can do a stateless check to see if we can calculate a total length
+	/*tailArr, tailIsArray := c.tail.(Slice[Seq[T]])
 	if !tailIsArray {
 		return LenUnknown, false
 	}
@@ -83,7 +83,7 @@ func (c concatSeq[T]) Len() (int, bool) {
 	return sz, true*/
 }
 
-func (c concatSeq[T]) Array() Array[T] {
+func (c concatSeq[T]) Values() Slice[T] {
 	var buf []T
 	sz, hasLen := c.Len()
 	if hasLen {
@@ -94,12 +94,12 @@ func (c concatSeq[T]) Array() Array[T] {
 	return buf
 }
 
-func (c concatSeq[T]) Take(n int) (Array[T], Seq[T]) {
+func (c concatSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	if n <= 0 {
 		return []T{}, c
 	}
 	var (
-		arr      Array[T]
+		arr      Slice[T]
 		headTail Seq[T]
 	)
 
@@ -121,7 +121,7 @@ func (c concatSeq[T]) Take(n int) (Array[T], Seq[T]) {
 
 		var (
 			headOpt opt.Opt[Seq[T]]
-			headArr Array[T]
+			headArr Slice[T]
 		)
 		headOpt, c.tail = c.tail.First()
 		headSeq, headErr := headOpt.Return()
@@ -143,7 +143,7 @@ func (c concatSeq[T]) Take(n int) (Array[T], Seq[T]) {
 	}
 }
 
-func (c concatSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
+func (c concatSeq[T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
 	var (
 		arr  []T
 		fst  opt.Opt[T]

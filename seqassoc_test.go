@@ -19,7 +19,7 @@ func TestSeqAssoc(t *testing.T) {
 		t.Errorf("Expected %v, found %v", m, m2)
 	}
 
-	as = as.Array().Sort(fn.OrderTupleAsc[string, int])
+	as = as.Values().Sort(fn.OrderTupleAsc[string, int])
 
 	fntesting.TestOf(t, as).Is(
 		fn.TupleOf("one", 1),

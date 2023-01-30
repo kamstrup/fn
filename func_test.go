@@ -14,12 +14,12 @@ import (
 )
 
 func TestZeroes(t *testing.T) {
-	fntesting.TestOf(t, fn.MapOf(fn.ArrayOfArgs(-1, 0, 1, 10), fn.IsZero[int])).Is(false, true, false, false)
-	fntesting.TestOf(t, fn.MapOf(fn.ArrayOfArgs(-1, 0, 1, 10), fn.IsNonZero[int])).Is(true, false, true, true)
+	fntesting.TestOf(t, fn.MapOf(fn.SliceOfArgs(-1, 0, 1, 10), fn.IsZero[int])).Is(false, true, false, false)
+	fntesting.TestOf(t, fn.MapOf(fn.SliceOfArgs(-1, 0, 1, 10), fn.IsNonZero[int])).Is(true, false, true, true)
 }
 
 func TestCollectCount(t *testing.T) {
-	arr := fn.ArrayOfArgs[int](1, 2, 3)
+	arr := fn.SliceOfArgs[int](1, 2, 3)
 
 	count := fn.Into(0, fn.Count[int], arr)
 	if count.Must() != 3 {
@@ -36,7 +36,7 @@ func TestCollectCount(t *testing.T) {
 }
 
 func TestCollectAppend(t *testing.T) {
-	arr := fn.ArrayOfArgs[int](1, 2, 3)
+	arr := fn.SliceOfArgs[int](1, 2, 3)
 	cpy := fn.Into(nil, fn.Append[int], arr)
 	exp := []int{1, 2, 3}
 	if !reflect.DeepEqual(cpy.Must(), exp) {
@@ -53,7 +53,7 @@ func TestCollectAppend(t *testing.T) {
 }
 
 func TestCollectAssoc(t *testing.T) {
-	oddNums := fn.ArrayOfArgs(1, 2, 3).
+	oddNums := fn.SliceOfArgs(1, 2, 3).
 		Where(func(i int) bool { return i%2 == 1 })
 
 	arr := fn.MapOf(oddNums, fn.TupleWithKey(func(i int) string {
@@ -69,7 +69,7 @@ func TestCollectAssoc(t *testing.T) {
 }
 
 func TestCollectSet(t *testing.T) {
-	nums := fn.ArrayOfArgs(1, 2, 2, 3, 1)
+	nums := fn.SliceOfArgs(1, 2, 2, 3, 1)
 	res := fn.Into(nil, fn.MakeSet[int], nums)
 	exp := map[int]struct{}{
 		1: {}, 2: {}, 3: {},
@@ -80,7 +80,7 @@ func TestCollectSet(t *testing.T) {
 }
 
 func TestCollectString(t *testing.T) {
-	strs := fn.ArrayOfArgs("one", "two")
+	strs := fn.SliceOfArgs("one", "two")
 	res := fn.Into(nil, fn.MakeString, strs)
 	exp := "onetwo"
 	if exp != res.Must().String() {
@@ -89,7 +89,7 @@ func TestCollectString(t *testing.T) {
 }
 
 func TestCollectGroupBy(t *testing.T) {
-	names := fn.ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
+	names := fn.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 	tups := fn.ZipOf[string, int](names, fn.RangeFrom(0))
 	res := fn.Into(nil, fn.GroupBy[string, int], tups)
 	exp := map[string][]int{
@@ -104,7 +104,7 @@ func TestCollectGroupBy(t *testing.T) {
 }
 
 func TestCollectUpdateAssoc(t *testing.T) {
-	names := fn.ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
+	names := fn.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 	tups := fn.ZipOf[string, int](names, fn.Constant(1))
 	res := fn.Into(nil, fn.UpdateAssoc[string, int](fnmath.Sum[int]), tups)
 	exp := map[string]int{
@@ -120,7 +120,7 @@ func TestCollectUpdateAssoc(t *testing.T) {
 
 func TestCollectUpdateArray(t *testing.T) {
 
-	hellos := fn.ArrayOfArgs(
+	hellos := fn.SliceOfArgs(
 		fn.TupleOf(1, "hello"), fn.TupleOf(2, "hej"),
 		fn.TupleOf(1, "world"), fn.TupleOf(2, "verden"))
 
@@ -186,27 +186,27 @@ func TestPredicates(t *testing.T) {
 }
 
 func TestAny(t *testing.T) {
-	if fn.Any(fn.ArrayOfArgs(1, 2, 3), fn.IsZero[int]) {
+	if fn.Any(fn.SliceOfArgs(1, 2, 3), fn.IsZero[int]) {
 		t.Fatal("should not find zero")
 	}
 
-	if !fn.Any(fn.ArrayOfArgs(0, 1), fn.IsNonZero[int]) {
+	if !fn.Any(fn.SliceOfArgs(0, 1), fn.IsNonZero[int]) {
 		t.Fatal("should find non-zero")
 	}
 }
 
 func TestAll(t *testing.T) {
-	if fn.All(fn.ArrayOfArgs(0, 0, 1), fn.IsZero[int]) {
+	if fn.All(fn.SliceOfArgs(0, 0, 1), fn.IsZero[int]) {
 		t.Fatal("should find no.zero")
 	}
 
-	if !fn.All(fn.ArrayOfArgs(0, 0), fn.IsZero[int]) {
+	if !fn.All(fn.SliceOfArgs(0, 0), fn.IsZero[int]) {
 		t.Fatal("should be all zeroes")
 	}
 }
 
 func TestLast(t *testing.T) {
-	o := fn.Last(fn.ArrayOfArgs(0, 0, 1))
+	o := fn.Last(fn.SliceOfArgs(0, 0, 1))
 	if o.Error() != nil {
 		t.Fatal("should not error", o.Error())
 	}
@@ -214,7 +214,7 @@ func TestLast(t *testing.T) {
 		t.Fatal("should be 1", o.Must())
 	}
 
-	o = fn.Last(fn.ArrayOfArgs(0))
+	o = fn.Last(fn.SliceOfArgs(0))
 	if o.Error() != nil {
 		t.Fatal("should not error", o.Error())
 	}

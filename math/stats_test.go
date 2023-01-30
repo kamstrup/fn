@@ -58,7 +58,7 @@ func TestStats(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			data := fn.ArrayOf(tc.input)
+			data := fn.SliceOf(tc.input)
 			opt := fn.Into(Stats[int]{}, MakeStats[int], data)
 			if len(tc.input) == 0 {
 				if opt.Ok() {

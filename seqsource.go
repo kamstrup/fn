@@ -39,11 +39,11 @@ func (s sourceSeq[T]) Len() (int, bool) {
 	return LenInfinite, false
 }
 
-func (s sourceSeq[T]) Array() Array[T] {
-	panic("cannot create Array of infinite source")
+func (s sourceSeq[T]) Values() Slice[T] {
+	panic("cannot create Slice of infinite source")
 }
 
-func (s sourceSeq[T]) Take(n int) (Array[T], Seq[T]) {
+func (s sourceSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	arr := make([]T, n)
 	for i := 0; i < n; i++ {
 		arr[i] = s.f()
@@ -51,7 +51,7 @@ func (s sourceSeq[T]) Take(n int) (Array[T], Seq[T]) {
 	return arr, s
 }
 
-func (s sourceSeq[T]) TakeWhile(predicate Predicate[T]) (Array[T], Seq[T]) {
+func (s sourceSeq[T]) TakeWhile(predicate Predicate[T]) (Slice[T], Seq[T]) {
 	var arr []T
 	for t := s.f(); predicate(t); t = s.f() {
 		arr = append(arr, t)

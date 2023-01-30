@@ -48,18 +48,18 @@ func (e errorSeq[T]) Len() (int, bool) {
 	return 0, true
 }
 
-func (e errorSeq[T]) Array() Array[T] {
+func (e errorSeq[T]) Values() Slice[T] {
 	return nil
 }
 
-func (e errorSeq[T]) Take(n int) (Array[T], Seq[T]) {
+func (e errorSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	if n < 0 {
 		panic("must take >= 0 elements")
 	}
 	return nil, e
 }
 
-func (e errorSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
+func (e errorSeq[T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
 	return nil, e
 }
 

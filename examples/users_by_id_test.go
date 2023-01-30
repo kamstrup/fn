@@ -54,20 +54,20 @@ func TestExampleUsersById(t *testing.T) {
 	}
 
 	// Let's check if they all have a valid "name" field
-	everyOneHasName := fn.All(fn.ArrayOf(users), (*User).HasName)
+	everyOneHasName := fn.All(fn.SliceOf(users), (*User).HasName)
 	fmt.Println("Does everyone have a name?", everyOneHasName)
 
 	// Now let's print the IDs of the users without names, sorted reverse alphabetically
-	usersWithEmptyNames := fn.ArrayOf(users).
+	usersWithEmptyNames := fn.SliceOf(users).
 		Where(fn.Not((*User).HasName))
 	idsWithEmptyNames := fn.MapOf(usersWithEmptyNames, (*User).ID).
-		Array().
+		Values().
 		Sort(fn.OrderDesc[string])
 	fmt.Println("These user IDs do not have a name:", idsWithEmptyNames)
 
 	// Let's create a map[userID]*User:
 	// First we create a Seq of Tuples(userId, User)
-	usersWithIDs := fn.MapOf(fn.ArrayOf(users), fn.TupleWithKey((*User).ID))
+	usersWithIDs := fn.MapOf(fn.SliceOf(users), fn.TupleWithKey((*User).ID))
 	// Now flush that Seq of tuples into the MakeAssoc collector
 	usersByIDs := fn.Into(nil, fn.MakeAssoc[string, *User], usersWithIDs).Or(nil)
 
@@ -90,7 +90,7 @@ func TestExampleUsersById(t *testing.T) {
 	// Let's get a combined list of Users sorted by name
 	allUsers := fn.ConcatOf(fn.AssocOf(usersByIDs), fn.AssocOf(newUsers)) // AssocOf handles maps as Seqs of Tuples
 	allUsersSorted := fn.MapOf(allUsers, fn.TupleValue[string, *User]).
-		Array().
+		Values().
 		Sort(func(u1, u2 *User) bool { return u1.name < u2.name })
 
 	fmt.Println("Combined list of users, by name:", allUsersSorted)

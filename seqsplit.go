@@ -26,7 +26,7 @@ type splitSeq[T any] struct {
 
 // SplitOf splits a Seq into sub-seqs based on a FuncSplit.
 // The splitting algorithm implemented is only "semi-lazy" in the following way:
-// Each split is read eagerly into an Array, but the tail is not executed.
+// Each split is read eagerly into an Slice, but the tail is not executed.
 // The split seq needs to work in this semi-lazy way in order to guarantee
 // that methods from the Seq interface returning a tail indeed returns a valid tail.
 func SplitOf[T any](seq Seq[T], splitter FuncSplit[T]) Seq[Seq[T]] {
@@ -67,7 +67,7 @@ func (s splitSeq[T]) Len() (int, bool) {
 	return LenUnknown, false
 }
 
-func (s splitSeq[T]) Array() Array[Seq[T]] {
+func (s splitSeq[T]) Values() Slice[Seq[T]] {
 	var (
 		fst  opt.Opt[Seq[T]]
 		tail Seq[Seq[T]]
@@ -79,7 +79,7 @@ func (s splitSeq[T]) Array() Array[Seq[T]] {
 	return arr
 }
 
-func (s splitSeq[T]) Take(n int) (Array[Seq[T]], Seq[Seq[T]]) {
+func (s splitSeq[T]) Take(n int) (Slice[Seq[T]], Seq[Seq[T]]) {
 	if n == 0 {
 		return []Seq[T]{}, s
 	}
@@ -101,7 +101,7 @@ func (s splitSeq[T]) Take(n int) (Array[Seq[T]], Seq[Seq[T]]) {
 	return arr, tail
 }
 
-func (s splitSeq[T]) TakeWhile(pred Predicate[Seq[T]]) (Array[Seq[T]], Seq[Seq[T]]) {
+func (s splitSeq[T]) TakeWhile(pred Predicate[Seq[T]]) (Slice[Seq[T]], Seq[Seq[T]]) {
 	var (
 		fst  opt.Opt[Seq[T]]
 		tail Seq[Seq[T]]
@@ -145,7 +145,7 @@ func (s splitSeq[T]) While(pred Predicate[Seq[T]]) Seq[Seq[T]] {
 }
 
 func (s splitSeq[T]) First() (opt.Opt[Seq[T]], Seq[Seq[T]]) {
-	// TODO: special case for Array?
+	// TODO: special case for Slice?
 	var (
 		arr  []T
 		fst  opt.Opt[T]
@@ -156,7 +156,7 @@ func (s splitSeq[T]) First() (opt.Opt[Seq[T]], Seq[Seq[T]]) {
 		val, err := fst.Return()
 		if err != nil {
 			if len(arr) > 0 {
-				return opt.Of(ArrayOf(arr)), ErrorOf[Seq[T]](err)
+				return opt.Of(SliceOf(arr)), ErrorOf[Seq[T]](err)
 			} else {
 				return opt.Empty[Seq[T]](), ErrorOf[Seq[T]](err)
 			}
@@ -166,10 +166,10 @@ func (s splitSeq[T]) First() (opt.Opt[Seq[T]], Seq[Seq[T]]) {
 		case SplitKeep:
 			arr = append(arr, val)
 		case SplitSeparate:
-			return opt.Of(ArrayOf(arr)), splitSeq[T]{seq: tail, split: s.split}
+			return opt.Of(SliceOf(arr)), splitSeq[T]{seq: tail, split: s.split}
 		case SplitSeparateKeep:
 			arr = append(arr, val)
-			return opt.Of(ArrayOf(arr)), splitSeq[T]{seq: tail, split: s.split}
+			return opt.Of(SliceOf(arr)), splitSeq[T]{seq: tail, split: s.split}
 		default:
 			panic("fn: invalid SplitChoice")
 		}

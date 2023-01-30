@@ -41,9 +41,9 @@ func (ws whereSeq[T]) Len() (int, bool) {
 	return LenUnknown, false
 }
 
-func (ws whereSeq[T]) Array() Array[T] {
+func (ws whereSeq[T]) Values() Slice[T] {
 	if l, _ := ws.Len(); l == 0 {
-		return Array[T](nil)
+		return Slice[T](nil)
 	}
 
 	var arr []T
@@ -54,9 +54,9 @@ func (ws whereSeq[T]) Array() Array[T] {
 	return arr
 }
 
-func (ws whereSeq[T]) Take(n int) (Array[T], Seq[T]) {
+func (ws whereSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	if l, _ := ws.Len(); l == 0 || n == 0 {
-		return Array[T](nil), SeqEmpty[T]()
+		return Slice[T](nil), SeqEmpty[T]()
 	}
 
 	// FIXME: TakeWhile + append() does double alloc! Should just be While() + Do()
@@ -76,9 +76,9 @@ func (ws whereSeq[T]) Take(n int) (Array[T], Seq[T]) {
 	return arr, tail
 }
 
-func (ws whereSeq[T]) TakeWhile(pred Predicate[T]) (Array[T], Seq[T]) {
+func (ws whereSeq[T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
 	if l, _ := ws.Len(); l == 0 {
-		return Array[T](nil), SeqEmpty[T]()
+		return Slice[T](nil), SeqEmpty[T]()
 	}
 
 	var arr []T

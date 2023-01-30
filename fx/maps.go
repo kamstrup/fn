@@ -28,10 +28,10 @@ func MapAssoc[K1, K2 comparable, V1, V2 any](m map[K1]V1, f func(K1, V1) (K2, V2
 	return m2
 }
 
-// SliceAssoc builds a slice []T from a map[K]V.
+// SerializeAssoc builds a slice []T from a map[K]V.
 // To build a map from a slice use AssocSlice.
 // The mnemonic for the function name is that the last word is what you operate on.
-func SliceAssoc[K comparable, V, T any](m map[K]V, f func(K, V) T) []T {
+func SerializeAssoc[K comparable, V, T any](m map[K]V, f func(K, V) T) []T {
 	slice := make([]T, len(m))
 	i := 0
 	for k, v := range m {

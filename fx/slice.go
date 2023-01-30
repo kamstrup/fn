@@ -79,7 +79,7 @@ func SortSliceDesc[T constraints.Ordered](slice []T) []T {
 }
 
 // AssocSlice builds a map[K]V from a slice.
-// To build a map from a slice use SliceAssoc.
+// To build a slice from a map use SerializeAssoc.
 // The mnemonic for the function name is that the last word is what you operate on.
 func AssocSlice[K comparable, V, T any](slice []T, f func(T) (K, V)) map[K]V {
 	m := make(map[K]V, len(slice))

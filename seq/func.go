@@ -2,6 +2,7 @@ package seq
 
 import (
 	"bytes"
+	"errors"
 	"strings"
 
 	"github.com/kamstrup/fn/constraints"
@@ -306,12 +307,30 @@ func Do[T any](seq Seq[T]) Seq[T] {
 
 // Any executes the Seq up to a point where the predicate returns true.
 // If it finds such an element it returns true, otherwise if there are no matches, false.
+// An empty seq will always return false.
+//
+// To check if a seq contains a zero element:
+//
+//		sq := seq.SliceOfArgs(-1, 0, 1, 2)
+//		seq.Any(sq, seq.IsZero[int]) // returns true
+//
+//	 sq = SliceOf[int](nil)
+//	 seq.Any(sq, seq.IsZero[int]) // returns false since sq is empty
 func Any[T any](seq Seq[T], pred Predicate[T]) bool {
 	fst, _ := seq.Where(pred).First()
 	return fst.Ok()
 }
 
 // All executes the Seq and returns true iff all elements return true under the predicate.
+// An empty seq will always return true.
+//
+// To check if all elements in a seq are non-zero:
+//
+//	 sq := seq.SliceOfArgs(1, 2, 3)
+//		seq.All(sq, seq.IsNonZero[int]) // returns true
+//
+//	 sq = seq.SliceOf[int](nil)
+//		seq.All(sq, seq.IsNonZero[int]) // returns true since sq is empty
 func All[T any](seq Seq[T], pred Predicate[T]) bool {
 	fstMismatch, _ := seq.Where(Not(pred)).First()
 	return fstMismatch.Empty()
@@ -332,4 +351,40 @@ func Last[T any](seq Seq[T]) opt.Opt[T] {
 		return opt.ErrorOf[T](err)
 	}
 	return opt.Empty[T]()
+}
+
+// ErrNotOne is returned from One if the seq contains more than 1 element.
+var ErrNotOne = errors.New("sequence contains more than 1 element")
+
+// One returns a valid opt if the seq contains exactly one element.
+// If the seq is empty the option will be invalid with opt.ErrEmpty as usual,
+// and if there is more than 1 element then the error will be ErrNotOne.
+func One[T any](seq Seq[T]) opt.Opt[T] {
+	fst, tail := seq.First()
+	if fst.Empty() {
+		return fst
+	}
+	second, _ := tail.First()
+	if second.Ok() {
+		return opt.ErrorOf[T](ErrNotOne)
+	}
+	return fst
+}
+
+// IsEmpty returns true if the seq is empty.
+// This function may execute the first element of the seq, if the length can not be determined.
+//
+// Checking if a seq is empty is rarely necessary. All operations are valid on an empty sequence,
+// even nil is a valid Slice. Just consume the seq and check the resulting opt.Opt or Slice.
+// Note than you can use the normal len() function on Slice, Set, Assoc, Chan, and String.
+func IsEmpty[T any](seq Seq[T]) bool {
+	if sz, ok := seq.Len(); ok {
+		return sz == 0
+	} else if sz == LenInfinite {
+		return false
+	}
+
+	// No well-defined length we need to execute the first element
+	fst, _ := seq.First()
+	return fst.Empty()
 }

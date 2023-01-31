@@ -11,11 +11,11 @@ const LenUnknown = -1
 // not terminate by itself but continue to yield values indefinitely.
 const LenInfinite = -2
 
-// Seq is the primary interface for the fn() library.
+// Seq is the primary interface for the seq package.
 // Seqs should be thought of as a stateless lazily computed collection of elements.
 // Operations that force traversing or computation of the Seq are said to "execute" the Seq.
-// As a rule of thumb any method that returns an Slice will execute that part of the Seq.
-// For example, seq.Take(7) executes the first 7 elements and returns them in an Slice,
+// As a rule of thumb any method that returns a Slice will execute that part of the Seq.
+// For example, seq.Take(7) executes the first 7 elements and returns them in a Slice,
 // and the rest of the Seq is untouched and returned as a tail Seq.
 // Any method that executes the Seq must document it explicitly.
 //

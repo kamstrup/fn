@@ -1,4 +1,4 @@
-package fx
+package slice
 
 import (
 	"math/bits"

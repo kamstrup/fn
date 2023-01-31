@@ -1,4 +1,4 @@
-package fx
+package slice
 
 import (
 	"sort"
@@ -6,8 +6,8 @@ import (
 	"github.com/kamstrup/fn/constraints"
 )
 
-// MapSlice converts a slice from one type to another
-func MapSlice[S, T any](slice []S, f func(s S) T) []T {
+// Mapping converts a slice from one type to another
+func Mapping[S, T any](slice []S, f func(s S) T) []T {
 	if len(slice) == 0 {
 		return []T{}
 	}
@@ -19,9 +19,9 @@ func MapSlice[S, T any](slice []S, f func(s S) T) []T {
 	return result
 }
 
-// MapSliceIndex converts a slice from one type to another.
+// MappingIndex converts a slice from one type to another.
 // The mapping function also receives the index of the element being transformed.
-func MapSliceIndex[S, T any](slice []S, f func(i int, s S) T) []T {
+func MappingIndex[S, T any](slice []S, f func(i int, s S) T) []T {
 	if len(slice) == 0 {
 		return []T{}
 	}
@@ -33,9 +33,9 @@ func MapSliceIndex[S, T any](slice []S, f func(i int, s S) T) []T {
 	return result
 }
 
-// GenSlice builds a new slice of a given size.
+// Gen builds a new slice of a given size.
 // The generator function is called for each index in the new slice.
-func GenSlice[T any](sz int, generator func(i int) T) []T {
+func Gen[T any](sz int, generator func(i int) T) []T {
 	result := make([]T, sz)
 	for i := range result {
 		result[i] = generator(i)
@@ -43,15 +43,15 @@ func GenSlice[T any](sz int, generator func(i int) T) []T {
 	return result
 }
 
-// CopySlice returns a shallow copy of the given slice.
-func CopySlice[T any](slice []T) []T {
+// Copy returns a shallow copy of the given slice.
+func Copy[T any](slice []T) []T {
 	cpy := make([]T, len(slice))
 	copy(cpy, slice)
 	return cpy
 }
 
-// ZeroSlice zeroes all elements in a slice.
-func ZeroSlice[T any](slice []T) []T {
+// Zero zeroes all elements in a slice.
+func Zero[T any](slice []T) []T {
 	// compiles to runtime.memclr(), see https://github.com/golang/go/issues/5373
 	var zero T
 	for i := range slice {
@@ -60,32 +60,20 @@ func ZeroSlice[T any](slice []T) []T {
 	return slice
 }
 
-// SortSliceAsc sorts a slice in-place.
+// SortAsc sorts a slice in-place.
 // The argument is returned to facilitate easy chaining.
-func SortSliceAsc[T constraints.Ordered](slice []T) []T {
+func SortAsc[T constraints.Ordered](slice []T) []T {
 	sort.Slice(slice, func(i, j int) bool {
 		return slice[i] < slice[j]
 	})
 	return slice
 }
 
-// SortSliceDesc sorts a slice in-place.
+// SortDesc sorts a slice in-place.
 // The argument is returned to facilitate easy chaining.
-func SortSliceDesc[T constraints.Ordered](slice []T) []T {
+func SortDesc[T constraints.Ordered](slice []T) []T {
 	sort.Slice(slice, func(i, j int) bool {
 		return slice[i] > slice[j]
 	})
 	return slice
-}
-
-// AssocSlice builds a map[K]V from a slice.
-// To build a slice from a map use SerializeAssoc.
-// The mnemonic for the function name is that the last word is what you operate on.
-func AssocSlice[K comparable, V, T any](slice []T, f func(T) (K, V)) map[K]V {
-	m := make(map[K]V, len(slice))
-	for _, t := range slice {
-		k, v := f(t)
-		m[k] = v
-	}
-	return m
 }

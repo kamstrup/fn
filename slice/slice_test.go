@@ -1,13 +1,12 @@
-package fx
+package slice
 
 import (
 	"reflect"
-	"strconv"
 	"testing"
 )
 
-func TestSliceMap(t *testing.T) {
-	even := MapSlice([]int{1, 2, 3}, func(i int) int {
+func TestMapping(t *testing.T) {
+	even := Mapping([]int{1, 2, 3}, func(i int) int {
 		return i * 2
 	})
 	if !reflect.DeepEqual(even, []int{2, 4, 6}) {
@@ -15,8 +14,8 @@ func TestSliceMap(t *testing.T) {
 	}
 }
 
-func TestSliceMapIndex(t *testing.T) {
-	results := MapSliceIndex([]int{1, 2, 3}, func(idx, n int) int {
+func TestMapIndex(t *testing.T) {
+	results := MappingIndex([]int{1, 2, 3}, func(idx, n int) int {
 		return n + idx
 	})
 	if !reflect.DeepEqual(results, []int{1, 3, 5}) {
@@ -24,8 +23,8 @@ func TestSliceMapIndex(t *testing.T) {
 	}
 }
 
-func TestSliceGen(t *testing.T) {
-	results := GenSlice(3, func(idx int) int {
+func TestGen(t *testing.T) {
+	results := Gen(3, func(idx int) int {
 		return idx
 	})
 	if !reflect.DeepEqual(results, []int{0, 1, 2}) {
@@ -33,46 +32,34 @@ func TestSliceGen(t *testing.T) {
 	}
 }
 
-func TestSliceCopy(t *testing.T) {
+func TestCopy(t *testing.T) {
 	orig := []int{1, 2, 3}
-	results := CopySlice(orig)
+	results := Copy(orig)
 	if !reflect.DeepEqual(results, []int{1, 2, 3}) {
 		t.Fatalf("bad results: %v", results)
 	}
 }
 
-func TestSliceZero(t *testing.T) {
+func TestZero(t *testing.T) {
 	orig := []int{1, 2, 3}
-	results := ZeroSlice(orig)
+	results := Zero(orig)
 	if !reflect.DeepEqual(results, []int{0, 0, 0}) || !reflect.DeepEqual(orig, []int{0, 0, 0}) {
 		t.Fatalf("bad results: %v", results)
 	}
 }
 
-func TestSliceSortAsc(t *testing.T) {
+func TestSortAsc(t *testing.T) {
 	data := []int{1, 3, 2}
-	SortSliceAsc(data)
+	SortAsc(data)
 	if !reflect.DeepEqual(data, []int{1, 2, 3}) {
 		t.Fatalf("bad results: %v", data)
 	}
 }
 
-func TestSliceSortDesc(t *testing.T) {
+func TestSortDesc(t *testing.T) {
 	data := []int{1, 3, 2}
-	SortSliceDesc(data)
+	SortDesc(data)
 	if !reflect.DeepEqual(data, []int{3, 2, 1}) {
 		t.Fatalf("bad results: %v", data)
-	}
-}
-
-func TestSliceAssoc(t *testing.T) {
-	s := []int{1, 2, 3}
-	m := AssocSlice(s, func(i int) (string, int8) {
-		return strconv.FormatInt(int64(i), 10), int8(i)
-	})
-	if !reflect.DeepEqual(m, map[string]int8{
-		"1": 1, "2": 2, "3": 3,
-	}) {
-		t.Fatalf("bad result: %v", m)
 	}
 }

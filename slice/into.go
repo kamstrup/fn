@@ -1,4 +1,4 @@
-package fx
+package slice
 
 // Reduce collects a slice of elements E into a result of type R.
 // This operation is also known as "fold" in other frameworks.

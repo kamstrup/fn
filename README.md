@@ -58,17 +58,14 @@ Generally seqs are immutable. Any exception to this will be clearly documented.
 There many ways to create seqs from standard Go structures. You can find most of them in 
 the section [Creating Seqs](#creating-seqs).
 
-**Array:** Standard Go slices `[]T` are wrapped in the `seq.Array[T]` type.
-The `Array` type is a public subtype of `[]T` so you can do numeric indexing on an `Array`.
-Arrays are seqs, but also add some extra methods like `Sort()` and `Reverse()`.
+**Slice:** Standard Go slices `[]T` are wrapped in the `seq.Slice[T]` type.
+The `Slice` type is a public subtype of `[]T` so you can do numeric indexing on a `Slice`,
+and use `cap()`, `len()`, and for-range loops on them.
+Slices are seqs, but also add some extra methods like `Sort()` and `Reverse()`.
 
-**Assoc:** Because "map" is an overloaded word in functional programming,
-Fn() uses the word "assoc" instead of `map[K]V` (pronounced with a soft "ch" at the end).
-The word "map" is reserved for the mapping operation used to convert a Seq to something else.
-
-**Tuple:** Or "pair". Represents two data points. A helper mainly used when working with assocs,
-where the tuple captures a key and a value. Assocs can be interpreted as a seq of tuples, or if you
-build a seq of tuples you can create an assoc or map from it.
+**Tuple:** Or "pair". Represents two data points. A helper mainly used when working with maps,
+where the tuple captures a key and a value. Maps can be interpreted as a seq of tuples, or if you
+build a seq of tuples you can create map from it.
 
 **Opt:** Returned from operations where you are not certain to get a result.
 For example when you call `sq.First()`. If the seq is empty you get back an empty opt,
@@ -77,6 +74,8 @@ and an empty tail sq.
 **sq.Len():** Lengths are handled in a special way in Fn(). They are allowed to be finite, 
 unknown, or infinite. Making these distinctions opens the possibility of pre-allocating
 slices and maps of the correct size, which can make a big difference in performance critical code.
+In most circumstances you will not need to use Len(). All operations are valid on empty seqs and
+empty opts, so just set up your pipeline of operations and check if the end result is valid.
 
 ## API Overview
 If you just want to jump in and see some code you can check out
@@ -88,17 +87,17 @@ that you can use to do 1-line functional constructs.
 
 ### Creating Seqs
 We follow the convention that functions for creating a Seq are named with an "Of"-suffix.
-Ie `StringOf()`, `ArrayOf` etc. They always return a `Seq[T]`. Functions with an "As"-suffix
+Ie `StringOf()`, `SliceOf` etc. They always return a `Seq[T]`. Functions with an "As"-suffix
 return a specific Seq implementation that allows you to perform type specific operations.
-Fx. like sorting an `Array`. It is a known limitattion of the Go compiler (v1.19) that it 
+Fx. like sorting an `Slice`. It is a known limitattion of the Go compiler (v1.19) that it 
 can not determine that generic structs implement generic interfaces. So in order to use
-an `Array`, `Assoc`, `Set`, or `String` as a Seq you need to call `.Seq()` on the instance.
+an `Slice`, `Map`, `Set`, or `String` as a Seq you need to call `.Seq()` on the instance.
 Seq creation funcs that take a variadic list of arguments have an "OfArgs"-suffix.
 
 #### From Standard Go Types
 ```go
-arr := seq.ArrayOfArgs(1,2,3) // also: ArrayOf(), ArrayAs(), ArrayAsArgs()
-ass := seq.AssocOf(map[string]int{"foo": 27, "bar": 68}) // also: AssocAs()
+arr := seq.SliceOfArgs(1,2,3) // also: SliceOf(), SliceAs(), SliceAsArgs()
+ass := seq.MapOf(map[string]int{"foo": 27, "bar": 68}) // also: MapAs()
 set := seq.SetOf(map[string]struct{}{"foo", {}, "bar": {}}) // also: SetAs()
 str := seq.StringOf("hello world") // also: StringAs()
 ch := seq.ChanOf(make(chan T))
@@ -111,7 +110,7 @@ empty := seq.EmptySeq[int]()
 zero := seq.Constant(0) // infinite
 nums := seq.RangeOf(0, 10)
 evenNums := seq.RangeStepOf(0, 10, 2)
-toInfinity := seq.NumbersFrom(0) 
+toInfinity := seq.RangeFrom(0) // "infinity" == max value for the numeric type 
 ```
 
 #### From Functions or Closures
@@ -168,8 +167,8 @@ longSeq := seq.Prepend(value, seq1) // prepends a single value to a Seq
 If you have 2 seqs that you want to traverse in parallel as tuples (pairs) of elements
 you can use `ZipOf`:
 ```go
-ints := seq.ArrayOfArgs(1,2,3)
-strs := seq.ArrayOfArgs("one", "two", "three")
+ints := seq.SliceOfArgs(1,2,3)
+strs := seq.SliceOfArgs("one", "two", "three")
 pairs := seq.ZipOf(ints, strs)
 // pairs is a Seq[Tuple[int,string]]
 ```
@@ -202,7 +201,7 @@ also known as "reduce" or "fold" in functional programming terminology.
 
 #### Building a string with Into()
 ```go
-strs := seq.ArrayOfArgs("one", "two")
+strs := seq.SliceOfArgs("one", "two")
 res := seq.Into(nil, seq.MakeString, strs)
 // res is an Opt[string] with the value "onetwo"
 ```
@@ -210,12 +209,12 @@ res := seq.Into(nil, seq.MakeString, strs)
 #### Collector Functions For seq.Into()
 The second argument to `Into()` is a *collector function*.
 Fn ships with a suite of standard collectors in the `seq` package, including:
-`Append`, `MakeAssoc`, `MakeSet`, `MakeString`, `MakeBytes`,
-`Sum`, `Count`, `Min`, `Max`, and `GroupBy`. There
-are 2 more advanced collection helpers `UpdateAssoc`, `UpdateArray`.
+`Append`, `MakeMap`, `MakeSet`, `MakeString`, `MakeBytes`,
+`fnmath.Sum`, `Count`, `fnmath.Min`, `fnmath.Max`, and `GroupBy`. There
+are 2 more advanced collection helpers `UpdateMap`, `UpdateArray`.
 
-#### Building a Map with MakeAssoc and TupleWithKey
-In order to use `MakeAssoc` to build a map we need a Seq of
+#### Building a Map with MakeMap and TupleWithKey
+In order to use `MakeMap` to build a map we need a Seq of
 `seq.Tuple`. The 2 easiest ways to obtain a Seq of tuples are
 via mapping your seq with `TupleWithKey`, or via `ZipOf`.
 
@@ -230,23 +229,23 @@ users := seq.ArrayOf(usersSlice)
 userTuples := seq.MapOf(users, seq.TupleWithKey(u *User) UserID {
    return u.ID
 })
-usersByID := seq.Into(nil, seq.MakeAssoc, userTuples).Or(nil)
+usersByID := seq.Into(nil, seq.MakeMap, userTuples).Or(nil)
 // usersByID is a map[UserID]*User, the '.Or(nil)' above converts the Opt result to nil if there are errors
 ```
 
-#### Counting Unique Names with UpdateAssoc
-`UpdateAssoc` and `UpdateArray` can be used in conjunction with
+#### Counting Unique Names with UpdateMap
+`UpdateMap` and `UpdateArray` can be used in conjunction with
 an *updater* function to create a collector. The updater function
 tells the collector what to do if there is an existing value in a slot.
 
 In this example we count the number of occurrences of names in a sq.
 We do this by mapping to names onto a seq of `{name, 1}` tuples and then
-instructing the `UpdateAssoc` to sum the values every time it merges an
+instructing the `UpdateMap` to sum the values every time it merges an
 element into the map:
 ```go
-names := seq.ArrayOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
+names := seq.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 tups := seq.ZipOf[string, int](names, seq.Constant(1))
-res := seq.Into(nil, seq.UpdateAssoc[string, int](seq.Sum[int]), tups)
+res := seq.Into(nil, seq.UpdateMap[string, int](seq.Sum[int]), tups)
 // res is an Opt[map[string,int]] with the value:
 // map[string]int{
 //   "bob":    3,
@@ -373,7 +372,7 @@ API CHANGES:
 
 POTENTIAL FUTURE FEATURES (in order of prio)
 * fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)
-* Special seqs for Assoc.Keys() and Assoc.Values()
+* Special seqs for Map.Keys() and Map.Values()
 * sq.Limit(n) Seq[T], lazy counterpart to sq.Take(n)
 * RunesOf(string) Seq[rune]
 * MakeChan collector func for Into()?
@@ -389,7 +388,6 @@ POTENTIAL FUTURE FEATURES (in order of prio)
 * Promises or Futures that work nicely with Seq and Opt?
 
 POTENTIAL FUTURE OPTIMIZATIONS
-* Seq of single element (see SingletOf(t))
 * EmptySeq impl. (currently just wraps an empty slice), but an empty struct{} would do even better
 * Look for allocating buffers of right size where we can
 * Can we do some clever allocations in seq.Into() when seed is nil?

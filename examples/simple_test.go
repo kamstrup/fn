@@ -47,9 +47,9 @@ func TestExampleUserSerial(t *testing.T) {
 	// skip empty usernames and assign serial number to each unique user.
 	names := seq.SliceOfArgs("bob", "alan", "bob", "scotty", "", "bob", "alan", "").
 		Where(seq.IsNonZero[string])
-	tups := seq.ZipOf[string, int](names, seq.Constant(-1)) // the tuple seq is needed for UpdateAssoc
+	tups := seq.ZipOf[string, int](names, seq.Constant(-1)) // the tuple seq is needed for UpdateMap
 	serial := 0
-	userSerials := seq.Into(nil, seq.UpdateAssoc[string, int](func(oldSerial, _ int) int {
+	userSerials := seq.Into(nil, seq.UpdateMap[string, int](func(oldSerial, _ int) int {
 		if oldSerial == 0 {
 			serial += 1
 			return serial

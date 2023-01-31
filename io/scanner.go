@@ -123,7 +123,7 @@ func (s scannerSeq) First() (opt.Opt[[]byte], BufferSeq) {
 }
 
 func (s scannerSeq) Map(m seq.FuncMap[[]byte, []byte]) BufferSeq {
-	return seq.MapOf[[]byte, []byte](s, m)
+	return seq.MappingOf[[]byte, []byte](s, m)
 }
 
 // Error implements the contract for the seq.Error function.

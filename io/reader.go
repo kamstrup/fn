@@ -184,7 +184,7 @@ func (r Reader) First() (opt.Opt[[]byte], BufferSeq) {
 }
 
 func (r Reader) Map(shaper seq.FuncMap[[]byte, []byte]) BufferSeq {
-	return seq.MapOf[[]byte](r, shaper)
+	return seq.MappingOf[[]byte](r, shaper)
 }
 
 // prepBuffer prepares a buffer of a given size. Pass n=0 for sensible default.

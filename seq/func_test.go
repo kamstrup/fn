@@ -14,8 +14,8 @@ import (
 )
 
 func TestZeroes(t *testing.T) {
-	fntesting.TestOf(t, seq.MapOf(seq.SliceOfArgs(-1, 0, 1, 10), seq.IsZero[int])).Is(false, true, false, false)
-	fntesting.TestOf(t, seq.MapOf(seq.SliceOfArgs(-1, 0, 1, 10), seq.IsNonZero[int])).Is(true, false, true, true)
+	fntesting.TestOf(t, seq.MappingOf(seq.SliceOfArgs(-1, 0, 1, 10), seq.IsZero[int])).Is(false, true, false, false)
+	fntesting.TestOf(t, seq.MappingOf(seq.SliceOfArgs(-1, 0, 1, 10), seq.IsNonZero[int])).Is(true, false, true, true)
 }
 
 func TestCollectCount(t *testing.T) {
@@ -56,10 +56,10 @@ func TestCollectAssoc(t *testing.T) {
 	oddNums := seq.SliceOfArgs(1, 2, 3).
 		Where(func(i int) bool { return i%2 == 1 })
 
-	arr := seq.MapOf(oddNums, seq.TupleWithKey(func(i int) string {
+	arr := seq.MappingOf(oddNums, seq.TupleWithKey(func(i int) string {
 		return strconv.FormatInt(int64(i), 10)
 	}))
-	res := seq.Into(nil, seq.MakeAssoc[string, int], arr)
+	res := seq.Into(nil, seq.MakeMap[string, int], arr)
 	exp := map[string]int{
 		"1": 1, "3": 3,
 	}
@@ -106,7 +106,7 @@ func TestCollectGroupBy(t *testing.T) {
 func TestCollectUpdateAssoc(t *testing.T) {
 	names := seq.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 	tups := seq.ZipOf[string, int](names, seq.Constant(1))
-	res := seq.Into(nil, seq.UpdateAssoc[string, int](fnmath.Sum[int]), tups)
+	res := seq.Into(nil, seq.UpdateMap[string, int](fnmath.Sum[int]), tups)
 	exp := map[string]int{
 		"bob":    3,
 		"alan":   2,

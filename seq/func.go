@@ -22,7 +22,7 @@ type Func2[S, T any] func(S, T)
 type Func2Err[S, T any] func(S, T) error
 
 // FuncMap is a function mapping type S to type T.
-// Used with fx. MapOf(), Map(), and TupleWithKey().
+// Used with fx. MappingOf(), Map(), and TupleWithKey().
 type FuncMap[S, T any] func(S) T
 
 type FuncMapErr[S, T any] func(S) (T, error)
@@ -75,9 +75,9 @@ func MakeBytes(into *bytes.Buffer, b []byte) *bytes.Buffer {
 	return into
 }
 
-// MakeAssoc is a FuncCollect that can take a Seq of Tuple elements and store them in a standard Go map.
+// MakeMap is a FuncCollect that can take a Seq of Tuple elements and store them in a standard go map.
 // This function works with nil or a pre-built map[K]V as initial value.
-func MakeAssoc[K comparable, V any](into map[K]V, t Tuple[K, V]) map[K]V { // FIXME MAYBE USE ASSOC instead of map
+func MakeMap[K comparable, V any](into map[K]V, t Tuple[K, V]) map[K]V {
 	if into == nil {
 		into = make(map[K]V)
 	}
@@ -120,7 +120,7 @@ func GroupBy[K comparable, V any](into map[K][]V, tup Tuple[K, V]) map[K][]V {
 	return into
 }
 
-// UpdateAssoc is used to build a new FuncCollect that can update a map[K]V in place.
+// UpdateMap is used to build a new FuncCollect that can update a map[K]V in place.
 // It updates the element at Tuple.Key() with the provided FuncUpdate.
 // Classic update functions could be fnmath.Max, fnmath.Min, or fnmath.Sum.
 //
@@ -128,13 +128,13 @@ func GroupBy[K comparable, V any](into map[K][]V, tup Tuple[K, V]) map[K][]V {
 //
 //	names := fn.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 //	tups := fn.ZipOf[string, int](names, Constant(1))
-//	res := fn.Into(nil, fn.UpdateAssoc[string, int](fnmath.Sum[int]), tups)
+//	res := fn.Into(nil, fn.UpdateMap[string, int](fnmath.Sum[int]), tups)
 //	fmt.Println(res)
 //
 // Prints:
 //
 //	map[alan:2 bob:3 scotty:1]
-func UpdateAssoc[K comparable, V any](updater FuncUpdate[V]) FuncCollect[map[K]V, Tuple[K, V]] {
+func UpdateMap[K comparable, V any](updater FuncUpdate[V]) FuncCollect[map[K]V, Tuple[K, V]] {
 	return func(into map[K]V, tup Tuple[K, V]) map[K]V {
 		if into == nil {
 			into = make(map[K]V)
@@ -257,9 +257,9 @@ func Not[T any](pred Predicate[T]) Predicate[T] {
 	}
 }
 
-// TupleWithKey creates a FuncMap to use with MapOf or Map.
+// TupleWithKey creates a FuncMap to use with MappingOf or Map.
 // The returned function yields Tuples keyed by the keySelector's return value.
-// Usually used in conjunction with Into and MakeAssoc to build a map[K]V.
+// Usually used in conjunction with Into and MakeMap to build a map[K]V.
 func TupleWithKey[K comparable, V any](keySelector FuncMap[V, K]) func(V) Tuple[K, V] {
 	return func(v V) Tuple[K, V] {
 		return TupleOf(keySelector(v), v)
@@ -272,8 +272,8 @@ func TupleWithKey[K comparable, V any](keySelector FuncMap[V, K]) func(V) Tuple[
 // In other languages and libraries this function is also known as "reduce" or "fold".
 //
 // This library ships with a suite of standard collector functions.
-// These include Append, MakeAssoc, MakeSet, MakeString, MakeBytes, Count,
-// GroupBy, UpdateAssoc, UpdateArray, fnmath.Sum, fnmath.Min, fnmath.Max,.
+// These include Append, MakeMap, MakeSet, MakeString, MakeBytes, Count,
+// GroupBy, UpdateMap, UpdateArray, fnmath.Sum, fnmath.Min, fnmath.Max,.
 //
 // The first argument, "into", can often be left as nil. It is the initial state for the collector.
 // If you want to pre-allocate or reuse a buffer you can pass it in here. Or if you want to have
@@ -376,7 +376,7 @@ func One[T any](seq Seq[T]) opt.Opt[T] {
 //
 // Checking if a seq is empty is rarely necessary. All operations are valid on an empty sequence,
 // even nil is a valid Slice. Just consume the seq and check the resulting opt.Opt or Slice.
-// Note than you can use the normal len() function on Slice, Set, Assoc, Chan, and String.
+// Note than you can use the normal len() function on Slice, Set, Map, Chan, and String.
 func IsEmpty[T any](seq Seq[T]) bool {
 	if sz, ok := seq.Len(); ok {
 		return sz == 0

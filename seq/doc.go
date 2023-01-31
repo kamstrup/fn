@@ -10,7 +10,7 @@
 // encapsulate an error.
 //
 // There are seqs for working with slices (see SliceOf, SliceOfArgs),
-// maps and sets (see AssocOf and SetOf), channels (see ChanOf), numeric ranges
+// maps and sets (see MapOf and SetOf), channels (see ChanOf), numeric ranges
 // (see RangeOf), or created from generator functions (see SourceOf).
 // Seqs can be joined with ConcatOf and FlattenOf, split with SplitOf,
 // iterated in parallel as Tuple with ZipOf.

@@ -60,16 +60,16 @@ func TestExampleUsersById(t *testing.T) {
 	// Now let's print the IDs of the users without names, sorted reverse alphabetically
 	usersWithEmptyNames := seq.SliceOf(users).
 		Where(seq.Not((*User).HasName))
-	idsWithEmptyNames := seq.MapOf(usersWithEmptyNames, (*User).ID).
+	idsWithEmptyNames := seq.MappingOf(usersWithEmptyNames, (*User).ID).
 		Values().
 		Sort(seq.OrderDesc[string])
 	fmt.Println("These user IDs do not have a name:", idsWithEmptyNames)
 
 	// Let's create a map[userID]*User:
 	// First we create a Seq of Tuples(userId, User)
-	usersWithIDs := seq.MapOf(seq.SliceOf(users), seq.TupleWithKey((*User).ID))
-	// Now flush that Seq of tuples into the MakeAssoc collector
-	usersByIDs := seq.Into(nil, seq.MakeAssoc[string, *User], usersWithIDs).Or(nil)
+	usersWithIDs := seq.MappingOf(seq.SliceOf(users), seq.TupleWithKey((*User).ID))
+	// Now flush that Seq of tuples into the MakeMap collector
+	usersByIDs := seq.Into(nil, seq.MakeMap[string, *User], usersWithIDs).Or(nil)
 
 	// usersById is now a map[string]*User. Let's look up some users
 	fmt.Println("User with ID(xyz123):", usersByIDs["xyz123"]) // no one, nil
@@ -88,8 +88,8 @@ func TestExampleUsersById(t *testing.T) {
 	}
 
 	// Let's get a combined list of Users sorted by name
-	allUsers := seq.ConcatOf(seq.AssocOf(usersByIDs), seq.AssocOf(newUsers)) // AssocOf handles maps as Seqs of Tuples
-	allUsersSorted := seq.MapOf(allUsers, seq.TupleValue[string, *User]).
+	allUsers := seq.ConcatOf(seq.MapOf(usersByIDs), seq.MapOf(newUsers)) // MapOf handles maps as Seqs of Tuples
+	allUsersSorted := seq.MappingOf(allUsers, seq.TupleValue[string, *User]).
 		Values().
 		Sort(func(u1, u2 *User) bool { return u1.name < u2.name })
 

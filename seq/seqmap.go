@@ -2,13 +2,13 @@ package seq
 
 import "github.com/kamstrup/fn/opt"
 
-// MapOf creates a new Seq that lazily converts the values, via a FuncMap,
+// MappingOf creates a new Seq that lazily converts the values, via a FuncMap,
 // into another Seq. The returned Seq has the same Seq.Len() as the input Seq.
-// If you are looking for ways to create a Seq from a Go map[K]V please
-// look at AssocOf() or SetOf().
+// If you are looking for ways to create a Seq from a go map[K]V please
+// look at MapOf() or SetOf().
 // If the mapping function is some kind of heavy operation or requires IO,
-// consider using the parallelized version of MapOf called Go.
-func MapOf[S, T any](seq Seq[S], fm FuncMap[S, T]) Seq[T] {
+// consider using the parallelized version of MappingOf called Go.
+func MappingOf[S, T any](seq Seq[S], fm FuncMap[S, T]) Seq[T] {
 	return mappedSeq[S, T]{
 		f:   fm,
 		seq: seq,
@@ -71,7 +71,7 @@ func (m mappedSeq[S, T]) Take(n int) (Slice[T], Seq[T]) {
 	)
 	// Note: we are not calling m.f on the skipped elements
 	head, tail = m.seq.Take(n)
-	return MapOf[S, T](head, m.f).Values(), MapOf(tail, m.f)
+	return MappingOf[S, T](head, m.f).Values(), MappingOf(tail, m.f)
 }
 
 func (m mappedSeq[S, T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
@@ -86,12 +86,12 @@ func (m mappedSeq[S, T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
 		}
 		return false
 	})
-	return arr, MapOf(tail, m.f)
+	return arr, MappingOf(tail, m.f)
 }
 
 func (m mappedSeq[S, T]) Skip(n int) Seq[T] {
 	tail := m.seq.Skip(n)
-	return MapOf(tail, m.f)
+	return MappingOf(tail, m.f)
 }
 func (m mappedSeq[S, T]) Where(pred Predicate[T]) Seq[T] {
 	return whereSeq[T]{
@@ -109,7 +109,7 @@ func (m mappedSeq[S, T]) While(pred Predicate[T]) Seq[T] {
 
 func (m mappedSeq[S, T]) First() (opt.Opt[T], Seq[T]) {
 	s, tail := m.seq.First()
-	return opt.Map(s, m.f), MapOf(tail, m.f)
+	return opt.Map(s, m.f), MappingOf(tail, m.f)
 }
 
 func (m mappedSeq[S, T]) Map(shaper FuncMap[T, T]) Seq[T] {

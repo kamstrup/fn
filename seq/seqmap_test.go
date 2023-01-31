@@ -9,14 +9,14 @@ import (
 )
 
 func TestMapSeq(t *testing.T) {
-	var arr seq.Seq[int] = seq.MapOf(seq.SliceOfArgs(1, 2, 3), func(i int) int {
+	var arr seq.Seq[int] = seq.MappingOf(seq.SliceOfArgs(1, 2, 3), func(i int) int {
 		return i * 2
 	})
 	fntesting.TestOf(t, arr).Is(2, 4, 6)
 }
 
 func TestMapSeqTake(t *testing.T) {
-	head, tail := seq.MapOf[int, int](seq.SliceOfArgs(1, 2, 3), func(i int) int {
+	head, tail := seq.MappingOf[int, int](seq.SliceOfArgs(1, 2, 3), func(i int) int {
 		return i * 2
 	}).Take(2)
 
@@ -25,7 +25,7 @@ func TestMapSeqTake(t *testing.T) {
 }
 
 func TestMapSeqTakeWhile(t *testing.T) {
-	head, tail := seq.MapOf[int, int](seq.SliceOfArgs(1, 2, 3), func(i int) int {
+	head, tail := seq.MappingOf[int, int](seq.SliceOfArgs(1, 2, 3), func(i int) int {
 		return i * 2
 	}).TakeWhile(func(i int) bool { return i <= 4 })
 
@@ -34,7 +34,7 @@ func TestMapSeqTakeWhile(t *testing.T) {
 }
 
 func TestMapSeqSkip(t *testing.T) {
-	tail := seq.MapOf[int, int](seq.SliceOfArgs(1, 2, 3), func(i int) int {
+	tail := seq.MappingOf[int, int](seq.SliceOfArgs(1, 2, 3), func(i int) int {
 		return i * 2
 	}).Skip(1)
 
@@ -42,7 +42,7 @@ func TestMapSeqSkip(t *testing.T) {
 }
 
 func TestMapSeqFirst(t *testing.T) {
-	arr := seq.MapOf[int, int](seq.SliceOfArgs(1, 2, 3), func(i int) int {
+	arr := seq.MappingOf[int, int](seq.SliceOfArgs(1, 2, 3), func(i int) int {
 		return i * 2
 	})
 
@@ -65,7 +65,7 @@ func TestMapSeqFirst(t *testing.T) {
 }
 
 func TestMapWhereAnyAll(t *testing.T) {
-	m := seq.MapOf[int, int](seq.SliceOfArgs(1, 2, 3), func(i int) int {
+	m := seq.MappingOf[int, int](seq.SliceOfArgs(1, 2, 3), func(i int) int {
 		return i * 2
 	})
 
@@ -85,7 +85,7 @@ func TestMapWhereAnyAll(t *testing.T) {
 		t.Errorf("all even numbers should be even!")
 	}
 
-	mz := seq.MapOf[int, int](seq.SliceOfArgs(1, 2, 0, 3), func(i int) int {
+	mz := seq.MappingOf[int, int](seq.SliceOfArgs(1, 2, 0, 3), func(i int) int {
 		return i * 2
 	}).Where(func(i int) bool { return i != 4 })
 

@@ -70,7 +70,7 @@ func (s singletSeq[T]) First() (opt.Opt[T], Seq[T]) {
 }
 
 func (s singletSeq[T]) Map(f FuncMap[T, T]) Seq[T] {
-	return MapOf[T, T](s, f)
+	return MappingOf[T, T](s, f)
 }
 
 func (s singletSeq[T]) Error() error {

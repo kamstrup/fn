@@ -7,6 +7,11 @@ import (
 	"github.com/kamstrup/fn/opt"
 )
 
+// Slice is a type wrapper for standard go slices.
+// You can either create your slices via normal type conversion, Slice[T](mySlice),
+// or more easily (with type inference) via the static constructor SliceAs, and SliceAsArgs.
+//
+// You can use numeric indexing and call len(slice) directly on Slice instances.
 type Slice[T any] []T
 
 func SeqEmpty[T any]() Seq[T] {
@@ -129,6 +134,26 @@ func (a Slice[T]) Map(shaper FuncMap[T, T]) Seq[T] {
 	return mappedSeq[T, T]{
 		f:   shaper,
 		seq: a,
+	}
+}
+
+// Last behaves like the Last function in the seq package, but allows for easier chaining.
+func (a Slice[T]) Last() opt.Opt[T] {
+	if len(a) > 0 {
+		return opt.Of(a[len(a)-1])
+	}
+	return opt.Empty[T]()
+}
+
+// One behaves like the One function in the seq package, but allows for easier chaining.
+func (a Slice[T]) One() opt.Opt[T] {
+	switch len(a) {
+	case 0:
+		return opt.ErrorOf[T](opt.ErrEmpty)
+	case 1:
+		return opt.Of(a[0])
+	default:
+		return opt.ErrorOf[T](ErrNotOne)
 	}
 }
 

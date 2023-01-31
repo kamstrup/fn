@@ -38,7 +38,7 @@ func TestExampleUserIndexes(t *testing.T) {
 	// In this example we examine a sequence of usernames, and record the index of each occurrence
 	names := seq.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 	tups := seq.ZipOf[string, int](names, seq.RangeFrom(0))
-	userIndexes := seq.Into(nil, seq.GroupBy[string, int], tups)
+	userIndexes := seq.Reduce(seq.GroupBy[string, int], nil, tups)
 	fmt.Println("Indexes of user names from", names, "\n", userIndexes)
 }
 
@@ -49,13 +49,13 @@ func TestExampleUserSerial(t *testing.T) {
 		Where(seq.IsNonZero[string])
 	tups := seq.ZipOf[string, int](names, seq.Constant(-1)) // the tuple seq is needed for UpdateMap
 	serial := 0
-	userSerials := seq.Into(nil, seq.UpdateMap[string, int](func(oldSerial, _ int) int {
+	userSerials := seq.Reduce(seq.UpdateMap[string, int](func(oldSerial, _ int) int {
 		if oldSerial == 0 {
 			serial += 1
 			return serial
 		}
 		return oldSerial
-	}), tups)
+	}), nil, tups)
 	fmt.Println("User serials from", names, "\n", userSerials)
 }
 

@@ -59,7 +59,7 @@ func TestStats(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			data := seq.SliceOf(tc.input)
-			opt := seq.Into(Stats[int]{}, MakeStats[int], data)
+			opt := seq.Reduce(MakeStats[int], Stats[int]{}, data)
 			if len(tc.input) == 0 {
 				if opt.Ok() {
 					t.Fatalf("Stats opt should be empty when input is empty")

@@ -4,9 +4,9 @@ import "testing"
 
 func TestInto(t *testing.T) {
 	vals := []int{1, 2, 3}
-	sum := Into(0, func(res, e int) int {
+	sum := Reduce(func(res, e int) int {
 		return res + e
-	}, vals)
+	}, 0, vals)
 
 	if sum != 6 {
 		t.Fatalf("bad result: %v", sum)

@@ -90,7 +90,7 @@ func (c concatSeq[T]) Values() Slice[T] {
 		buf = make([]T, 0, sz)
 	}
 
-	buf = Into(buf, Append[T], c.seq()).Or(nil) // careful: errors silently dropped
+	buf = Reduce(Append[T], buf, c.seq()).Or(nil) // careful: errors silently dropped
 	return buf
 }
 

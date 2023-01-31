@@ -69,7 +69,7 @@ func TestExampleUsersById(t *testing.T) {
 	// First we create a Seq of Tuples(userId, User)
 	usersWithIDs := seq.MappingOf(seq.SliceOf(users), seq.TupleWithKey((*User).ID))
 	// Now flush that Seq of tuples into the MakeMap collector
-	usersByIDs := seq.Into(nil, seq.MakeMap[string, *User], usersWithIDs).Or(nil)
+	usersByIDs := seq.Reduce(seq.MakeMap[string, *User], nil, usersWithIDs).Or(nil)
 
 	// usersById is now a map[string]*User. Let's look up some users
 	fmt.Println("User with ID(xyz123):", usersByIDs["xyz123"]) // no one, nil

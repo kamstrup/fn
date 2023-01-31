@@ -23,10 +23,6 @@ that makes it even more fun to write Go code.
  * No dependencies. Only the Go standard library.
  * Include simple affordances to interop with constructs from the Go standard
    library, but no big new frameworking for doing IO or other stuff.
- * If we start talking about "monoids", "transducers", and even simpler terms
-   like "fold", and "reduce", 75% of developers will start to zone out or just walk away.
-   We prioritize simple, well-known, terms that produce readable code that most
-   developers will have a chance of understanding and enjoying.
 
 [1]: Some of the more advanced functional data types, like the ones mentioned,
 are definitely super useful and would fit well in some extension library for Fn().
@@ -50,7 +46,7 @@ The "inverse" of this operation looks like:
 head, tail = tail.First() // pops the first element and returns a new tail
 ```
 There are many easier ways to walk a Seq though. For example via `sq.ForEach()`
-, `sq.Take()`, and `seq.Into()`. See [Iterating Over a Seq](#iterating-over-a-seq).
+, `sq.Take()`, and `seq.Reduce()`. See [Iterating Over a Seq](#iterating-over-a-seq).
 
 Generally seqs are immutable. Any exception to this will be clearly documented. 
 
@@ -196,18 +192,18 @@ The simplest way to collect results from a Seq is to call `sq.Array()`.
 It is often desirable to collect the elements into another structure that is not
 just a slice. Maybe some sort of map, buffer, or completely custom data type.
 
-To this end Fn has the functions `Into()` and `IntoErr()`. This is often
-also known as "reduce" or "fold" in functional programming terminology.
+To this end Fn has the functions `Reduce()`. This is also known as "fold" in
+functional programming terminology.
 
-#### Building a string with Into()
+#### Building a string with Reduce()
 ```go
 strs := seq.SliceOfArgs("one", "two")
-res := seq.Into(nil, seq.MakeString, strs)
+res := seq.Reduce(nil, seq.MakeString, strs)
 // res is an Opt[string] with the value "onetwo"
 ```
 
-#### Collector Functions For seq.Into()
-The second argument to `Into()` is a *collector function*.
+#### Collector Functions For seq.Reduce()
+The first argument to `Reduce()` is a *collector function*.
 Fn ships with a suite of standard collectors in the `seq` package, including:
 `Append`, `MakeMap`, `MakeSet`, `MakeString`, `MakeBytes`,
 `fnmath.Sum`, `Count`, `fnmath.Min`, `fnmath.Max`, and `GroupBy`. There
@@ -229,7 +225,7 @@ users := seq.ArrayOf(usersSlice)
 userTuples := seq.MapOf(users, seq.TupleWithKey(u *User) UserID {
    return u.ID
 })
-usersByID := seq.Into(nil, seq.MakeMap, userTuples).Or(nil)
+usersByID := seq.Reduce(nil, seq.MakeMap, userTuples).Or(nil)
 // usersByID is a map[UserID]*User, the '.Or(nil)' above converts the Opt result to nil if there are errors
 ```
 
@@ -245,7 +241,7 @@ element into the map:
 ```go
 names := seq.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 tups := seq.ZipOf[string, int](names, seq.Constant(1))
-res := seq.Into(nil, seq.UpdateMap[string, int](seq.Sum[int]), tups)
+res := seq.Reduce(nil, seq.UpdateMap[string, int](seq.Sum[int]), tups)
 // res is an Opt[map[string,int]] with the value:
 // map[string]int{
 //   "bob":    3,
@@ -283,25 +279,23 @@ seq.Do(nums)
 ```
 
 ### Opts
-Some operations return `Opt[T]`, notably `sq.First()` and `Into()`.
+Some operations return `Opt[T]`, notably `sq.First()` and `Reduce()`.
 Opts are used to represent a value that might not be there (if the seq is empty), or capture potential errors.
 An opt with a captured error is considered empty, and empty opts will report the error `seq.ErrEmpty`.
 
 They have a range of helper API that allows for easy chaining:
 ```go
-opt.Must()   // Returns T or panics if the if the opt is empty
-opt.Empty()  // True if there was an error or no value is captured
-opt.Ok()     // Opposite of Empty()
-opt.Return() // Unpacks into standard "T, error" pair
-opt.Or(val)  // Returns val if opt is empty, or the option's own value if non-empty
+op.Must()   // Returns T or panics if the if the opt is empty
+op.Empty()  // True if there was an error or no value is captured
+op.Ok()     // Opposite of Empty()
+op.Return() // Unpacks into standard "T, error" pair
+op.Or(val)  // Returns val if opt is empty, or the option's own value if non-empty
+op.Map(func(val T) T { ... }) // Converts the value to something of the same type
+op.Error()  // Returns nil, seq.ErrEmpty, or any captured error
+op.OnErr(func (error) T { ... }) // Returns the opt value T, or invokes a callback with the error
 
-opt.Map(func(val T) T { ... }) // Converts the value to something of the same type
-OptMap(opt, func(val T) S)     // Converts the opt into another type
-
-opt.Seq() // Interprets the option as a single-valued Seq
-
-opt.Error() // Returns nil, seq.ErrEmpty, or any captured error
-opt.OnErr(func (error) T { ... }) // Returns the opt value T, or invokes a callback with the error
+// And the static function:
+opt.Map(opt, func(val S) T) Opt[T]  // Converts the opt from type S to T
 ```
 
 **Opt Misconceptions and Pitfalls**: Opts should be passed by value, on the stack.
@@ -344,7 +338,7 @@ When you execute a Seq the "empty" tail Seq from ForEach() and other operations 
 errors.
 
 Alternatively you can wrap results in `Opt[T]` which can also capture an error.
-Any error encountered via `sq.First()` or `seq.Into()` are reported via opts.
+Any error encountered via `sq.First()` or `seq.Reduce()` are reported via opts.
 
 ## The Fx Package - Simplified Fn
 Fn includes a minimal sub-library called Fx that works directly on standard Go
@@ -375,7 +369,7 @@ POTENTIAL FUTURE FEATURES (in order of prio)
 * Special seqs for Map.Keys() and Map.Values()
 * sq.Limit(n) Seq[T], lazy counterpart to sq.Take(n)
 * RunesOf(string) Seq[rune]
-* MakeChan collector func for Into()?
+* MakeChan collector func for Reduce()?
 * A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
 * MultiChan() Seq that selects on multiple chan T?
 * Something for context.Context? Support cancel() cb and Done() chans? fncontext package...
@@ -390,5 +384,5 @@ POTENTIAL FUTURE FEATURES (in order of prio)
 POTENTIAL FUTURE OPTIMIZATIONS
 * EmptySeq impl. (currently just wraps an empty slice), but an empty struct{} would do even better
 * Look for allocating buffers of right size where we can
-* Can we do some clever allocations in seq.Into() when seed is nil?
+* Can we do some clever allocations in seq.Reduce() when seed is nil?
 ```

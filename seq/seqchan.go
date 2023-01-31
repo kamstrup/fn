@@ -32,7 +32,7 @@ func (c Chan[T]) Len() (int, bool) {
 }
 
 func (c Chan[T]) Values() Slice[T] {
-	return Into(nil, Append[T], c.Seq()).Or(nil) // careful: errors silently dropped
+	return Reduce(Append[T], nil, c.Seq()).Or(nil) // careful: errors silently dropped
 }
 
 func (c Chan[T]) Take(n int) (Slice[T], Seq[T]) {

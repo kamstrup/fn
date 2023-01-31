@@ -52,7 +52,7 @@ func Uniq[T comparable](slice []T) []T {
 //	// dict maps word indexes in the corpus:
 //	//    map[string]uint16{"one": 0, "two": 1, "three": 2, "four": 3}
 //
-// # Example 2: Representing Words as Offsets Into A Corpus
+// # Example 2: Representing Words as Offsets Reduce A Corpus
 //
 //		// With the 'corpus' and 'dict' variables from Example 1
 //	 lastWords := []string{"one", "two", "five"}

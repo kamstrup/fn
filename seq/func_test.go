@@ -21,12 +21,12 @@ func TestZeroes(t *testing.T) {
 func TestCollectCount(t *testing.T) {
 	arr := seq.SliceOfArgs[int](1, 2, 3)
 
-	count := seq.Into(0, seq.Count[int], arr)
+	count := seq.Reduce(seq.Count[int], 0, arr)
 	if count.Must() != 3 {
 		t.Errorf("expected count 3: %d", count)
 	}
 
-	count = seq.Into(0, seq.Count[int], seq.SeqEmpty[int]())
+	count = seq.Reduce(seq.Count[int], 0, seq.SeqEmpty[int]())
 	if !count.Empty() || count.Ok() {
 		t.Errorf("expected empty count: %v", count)
 	}
@@ -37,13 +37,13 @@ func TestCollectCount(t *testing.T) {
 
 func TestCollectAppend(t *testing.T) {
 	arr := seq.SliceOfArgs[int](1, 2, 3)
-	cpy := seq.Into(nil, seq.Append[int], arr)
+	cpy := seq.Reduce(seq.Append[int], nil, arr)
 	exp := []int{1, 2, 3}
 	if !reflect.DeepEqual(cpy.Must(), exp) {
 		t.Errorf("expected %v, got %v", exp, cpy)
 	}
 
-	ints := seq.Into([]int{27}, seq.Append[int], seq.SeqEmpty[int]())
+	ints := seq.Reduce(seq.Append[int], []int{27}, seq.SeqEmpty[int]())
 	if !ints.Empty() || ints.Ok() {
 		t.Errorf("expected empty min: %v", ints)
 	}
@@ -59,7 +59,7 @@ func TestCollectAssoc(t *testing.T) {
 	arr := seq.MappingOf(oddNums, seq.TupleWithKey(func(i int) string {
 		return strconv.FormatInt(int64(i), 10)
 	}))
-	res := seq.Into(nil, seq.MakeMap[string, int], arr)
+	res := seq.Reduce(seq.MakeMap[string, int], nil, arr)
 	exp := map[string]int{
 		"1": 1, "3": 3,
 	}
@@ -70,7 +70,7 @@ func TestCollectAssoc(t *testing.T) {
 
 func TestCollectSet(t *testing.T) {
 	nums := seq.SliceOfArgs(1, 2, 2, 3, 1)
-	res := seq.Into(nil, seq.MakeSet[int], nums)
+	res := seq.Reduce(seq.MakeSet[int], nil, nums)
 	exp := map[int]struct{}{
 		1: {}, 2: {}, 3: {},
 	}
@@ -81,7 +81,7 @@ func TestCollectSet(t *testing.T) {
 
 func TestCollectString(t *testing.T) {
 	strs := seq.SliceOfArgs("one", "two")
-	res := seq.Into(nil, seq.MakeString, strs)
+	res := seq.Reduce(seq.MakeString, nil, strs)
 	exp := "onetwo"
 	if exp != res.Must().String() {
 		t.Errorf("expected %v, got %v", exp, res)
@@ -91,7 +91,7 @@ func TestCollectString(t *testing.T) {
 func TestCollectGroupBy(t *testing.T) {
 	names := seq.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 	tups := seq.ZipOf[string, int](names, seq.RangeFrom(0))
-	res := seq.Into(nil, seq.GroupBy[string, int], tups)
+	res := seq.Reduce(seq.GroupBy[string, int], nil, tups)
 	exp := map[string][]int{
 		"bob":    {0, 2, 4},
 		"alan":   {1, 5},
@@ -106,7 +106,7 @@ func TestCollectGroupBy(t *testing.T) {
 func TestCollectUpdateAssoc(t *testing.T) {
 	names := seq.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 	tups := seq.ZipOf[string, int](names, seq.Constant(1))
-	res := seq.Into(nil, seq.UpdateMap[string, int](fnmath.Sum[int]), tups)
+	res := seq.Reduce(seq.UpdateMap[string, int](fnmath.Sum[int]), nil, tups)
 	exp := map[string]int{
 		"bob":    3,
 		"alan":   2,
@@ -124,9 +124,9 @@ func TestCollectUpdateArray(t *testing.T) {
 		seq.TupleOf(1, "hello"), seq.TupleOf(2, "hej"),
 		seq.TupleOf(1, "world"), seq.TupleOf(2, "verden"))
 
-	res := seq.Into(nil, seq.UpdateArray[int, string](func(old, new_ string) string {
+	res := seq.Reduce(seq.UpdateArray[int, string](func(old, new_ string) string {
 		return strings.TrimSpace(old + " " + new_)
-	}), hellos)
+	}), nil, hellos)
 
 	exp := []string{
 		"",
@@ -142,7 +142,7 @@ func TestCollectUpdateArray(t *testing.T) {
 func TestCollectError(t *testing.T) {
 	theError := errors.New("the error")
 	errSeq := seq.ErrorOf[int](theError)
-	res := seq.Into(0, fnmath.Sum[int], errSeq)
+	res := seq.Reduce(fnmath.Sum[int], 0, errSeq)
 
 	if res.Error() != theError || res.Ok() {
 		t.Errorf("expected 'the error': %v", res)

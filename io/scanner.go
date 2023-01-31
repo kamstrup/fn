@@ -51,10 +51,10 @@ func (s scannerSeq) Len() (int, bool) {
 }
 
 func (s scannerSeq) Values() BufferArray {
-	tokens := seq.Into(nil, func(tokens [][]byte, tok []byte) [][]byte {
+	tokens := seq.Reduce(func(tokens [][]byte, tok []byte) [][]byte {
 		dupTok := append([]byte{}, tok...) // scanner owns tok, so we copy it
 		return append(tokens, dupTok)
-	}, s.seq()).Or(nil) // careful: errors silently dropped
+	}, nil, s.seq()).Or(nil) // careful: errors silently dropped
 	return tokens
 }
 

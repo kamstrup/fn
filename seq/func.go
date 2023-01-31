@@ -44,18 +44,18 @@ type PredicateErr[T any] func(T) (bool, error)
 // FuncUpdate is used to update an existing 'old' value compared to a 'new_' value, and returning the updated result.
 type FuncUpdate[T any] func(old, new_ T) T
 
-// Count is a FuncCollect for use with Into, that counts the number of elements it sees.
+// Count is a FuncCollect for use with Reduce, that counts the number of elements it sees.
 func Count[T any](into int, _ T) int {
 	return into + 1
 }
 
-// Append is a FuncCollect for use with Into, that uses the standard Go append() function.
+// Append is a FuncCollect for use with Reduce, that uses the standard Go append() function.
 // This function works with nil or a pre-built slice as initial value.
 func Append[T any](into []T, t T) []T {
 	return append(into, t)
 }
 
-// MakeString is a FuncCollect for use with Into that writes strings into a bytes.Buffer.
+// MakeString is a FuncCollect for use with Reduce that writes strings into a bytes.Buffer.
 // This function works with nil or a pre-built bytes.Buffer as initial value.
 func MakeString(into *strings.Builder, s string) *strings.Builder {
 	if into == nil {
@@ -65,7 +65,7 @@ func MakeString(into *strings.Builder, s string) *strings.Builder {
 	return into
 }
 
-// MakeBytes is a FuncCollect for use with Into that writes bytes into a bytes.Buffer.
+// MakeBytes is a FuncCollect for use with Reduce that writes bytes into a bytes.Buffer.
 // This function works with nil or a pre-built bytes.Buffer as initial value.
 func MakeBytes(into *bytes.Buffer, b []byte) *bytes.Buffer {
 	if into == nil {
@@ -103,7 +103,7 @@ func MakeSet[K comparable](into map[K]struct{}, k K) map[K]struct{} {
 //
 //	names := SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 //	tups := ZipOf[string, int](names, RangeFrom(0))
-//	result := Into(nil, GroupBy[string, int], tups)
+//	result := Reduce(nil, GroupBy[string, int], tups)
 //
 // Then the result is
 //
@@ -128,7 +128,7 @@ func GroupBy[K comparable, V any](into map[K][]V, tup Tuple[K, V]) map[K][]V {
 //
 //	names := fn.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 //	tups := fn.ZipOf[string, int](names, Constant(1))
-//	res := fn.Into(nil, fn.UpdateMap[string, int](fnmath.Sum[int]), tups)
+//	res := fn.Reduce(nil, fn.UpdateMap[string, int](fnmath.Sum[int]), tups)
 //	fmt.Println(res)
 //
 // Prints:
@@ -259,29 +259,29 @@ func Not[T any](pred Predicate[T]) Predicate[T] {
 
 // TupleWithKey creates a FuncMap to use with MappingOf or Map.
 // The returned function yields Tuples keyed by the keySelector's return value.
-// Usually used in conjunction with Into and MakeMap to build a map[K]V.
+// Usually used in conjunction with Reduce and MakeMap to build a map[K]V.
 func TupleWithKey[K comparable, V any](keySelector FuncMap[V, K]) func(V) Tuple[K, V] {
 	return func(v V) Tuple[K, V] {
 		return TupleOf(keySelector(v), v)
 	}
 }
 
-// Into executes a Seq, collecting the results via a collection function (FuncCollect).
+// Reduce executes a Seq, collecting the results via a collection function (FuncCollect).
 // The method signature follows append() and copy() conventions,
 // having the destination to put data into first.
-// In other languages and libraries this function is also known as "reduce" or "fold".
+// In other languages and libraries this function is also known as "fold".
 //
 // This library ships with a suite of standard collector functions.
 // These include Append, MakeMap, MakeSet, MakeString, MakeBytes, Count,
 // GroupBy, UpdateMap, UpdateArray, fnmath.Sum, fnmath.Min, fnmath.Max,.
 //
-// The first argument, "into", can often be left as nil. It is the initial state for the collector.
+// The second argument, "into", can often be left as nil. It is the initial state for the collector.
 // If you want to pre-allocate or reuse a buffer you can pass it in here. Or if you want to have
 // a certain prefix on a string you can pass in a strings.Builder where you have added the prefix.
 //
 // If the seq produces and error the returned Opt will capture it, similarly if the seq is empty
-// the returned Opt will be empty.
-func Into[T, E any](into T, collector FuncCollect[T, E], seq Seq[E]) opt.Opt[T] {
+// the returned opt.Opt will be empty.
+func Reduce[T, E any](collector FuncCollect[T, E], into T, seq Seq[E]) opt.Opt[T] {
 	empty := true
 	tail := seq.ForEach(func(elem E) {
 		into = collector(into, elem)

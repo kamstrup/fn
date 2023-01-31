@@ -21,7 +21,7 @@ func SeqEmpty[T any]() Seq[T] {
 // SliceOf returns a slice cast as a Seq implemented by Slice.
 // This method returns a Seq instead of Slice because the Go compiler
 // can not do the required type inference for concrete types implementing
-// generic interfaces. If you need to explicitly use an Slice then you
+// generic interfaces. If you need to explicitly use a Slice then you
 // can use SliceAsArgs, SliceAs, or straight type conversion Slice[T](mySlice).
 func SliceOf[T any](tt []T) Seq[T] {
 	// NOTE: Ideally this function would return Slice[T]

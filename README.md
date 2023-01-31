@@ -78,16 +78,17 @@ If you just want to jump in and see some code you can check out
 [the simple examples](https://github.com/kamstrup/fn/blob/main/examples/simple_test.go).
 Otherwise here follows a brief overview.
 
-Fn also bundles a [very simple sub-library called Fx](#the-fx-package---simplified-fn)
+Fn also bundles a [very simple sub-library called 'slice'](#the-slice-package)
+Fn also bundles a [very simple sub-library called 'slice'](#the-slice-package)
 that you can use to do 1-line functional constructs.
 
 ### Creating Seqs
 We follow the convention that functions for creating a Seq are named with an "Of"-suffix.
 Ie `StringOf()`, `SliceOf` etc. They always return a `Seq[T]`. Functions with an "As"-suffix
 return a specific Seq implementation that allows you to perform type specific operations.
-Fx. like sorting an `Slice`. It is a known limitattion of the Go compiler (v1.19) that it 
+Fx. like sorting a `Slice`. It is a known limitation of the Go compiler (v1.19) that it 
 can not determine that generic structs implement generic interfaces. So in order to use
-an `Slice`, `Map`, `Set`, or `String` as a Seq you need to call `.Seq()` on the instance.
+a `Slice`, `Map`, `Set`, or `String` as a Seq you need to call `.Seq()` on the instance.
 Seq creation funcs that take a variadic list of arguments have an "OfArgs"-suffix.
 
 #### From Standard Go Types
@@ -207,7 +208,7 @@ The first argument to `Reduce()` is a *collector function*.
 Fn ships with a suite of standard collectors in the `seq` package, including:
 `Append`, `MakeMap`, `MakeSet`, `MakeString`, `MakeBytes`,
 `fnmath.Sum`, `Count`, `fnmath.Min`, `fnmath.Max`, and `GroupBy`. There
-are 2 more advanced collection helpers `UpdateMap`, `UpdateArray`.
+are 2 more advanced collection helpers `UpdateMap`, `UpdateSlice`.
 
 #### Building a Map with MakeMap and TupleWithKey
 In order to use `MakeMap` to build a map we need a Seq of
@@ -221,7 +222,7 @@ type UserID uint64
 type User struct { ID UserID ... }
 usersSlice := []*User { ... }
 
-users := seq.ArrayOf(usersSlice)
+users := seq.SliceOf(usersSlice)
 userTuples := seq.MapOf(users, seq.TupleWithKey(u *User) UserID {
    return u.ID
 })
@@ -230,7 +231,7 @@ usersByID := seq.Reduce(nil, seq.MakeMap, userTuples).Or(nil)
 ```
 
 #### Counting Unique Names with UpdateMap
-`UpdateMap` and `UpdateArray` can be used in conjunction with
+`UpdateMap` and `UpdateSlice` can be used in conjunction with
 an *updater* function to create a collector. The updater function
 tells the collector what to do if there is an existing value in a slot.
 
@@ -340,12 +341,12 @@ errors.
 Alternatively you can wrap results in `Opt[T]` which can also capture an error.
 Any error encountered via `sq.First()` or `seq.Reduce()` are reported via opts.
 
-## The Fx Package - Simplified Fn
-Fn includes a minimal sub-library called Fx that works directly on standard Go
-slices and maps and does not use seqs at all. The functions in Fx are intended
+## The slice Package
+Fn includes a minimal sub-library called 'slice' that works directly on standard Go
+slices and maps and does not use seqs at all. The functions in 'slice' are intended
 for doing one-shot conversions and mapping elements 1-1.
 
-You can find a few [examples of how to use Fx](https://github.com/kamstrup/fn/blob/main/examples/fx_test.go)
+You can find a few [examples of how to use 'slice'](https://github.com/kamstrup/fn/blob/main/examples/slice_test.go)
 in the "examples" folder.
 .
 

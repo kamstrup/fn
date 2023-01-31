@@ -5,6 +5,7 @@ import "github.com/kamstrup/fn/opt"
 // Assoc is a type wrapper for Go maps exposing them as a Seq of Tuple[K,V].
 //
 // An Assoc can be used directly as a go map if you instantiate them via AssocAs().
+// That means you can index by K and call len() and cap() on it.
 //
 // Important: Assoc, as all go maps, do not have an intrinsic sort order. Methods
 // returning a subset of the elements will return a random sample. Methods with

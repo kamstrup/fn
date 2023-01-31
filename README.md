@@ -256,16 +256,18 @@ res := seq.Into(nil, seq.UpdateAssoc[string, int](seq.Sum[int]), tups)
 ```
 
 ### Operations on Seqs
-To check if a Seq contains some given element you can use `seq.Any(seq, pred)`:
+To check if a Seq contains some given element you can use `seq.Any(sq, pred)`:
 ```go
 nums := seq.RangeOf(0, 10)
 hasEvenNum := seq.Any(nums, func (n int) bool { return n % 2 == 0})
 hasSeven := seq.Any(nums, seq.Is(7))
 ```
-You can also check if all elements satisfy some criteria with `seq.All(seq, pred)`.
+You can also check if all elements satisfy some criteria with `seq.All(sq, pred)`.
 
 Similar to how you can retrieve the first element in a Seq with `head, tail := sq.First()`
-you can get the last element with `last := seq.Last(seq)`.
+you can get the last element with `last := seq.Last(sq)`.
+
+You can check if a seq is empty with `seq.IsEmpty(sq)`.
 
 Executing a Seq for side effects, fx. printing all elements, can be done with `seq.Do()`:
 ```.go

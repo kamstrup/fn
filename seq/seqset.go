@@ -3,7 +3,8 @@ package seq
 import "github.com/kamstrup/fn/opt"
 
 // Set represents a collection of unique elements, represented as a standard map of empty structs.
-// Sets can be used directly as Go maps if you instantiate them via SetAs().
+// Sets can be used directly as go maps if you instantiate them via SetAs().
+// This means that you can use indexing with K, call len(set), and mutate a Set.
 //
 // Important: Set, as all go maps, do not have an intrinsic sort order. Methods
 // returning a subset of the elements will return a random sample. Methods with

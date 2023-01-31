@@ -33,6 +33,11 @@ type Seq[T any] interface {
 	// Len returns the number of elements in the Seq if it is well-defined.
 	// If the boolean return value is false, the length is not well-defined and is either
 	// LenUnknown or LenInfinite.
+	//
+	// You rarely want to check the length of a Seq. It is mostly intended for cases where
+	// we can pre-allocate suitable size buffers to hold results. If you are looking to check
+	// if a Seq contains a given element, or satisfies some property, you can use Any, All,
+	// Last, One, or IsEmpty.
 	Len() (int, bool)
 	// Values executes the Seq and stores all elements in memory as an Slice
 	Values() Slice[T]

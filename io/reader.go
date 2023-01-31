@@ -1,4 +1,4 @@
-package fnio
+package seqio
 
 import (
 	"bytes"

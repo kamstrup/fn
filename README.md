@@ -188,7 +188,7 @@ seq.LessThan(x) // val < x
 ```
 
 ### Collecting Results
-The simplest way to collect results from a Seq is to call `sq.Array()`.
+The simplest way to collect results from a Seq is to call `sq.Values()`.
 It is often desirable to collect the elements into another structure that is not
 just a slice. Maybe some sort of map, buffer, or completely custom data type.
 
@@ -365,7 +365,7 @@ API CHANGES:
 * Do we need to change seq.Go() to enable better error handling?
 
 POTENTIAL FUTURE FEATURES (in order of prio)
-* fnio.DirOf(dirName), * fnio.DirTreeOf(dirName) (recursive)
+* seqio.DirOf(dirName), seqio.DirTreeOf(dirName) (recursive)
 * Special seqs for Map.Keys() and Map.Values()
 * sq.Limit(n) Seq[T], lazy counterpart to sq.Take(n)
 * RunesOf(string) Seq[rune]

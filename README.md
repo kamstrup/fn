@@ -134,7 +134,7 @@ Functions that do not execute the Seq, but return a new lazy Seq include:
 while := sq.While(predicate)
 where := sq.Where(predicate)
 mappedSameType := sq.Map(func (val T) T { ... }) // the Seq method Map() can only produce a seq of the same type
-mappedOtherType := seq.MapOf(seq, func(val T) S {}) // becomes a Seq[S]
+mappedOtherType := seq.MappingOf(seq, func(val T) S {}) // becomes a Seq[S]
 ```
 
 ### Transforming Seqs
@@ -147,7 +147,7 @@ sq.TakeWhile(predicate) // if you also need the tail
 Transforming elements, mapping them 1-1 is done with
 ```go
 sq.Map(func(t T) T { ... })
-seqT := seq.MapOf(seqS, func(s S) T { ... })
+seqT := seq.MappingOf(seqS, func(s S) T { ... })
 ```
 You can split a `Seq[T]` into sub-seqs with
 ```go
@@ -222,7 +222,7 @@ type User struct { ID UserID ... }
 usersSlice := []*User { ... }
 
 users := seq.SliceOf(usersSlice)
-userTuples := seq.MapOf(users, seq.TupleWithKey(u *User) UserID {
+userTuples := seq.MappingOf(users, seq.TupleWithKey(u *User) UserID {
    return u.ID
 })
 usersByID := seq.Reduce(nil, seq.MakeMap, userTuples).Or(nil)

@@ -126,9 +126,9 @@ func GroupBy[K comparable, V any](into map[K][]V, tup Tuple[K, V]) map[K][]V {
 //
 // Example, counting the number of unique names in a slice:
 //
-//	names := fn.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
-//	tups := fn.ZipOf[string, int](names, Constant(1))
-//	res := fn.Reduce(nil, fn.UpdateMap[string, int](fnmath.Sum[int]), tups)
+//	names := seq.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
+//	tups := seq.ZipOf[string, int](names, Constant(1))
+//	res := seq.Reduce(nil, seq.UpdateMap[string, int](fnmath.Sum[int]), tups)
 //	fmt.Println(res)
 //
 // Prints:

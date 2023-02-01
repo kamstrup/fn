@@ -10,7 +10,7 @@ type Stats[N constraints.Arithmetic] struct {
 	Count         int
 }
 
-// MakeStats is a fn.FuncCollect that computes basic numeric properties of a seq of numbers.
+// MakeStats is a seq.FuncCollect that computes basic numeric properties of a seq of numbers.
 func MakeStats[N constraints.Integer | constraints.Float](s Stats[N], n N) Stats[N] {
 	if s.Count == 0 || n > s.Max {
 		s.Max = n

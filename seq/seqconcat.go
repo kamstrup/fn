@@ -35,7 +35,7 @@ func (c concatSeq[T]) ForEach(f Func1[T]) Seq[T] {
 		})
 	}
 
-	return SeqEmpty[T]()
+	return Empty[T]()
 }
 
 func (c concatSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
@@ -45,7 +45,7 @@ func (c concatSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 		i++
 	})
 
-	return SeqEmpty[T]()
+	return Empty[T]()
 }
 
 func (c concatSeq[T]) Len() (int, bool) {

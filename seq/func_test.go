@@ -26,7 +26,7 @@ func TestCollectCount(t *testing.T) {
 		t.Errorf("expected count 3: %d", count)
 	}
 
-	count = seq.Reduce(seq.Count[int], 0, seq.SeqEmpty[int]())
+	count = seq.Reduce(seq.Count[int], 0, seq.Empty[int]())
 	if !count.Empty() || count.Ok() {
 		t.Errorf("expected empty count: %v", count)
 	}
@@ -43,7 +43,7 @@ func TestCollectAppend(t *testing.T) {
 		t.Errorf("expected %v, got %v", exp, cpy)
 	}
 
-	ints := seq.Reduce(seq.Append[int], []int{27}, seq.SeqEmpty[int]())
+	ints := seq.Reduce(seq.Append[int], []int{27}, seq.Empty[int]())
 	if !ints.Empty() || ints.Ok() {
 		t.Errorf("expected empty min: %v", ints)
 	}
@@ -222,7 +222,7 @@ func TestLast(t *testing.T) {
 		t.Fatal("should be 0", o.Must())
 	}
 
-	o = seq.Last(seq.SeqEmpty[int]())
+	o = seq.Last(seq.Empty[int]())
 	if !o.Empty() {
 		t.Fatal("should be empty", o.Must())
 	}

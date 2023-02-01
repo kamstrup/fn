@@ -45,7 +45,7 @@ func (r Reader) ForEach(f seq.Func1[[]byte]) BufferSeq {
 		r.buf = make([]byte, len(r.buf))
 	}
 
-	return seq.SeqEmpty[[]byte]()
+	return seq.Empty[[]byte]()
 }
 
 // ForEachIndex on a Reader sequence passes the stream offset, not the iteration index to f.
@@ -63,7 +63,7 @@ func (r Reader) ForEachIndex(f seq.Func2[int, []byte]) BufferSeq {
 		i++
 	}
 
-	return seq.SeqEmpty[[]byte]()
+	return seq.Empty[[]byte]()
 }
 
 // Len on a Reader is unknown, unless the underlying io.Reader is an *os.File
@@ -114,7 +114,7 @@ func (r Reader) Take(n int) (BufferArray, BufferSeq) {
 	for i := 0; i < n; i++ {
 		numRead, err := r.r.Read(r.buf)
 		if err == io.EOF && numRead == 0 {
-			return res, seq.SeqEmpty[[]byte]()
+			return res, seq.Empty[[]byte]()
 		} else if err != nil {
 			return res, seq.ErrorOf[[]byte](err)
 		}
@@ -132,7 +132,7 @@ func (r Reader) TakeWhile(pred seq.Predicate[[]byte]) (BufferArray, BufferSeq) {
 	for {
 		numRead, err := r.r.Read(r.buf)
 		if err == io.EOF && numRead == 0 {
-			return res, seq.SeqEmpty[[]byte]()
+			return res, seq.Empty[[]byte]()
 		} else if err != nil {
 			return res, seq.ErrorOf[[]byte](err)
 		}
@@ -149,7 +149,7 @@ func (r Reader) TakeWhile(pred seq.Predicate[[]byte]) (BufferArray, BufferSeq) {
 		}
 	}
 
-	return res, seq.SeqEmpty[[]byte]()
+	return res, seq.Empty[[]byte]()
 }
 
 func (r Reader) Skip(n int) BufferSeq {
@@ -173,9 +173,9 @@ func (r Reader) First() (opt.Opt[[]byte], BufferSeq) {
 	n, err := r.r.Read(r.buf)
 	if err == io.EOF {
 		if n == 0 {
-			return opt.Empty[[]byte](), seq.SeqEmpty[[]byte]()
+			return opt.Empty[[]byte](), seq.Empty[[]byte]()
 		}
-		return opt.Of[[]byte](r.buf[:n]), seq.SeqEmpty[[]byte]()
+		return opt.Of[[]byte](r.buf[:n]), seq.Empty[[]byte]()
 	} else if err != nil {
 		return opt.ErrorOf[[]byte](err), seq.ErrorOf[[]byte](err)
 	}

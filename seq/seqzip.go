@@ -35,7 +35,7 @@ func (z zipSeq[X, Y]) ForEach(f Func1[Tuple[X, Y]]) Seq[Tuple[X, Y]] {
 		}
 	}
 
-	return SeqEmpty[Tuple[X, Y]]()
+	return Empty[Tuple[X, Y]]()
 }
 
 func (z zipSeq[X, Y]) ForEachIndex(f Func2[int, Tuple[X, Y]]) Seq[Tuple[X, Y]] {
@@ -56,7 +56,7 @@ func (z zipSeq[X, Y]) ForEachIndex(f Func2[int, Tuple[X, Y]]) Seq[Tuple[X, Y]] {
 
 	}
 
-	return SeqEmpty[Tuple[X, Y]]()
+	return Empty[Tuple[X, Y]]()
 }
 
 func (z zipSeq[X, Y]) Len() (int, bool) {
@@ -108,7 +108,7 @@ func (z zipSeq[X, Y]) Take(n int) (Slice[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 	if sz, ok := z.Len(); ok {
 		if sz <= n {
 			// Best case
-			return z.Values(), SeqEmpty[Tuple[X, Y]]()
+			return z.Values(), Empty[Tuple[X, Y]]()
 		}
 
 		// We know we have at least n elements in both tx and ty
@@ -217,5 +217,5 @@ func zipErrorTail[X comparable, Y any](fx opt.Opt[X], fy opt.Opt[Y]) Seq[Tuple[X
 	} else if errY := fy.Error(); errY != nil && errY != opt.ErrEmpty {
 		return ErrorOf[Tuple[X, Y]](errY)
 	}
-	return SeqEmpty[Tuple[X, Y]]()
+	return Empty[Tuple[X, Y]]()
 }

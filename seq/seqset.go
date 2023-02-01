@@ -42,7 +42,7 @@ func (s Set[K]) ForEach(f Func1[K]) Seq[K] {
 		f(k)
 	}
 
-	return SeqEmpty[K]()
+	return Empty[K]()
 }
 
 func (s Set[K]) ForEachIndex(f Func2[int, K]) Seq[K] {
@@ -52,7 +52,7 @@ func (s Set[K]) ForEachIndex(f Func2[int, K]) Seq[K] {
 		idx++
 	}
 
-	return SeqEmpty[K]()
+	return Empty[K]()
 }
 
 func (s Set[K]) Len() (int, bool) {
@@ -148,7 +148,7 @@ func (s Set[K]) Skip(n int) Seq[K] {
 	)
 	sz := len(s)
 	if n >= sz {
-		return SeqEmpty[K]()
+		return Empty[K]()
 	} else {
 		tail = make([]K, sz-n)
 	}

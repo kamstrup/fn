@@ -14,7 +14,7 @@ type singletSeq[T any] struct {
 func OptOf[T any](op opt.Opt[T]) Seq[T] {
 	if err := op.Error(); err != nil {
 		if err == opt.ErrEmpty {
-			return SeqEmpty[T]()
+			return Empty[T]()
 		}
 		return ErrorOf[T](err)
 	}
@@ -28,12 +28,12 @@ func SingletOf[T any](t T) Seq[T] {
 
 func (s singletSeq[T]) ForEach(f Func1[T]) Seq[T] {
 	f(s.val)
-	return SeqEmpty[T]()
+	return Empty[T]()
 }
 
 func (s singletSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 	f(0, s.val)
-	return SeqEmpty[T]()
+	return Empty[T]()
 }
 
 func (s singletSeq[T]) Len() (int, bool) {
@@ -48,12 +48,12 @@ func (s singletSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	if n == 0 {
 		return Slice[T]{}, s
 	}
-	return Slice[T]{s.val}, SeqEmpty[T]()
+	return Slice[T]{s.val}, Empty[T]()
 }
 
 func (s singletSeq[T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
 	if pred(s.val) {
-		return Slice[T]{s.val}, SeqEmpty[T]()
+		return Slice[T]{s.val}, Empty[T]()
 	}
 	return Slice[T]{}, s
 }
@@ -62,25 +62,25 @@ func (s singletSeq[T]) Skip(n int) Seq[T] {
 	if n == 0 {
 		return s
 	}
-	return SeqEmpty[T]()
+	return Empty[T]()
 }
 
 func (s singletSeq[T]) Where(pred Predicate[T]) Seq[T] {
 	if pred(s.val) { // eager impl, for optimization
 		return s
 	}
-	return SeqEmpty[T]()
+	return Empty[T]()
 }
 
 func (s singletSeq[T]) While(pred Predicate[T]) Seq[T] {
 	if pred(s.val) { // eager impl, for optimization
 		return s
 	}
-	return SeqEmpty[T]()
+	return Empty[T]()
 }
 
 func (s singletSeq[T]) First() (opt.Opt[T], Seq[T]) {
-	return opt.Of(s.val), SeqEmpty[T]()
+	return opt.Of(s.val), Empty[T]()
 }
 
 func (s singletSeq[T]) Map(f FuncMap[T, T]) Seq[T] {

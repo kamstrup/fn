@@ -135,7 +135,7 @@ func (s scannerSeq) errOrEmpty() BufferSeq {
 	if err := s.Error(); err != nil {
 		return seq.ErrorOf[[]byte](err)
 	}
-	return seq.SeqEmpty[[]byte]()
+	return seq.Empty[[]byte]()
 }
 
 func (s scannerSeq) seq() BufferSeq {

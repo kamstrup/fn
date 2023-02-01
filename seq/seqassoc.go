@@ -50,7 +50,7 @@ func (a Map[K, V]) ForEach(f Func1[Tuple[K, V]]) Seq[Tuple[K, V]] {
 		f(Tuple[K, V]{k, v})
 	}
 
-	return SeqEmpty[Tuple[K, V]]()
+	return Empty[Tuple[K, V]]()
 }
 
 func (a Map[K, V]) ForEachIndex(f Func2[int, Tuple[K, V]]) Seq[Tuple[K, V]] {
@@ -60,7 +60,7 @@ func (a Map[K, V]) ForEachIndex(f Func2[int, Tuple[K, V]]) Seq[Tuple[K, V]] {
 		idx++
 	}
 
-	return SeqEmpty[Tuple[K, V]]()
+	return Empty[Tuple[K, V]]()
 }
 
 func (a Map[K, V]) Len() (int, bool) {
@@ -157,7 +157,7 @@ func (a Map[K, V]) Skip(n int) Seq[Tuple[K, V]] {
 	)
 	sz := len(a)
 	if n >= sz {
-		return SeqEmpty[Tuple[K, V]]()
+		return Empty[Tuple[K, V]]()
 	} else {
 		tail = make([]Tuple[K, V], sz-n)
 	}

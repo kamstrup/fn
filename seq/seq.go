@@ -69,5 +69,5 @@ func errOrEmpty[T any](seq Seq[T]) Seq[T] {
 	if err := Error(seq); err != nil {
 		return ErrorOf[T](err)
 	}
-	return SeqEmpty[T]()
+	return Empty[T]()
 }

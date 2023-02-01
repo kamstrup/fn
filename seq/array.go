@@ -14,7 +14,8 @@ import (
 // You can use numeric indexing and call len(slice) directly on Slice instances.
 type Slice[T any] []T
 
-func SeqEmpty[T any]() Seq[T] {
+// Empty returns an empty seq
+func Empty[T any]() Seq[T] {
 	return Slice[T](nil)
 }
 
@@ -29,7 +30,7 @@ func SliceOf[T any](tt []T) Seq[T] {
 	// Alas, as of Go 1.19 this is not possible.
 	// See https://github.com/golang/go/issues/41176
 	if len(tt) == 0 {
-		return SeqEmpty[T]()
+		return Empty[T]()
 	} else if len(tt) == 1 {
 		return SingletOf(tt[0])
 	}
@@ -63,7 +64,7 @@ func (a Slice[T]) ForEach(f Func1[T]) Seq[T] {
 		f(v)
 	}
 
-	return SeqEmpty[T]()
+	return Empty[T]()
 }
 
 func (a Slice[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
@@ -71,7 +72,7 @@ func (a Slice[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 		f(i, v)
 	}
 
-	return SeqEmpty[T]()
+	return Empty[T]()
 }
 
 func (a Slice[T]) Len() (int, bool) {
@@ -84,7 +85,7 @@ func (a Slice[T]) Values() Slice[T] {
 
 func (a Slice[T]) Take(n int) (Slice[T], Seq[T]) {
 	if len(a) <= n {
-		return a, SeqEmpty[T]()
+		return a, Empty[T]()
 	}
 	return a[:n], a[n:]
 }
@@ -95,7 +96,7 @@ func (a Slice[T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
 			return a[:i], a[i:]
 		}
 	}
-	return a, SeqEmpty[T]()
+	return a, Empty[T]()
 }
 
 func (a Slice[T]) Skip(n int) Seq[T] {
@@ -104,7 +105,7 @@ func (a Slice[T]) Skip(n int) Seq[T] {
 	}
 
 	if len(a) <= n {
-		return SeqEmpty[T]()
+		return Empty[T]()
 	}
 	return a[n:]
 }

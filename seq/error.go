@@ -26,7 +26,7 @@ func Error(x any) error {
 // If the error argument is nil or opt.ErrEmpty a non-error empty seq is returned.
 func ErrorOf[T any](err error) Seq[T] {
 	if err == opt.ErrEmpty || err == nil {
-		return SeqEmpty[T]()
+		return Empty[T]()
 	}
 	return errorSeq[T]{err}
 }

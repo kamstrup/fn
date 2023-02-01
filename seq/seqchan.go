@@ -14,7 +14,7 @@ func (c Chan[T]) ForEach(f Func1[T]) Seq[T] {
 		f(t)
 	}
 
-	return SeqEmpty[T]()
+	return Empty[T]()
 }
 
 func (c Chan[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
@@ -24,7 +24,7 @@ func (c Chan[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 		i++
 	}
 
-	return SeqEmpty[T]()
+	return Empty[T]()
 }
 
 func (c Chan[T]) Len() (int, bool) {
@@ -51,7 +51,7 @@ func (c Chan[T]) Take(n int) (Slice[T], Seq[T]) {
 	}
 
 	// If we get here c was closed
-	return head, SeqEmpty[T]()
+	return head, Empty[T]()
 }
 
 func (c Chan[T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
@@ -65,7 +65,7 @@ func (c Chan[T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
 	}
 
 	// if we get here c was closed
-	return arr, SeqEmpty[T]()
+	return arr, Empty[T]()
 }
 
 func (c Chan[T]) Skip(n int) Seq[T] {
@@ -81,7 +81,7 @@ func (c Chan[T]) Skip(n int) Seq[T] {
 		}
 	}
 
-	return SeqEmpty[T]() // if we get here c was closed
+	return Empty[T]() // if we get here c was closed
 }
 
 func (c Chan[T]) Where(pred Predicate[T]) Seq[T] {
@@ -101,7 +101,7 @@ func (c Chan[T]) While(pred Predicate[T]) Seq[T] {
 func (c Chan[T]) First() (opt.Opt[T], Seq[T]) {
 	t, ok := <-c
 	if !ok {
-		return opt.Empty[T](), SeqEmpty[T]()
+		return opt.Empty[T](), Empty[T]()
 	}
 	return opt.Of(t), c
 }

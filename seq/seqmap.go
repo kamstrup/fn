@@ -29,7 +29,7 @@ func (m mappedSeq[S, T]) ForEach(f Func1[T]) Seq[T] {
 	if err := Error(res); err != nil {
 		return ErrorOf[T](err)
 	}
-	return SeqEmpty[T]()
+	return Empty[T]()
 }
 
 func (m mappedSeq[S, T]) ForEachIndex(f Func2[int, T]) Seq[T] {
@@ -41,7 +41,7 @@ func (m mappedSeq[S, T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 	if err := Error(res); err != nil {
 		return ErrorOf[T](err)
 	}
-	return SeqEmpty[T]()
+	return Empty[T]()
 }
 
 func (m mappedSeq[S, T]) Len() (int, bool) {

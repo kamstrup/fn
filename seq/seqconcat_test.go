@@ -25,6 +25,6 @@ func TestConcatError(t *testing.T) {
 
 func TestConcatWithEmpty(t *testing.T) {
 	fntesting.SuiteOf(t, func() seq.Seq[int] {
-		return seq.ConcatOf(seq.SeqEmpty[int](), seq.SingletOf(1), seq.SliceOfArgs(2, 3))
+		return seq.ConcatOf(seq.Empty[int](), seq.SingletOf(1), seq.SliceOfArgs(2, 3))
 	}).Is(1, 2, 3)
 }

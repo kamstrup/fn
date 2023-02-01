@@ -19,7 +19,7 @@ func (s String) ForEach(f Func1[byte]) Seq[byte] {
 		f(s[i])
 	}
 
-	return SeqEmpty[byte]()
+	return Empty[byte]()
 }
 
 func (s String) ForEachIndex(f Func2[int, byte]) Seq[byte] {
@@ -29,7 +29,7 @@ func (s String) ForEachIndex(f Func2[int, byte]) Seq[byte] {
 		f(i, s[i])
 	}
 
-	return SeqEmpty[byte]()
+	return Empty[byte]()
 }
 
 func (s String) Len() (int, bool) {
@@ -42,7 +42,7 @@ func (s String) Values() Slice[byte] {
 
 func (s String) Take(n int) (Slice[byte], Seq[byte]) {
 	if len(s) <= n {
-		return []byte(s), SeqEmpty[byte]()
+		return []byte(s), Empty[byte]()
 	}
 	return []byte(s[:n]), s[n:]
 }
@@ -53,12 +53,12 @@ func (s String) TakeWhile(pred Predicate[byte]) (Slice[byte], Seq[byte]) {
 			return []byte(s[:i]), s[i:]
 		}
 	}
-	return []byte(s), SeqEmpty[byte]()
+	return []byte(s), Empty[byte]()
 }
 
 func (s String) Skip(n int) Seq[byte] {
 	if len(s) <= n {
-		return SeqEmpty[byte]()
+		return Empty[byte]()
 	}
 	return s[n:]
 }

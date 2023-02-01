@@ -14,7 +14,7 @@ func TestCollectSum(t *testing.T) {
 		t.Errorf("expected sum 6: %d", sum)
 	}
 
-	sum = seq.Reduce(Sum[int], 27, seq.SeqEmpty[int]())
+	sum = seq.Reduce(Sum[int], 27, seq.Empty[int]())
 	if !sum.Empty() || sum.Ok() {
 		t.Errorf("expected empty sum: %v", sum)
 	}
@@ -30,7 +30,7 @@ func TestCollectMinMax(t *testing.T) {
 		t.Errorf("expected min -1: %d", min)
 	}
 
-	min = seq.Reduce(Min[int], 27, seq.SeqEmpty[int]())
+	min = seq.Reduce(Min[int], 27, seq.Empty[int]())
 	if !min.Empty() || min.Ok() {
 		t.Errorf("expected empty min: %v", min)
 	}
@@ -43,7 +43,7 @@ func TestCollectMinMax(t *testing.T) {
 		t.Errorf("expected max 3: %d", max)
 	}
 
-	max = seq.Reduce(Max[int], 27, seq.SeqEmpty[int]())
+	max = seq.Reduce(Max[int], 27, seq.Empty[int]())
 	if !max.Empty() || max.Ok() {
 		t.Errorf("expected empty max: %v", min)
 	}

@@ -20,7 +20,7 @@ func RangeStepOf[N constraints.Integer](from, to, step N) Seq[N] {
 		panic("range step must be non-zero")
 	}
 	if from == to {
-		return SeqEmpty[N]()
+		return Empty[N]()
 	}
 
 	// We must work with a positive step, in order to support unsigned numbers
@@ -61,7 +61,7 @@ func (r rangeSeq[N]) ForEach(f Func1[N]) Seq[N] {
 		}
 	}
 
-	return SeqEmpty[N]()
+	return Empty[N]()
 }
 
 func (r rangeSeq[N]) ForEachIndex(f Func2[int, N]) Seq[N] {
@@ -78,7 +78,7 @@ func (r rangeSeq[N]) ForEachIndex(f Func2[int, N]) Seq[N] {
 		}
 	}
 
-	return SeqEmpty[N]()
+	return Empty[N]()
 }
 
 func (r rangeSeq[N]) Len() (int, bool) {
@@ -122,7 +122,7 @@ func (r rangeSeq[N]) Values() Slice[N] {
 func (r rangeSeq[N]) Take(n int) (Slice[N], Seq[N]) {
 	sz, _ := r.Len()
 	if n >= sz {
-		return r.Values(), SeqEmpty[N]()
+		return r.Values(), Empty[N]()
 	}
 
 	// n < sz
@@ -163,7 +163,7 @@ func (r rangeSeq[N]) TakeWhile(pred Predicate[N]) (Slice[N], Seq[N]) {
 		}
 	}
 
-	return arr, SeqEmpty[N]()
+	return arr, Empty[N]()
 }
 
 func (r rangeSeq[N]) Skip(n int) Seq[N] {
@@ -172,7 +172,7 @@ func (r rangeSeq[N]) Skip(n int) Seq[N] {
 	}
 
 	if sz, _ := r.Len(); n >= sz {
-		return SeqEmpty[N]()
+		return Empty[N]()
 	}
 
 	if r.to > r.from {
@@ -207,7 +207,7 @@ func (r rangeSeq[N]) First() (opt.Opt[N], Seq[N]) {
 		}
 	}
 
-	return opt.Of(r.from), SeqEmpty[N]()
+	return opt.Of(r.from), Empty[N]()
 }
 
 func (r rangeSeq[N]) Map(shaper FuncMap[N, N]) Seq[N] {

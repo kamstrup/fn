@@ -255,8 +255,11 @@ res := seq.Reduce(nil, seq.UpdateMap[string, int](seq.Sum[int]), tups)
 To check if a Seq contains some given element you can use `seq.Any(sq, pred)`:
 ```go
 nums := seq.RangeOf(0, 10)
-hasEvenNum := seq.Any(nums, func (n int) bool { return n % 2 == 0})
-hasSeven := seq.Any(nums, seq.Is(7))
+hasEvenNum := seq.Any(nums, func (n int) bool { return n % 2 == 0}) // true
+hasSeven := seq.Any(nums, seq.Is(7)) // true
+allNonZero := seq.All(nums, seq.IsNonZero[int]) // false
+// Note: Even if all 3 calls to Any, Any, and All above execute the nums seq
+//       this all still work because range-seqs are stateless.
 ```
 You can also check if all elements satisfy some criteria with `seq.All(sq, pred)`.
 
@@ -342,7 +345,7 @@ Alternatively you can wrap results in `Opt[T]` which can also capture an error.
 Any error encountered via `sq.First()` or `seq.Reduce()` are reported via opts.
 
 ## The slice Package
-Fn includes a minimal sub-library called 'slice' that works directly on standard Go
+Fn includes a package called 'slice' that works directly on standard Go
 slices and maps and does not use seqs at all. The functions in 'slice' are intended
 for doing one-shot conversions and mapping elements 1-1.
 

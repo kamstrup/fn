@@ -33,7 +33,6 @@ func FromMap[K comparable, V, T any](m map[K]V, f func(K, V) T) []T {
 
 // ToMap builds a map[K]V from a slice.
 // To build a slice from a map use FromMap.
-// The mnemonic for the function name is that the last word is what you operate on.
 func ToMap[K comparable, V, T any](slice []T, f func(T) (K, V)) map[K]V {
 	m := make(map[K]V, len(slice))
 	for _, t := range slice {

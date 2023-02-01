@@ -28,7 +28,7 @@ func Go[S, T any](seq Seq[S], numJobs int, task FuncMap[S, T]) Seq[T] {
 	// The controlling goroutine
 	go func() {
 		// Start pumping work into chS and indicate completion with close()
-		seq.ForEach(func(s S) {
+		seq.ForEach(func(s S) { // TODO: returned seq should be checked for errors
 			chS <- s
 		})
 		close(chS)

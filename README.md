@@ -389,31 +389,32 @@ execution speed and memory usage will suffer. Fn() is designed to make the best 
 the Go runtime can provide. Initial benchmarks puts it as a top contender among Golang
 functional libraries. See benchmarks here https://github.com/mariomac/go-stream-benchmarks/pull/1
 
+## Experimental Packages
+ * `seqjson` provides Seq[T] based on json.Decoder
+ * `fntesting` contains various utilities to test Seqs
+
 TODO
 ---
 ```
-CHORES:
-* doc.go files
-
 API CHANGES:
 * Do we need to change seq.Go() to enable better error handling?
+* Add Seq.Limit(n) method on Seq interface?
 
-POTENTIAL FUTURE FEATURES (in order of prio)
+POTENTIAL FUTURE FEATURES (unordered)
+* Something for context.Context? Support cancel() cb and Done() chans? fncontext package...
 * seqio.DirOf(dirName), seqio.DirTreeOf(dirName) (recursive)
 * Special seqs for Map.Keys() and Map.Values()
-* sq.Limit(n) Seq[T], lazy counterpart to sq.Take(n)
 * RunesOf(string) Seq[rune]
 * MakeChan collector func for Reduce()?
-* A small JSON package "fnjson" to help reading and writing Seqs of JSON objects
 * MultiChan() Seq that selects on multiple chan T?
-* Something for context.Context? Support cancel() cb and Done() chans? fncontext package...
 * seq.GoErr(seq, numTasks, FuncMapErr) -- or some version of seq.Go() with cancellation and error handling. 
 * Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
 * MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
 * Compound FuncCollect, CollectorOf[S,T any](funcs ... FuncCollect[S,T]) FuncCollect[S,[]T]
-* Seq[Arithmetic] producing random numbers?
+* Seq[Arithmetic] producing random numbers (in fnmath)?
 * Seq for *sql.Rows, with some type safe mechanism for reading rows
 * Promises or Futures that work nicely with Seq and Opt?
+* Some kind of "push seq", or is that just Chan? Some libraries only provide "callback based iteration" for data structures.
 
 POTENTIAL FUTURE OPTIMIZATIONS
 * EmptySeq impl. (currently just wraps an empty slice), but an empty struct{} would do even better

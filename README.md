@@ -98,7 +98,7 @@ set := seq.SetOf(map[string]struct{}{"foo", {}, "bar": {}}) // also: SetAs()
 str := seq.StringOf("hello world") // also: StringAs()
 ch := seq.ChanOf(make(chan T))
 twentySeven := seq.SingletOf(27) // single element Seq
-empty := seq.EmptySeq[int]()
+empty := seq.Empty[int]()
 ```
 
 #### Numeric Ranges

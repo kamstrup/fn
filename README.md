@@ -234,7 +234,7 @@ usersByID := seq.Reduce(nil, seq.MakeMap, userTuples).Or(nil)
 an *updater* function to create a collector. The updater function
 tells the collector what to do if there is an existing value in a slot.
 
-In this example we count the number of occurrences of names in a sq.
+In this example we count the number of occurrences of names in a seq.
 We do this by mapping to names onto a seq of `{name, 1}` tuples and then
 instructing the `UpdateMap` to sum the values every time it merges an
 element into the map:
@@ -282,19 +282,19 @@ seq.Do(nums)
 ```
 
 ### Opts
-Some operations return `Opt[T]`, notably `sq.First()` and `Reduce()`.
+Some operations return `Opt[T]`, notably `sq.First()` and `seq.Reduce()`.
 Opts are used to represent a value that might not be there (if the seq is empty), or capture potential errors.
-An opt with a captured error is considered empty, and empty opts will report the error `seq.ErrEmpty`.
+An opt with a captured error is considered empty, and empty opts will report the error `opt.ErrEmpty`.
 
 They have a range of helper API that allows for easy chaining:
 ```go
-op.Must()   // Returns T or panics if the if the opt is empty
+op.Must()   // Returns T or panics if the opt is empty
 op.Empty()  // True if there was an error or no value is captured
 op.Ok()     // Opposite of Empty()
 op.Return() // Unpacks into standard "T, error" pair
 op.Or(val)  // Returns val if opt is empty, or the option's own value if non-empty
 op.Map(func(val T) T { ... }) // Converts the value to something of the same type
-op.Error()  // Returns nil, seq.ErrEmpty, or any captured error
+op.Error()  // Returns nil, opt.ErrEmpty, or any captured error
 op.OnErr(func (error) T { ... }) // Returns the opt value T, or invokes a callback with the error
 
 // And the static function:
@@ -350,6 +350,38 @@ for doing one-shot conversions and mapping elements 1-1.
 
 You can find a few [examples of how to use 'slice'](https://github.com/kamstrup/fn/blob/main/examples/slice_test.go)
 in the "examples" folder.
+
+## Tips and Tricks
+
+### Don't Check Length or Presence Until the Last step
+All of the code in Fn() works with nil slices and maps, and empty Opts.
+
+For example, to ensure that there is one and only one record with a given ID in the 10 first records
+in some slice:
+```.go
+recordID := 1234
+recSeq := seq.SliceOf(records).
+    Take(10).
+    Where(func(rec *Record) bool { return rec.ID == recordID})
+
+theOneRecord, err := seq.One(recSeq).Return()
+```
+Note how we are not checking the length of 'records', or how many records with the given ID
+we found. That is all handled by `seq.One()`.
+
+### Chan, Map, Set, Slice and String Can be Used As Their Native Go Types
+All the seq constructors names with the "As" suffix return their type wrapper.
+```.go
+myMap := seq.MapAs(make(map[string]int))
+
+// We can do normal map[string]int stuff
+myMap["one"] = 1
+myMapLen := len(myMap)
+for k, v := range myMap { ... }
+
+// But also treat it as a seq
+result := myMap.Where(...).ToSlice()
+```
 
 ## Performance
 If the foundational functional data structures and algorithms is not done carefully,

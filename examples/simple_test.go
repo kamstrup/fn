@@ -22,6 +22,10 @@ func TestExampleSimple(t *testing.T) {
 	// and the Println() statements follow after this Println()
 	fmt.Println("Printing names starting with 'S'...")
 	seq.Do(words)
+	// Prints:
+	// Printing names starting with 'S'...
+	// stream
+	// sock
 
 	// If we wanted to execute immediately we could have replaced the last .Map() with .ForEach()
 }
@@ -31,15 +35,18 @@ func TestExampleContains(t *testing.T) {
 	names := seq.SliceOfArgs("John", "Bobby", "Lisa").
 		Map(strings.ToLower)
 	hasLisa := seq.Any(names, seq.Is("lisa"))
-	fmt.Println(names, "lower-cased contains 'lisa':", hasLisa)
+	fmt.Println(names, "lower-cased contains 'lisa':", hasLisa) // true
 }
 
 func TestExampleUserIndexes(t *testing.T) {
 	// In this example we examine a sequence of usernames, and record the index of each occurrence
 	names := seq.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 	tups := seq.ZipOf[string, int](names, seq.RangeFrom(0))
-	userIndexes := seq.Reduce(seq.GroupBy[string, int], nil, tups)
+	userIndexes := seq.Reduce(seq.GroupBy[string, int], nil, tups).Or(nil)
 	fmt.Println("Indexes of user names from", names, "\n", userIndexes)
+	// Prints:
+	// Indexes of user names from [bob alan bob scotty bob alan]
+	// map[alan:[1 5] bob:[0 2 4] scotty:[3]]
 }
 
 func TestExampleUserSerial(t *testing.T) {
@@ -55,8 +62,13 @@ func TestExampleUserSerial(t *testing.T) {
 			return serial
 		}
 		return oldSerial
-	}), nil, tups)
+	}), nil, tups).
+		Or(nil)
+
 	fmt.Println("User serials from", names, "\n", userSerials)
+	// Prints:
+	// User serials from {[bob alan bob scotty  bob alan ] 0x4fcd20}
+	// map[alan:2 bob:1 scotty:3]
 }
 
 func TestExampleParallelDownloader(t *testing.T) {
@@ -76,4 +88,37 @@ func TestExampleParallelDownloader(t *testing.T) {
 		t.Fatal(err) // Not going to happen in this test, but might in real apps
 	}
 	fmt.Println("All done")
+}
+
+func TestExampleMapType(t *testing.T) {
+	// In this example we show how a seq.Map from seq.MapAs() can be used
+	// as a normal Go map (same is true for ChanAs, SliceAs, SetAs etc)
+	// and also as a Seq
+	myMap := seq.MapAs(make(map[string]int))
+	myMap["one"] = 1
+	myMap["two"] = 2
+	myMap["three"] = 3
+	myMap["four"] = 4
+
+	fmt.Println("Number of elements in myMap:", len(myMap)) // prints 2
+
+	for k, v := range myMap {
+		fmt.Println("Ranging over myMap:", k, v)
+	}
+
+	// We can also use myMap as a Seq
+	// Let's find entries with even values and collect the keys for them:
+	evenEntries := myMap.Where(func(kv seq.Tuple[string, int]) bool {
+		return kv.Value()%2 == 0
+	})
+	evenKeys := seq.MappingOf(evenEntries, seq.TupleKey[string, int]).ToSlice()
+	fmt.Println("Map keys with even values:", evenKeys)
+
+	// Prints:
+	// Number of elements in myMap: 4
+	// Ranging over myMap: one 1
+	// Ranging over myMap: two 2
+	// Ranging over myMap: three 3
+	// Ranging over myMap: four 4
+	// Map keys with even values: [two four]
 }

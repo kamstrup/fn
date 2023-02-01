@@ -46,7 +46,7 @@ func (w whileSeq[T]) Len() (int, bool) {
 	return LenUnknown, false
 }
 
-func (w whileSeq[T]) Values() Slice[T] {
+func (w whileSeq[T]) ToSlice() Slice[T] {
 	head, _ := w.seq.TakeWhile(w.pred)
 	return head
 }

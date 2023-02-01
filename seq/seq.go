@@ -39,8 +39,8 @@ type Seq[T any] interface {
 	// if a Seq contains a given element, or satisfies some property, you can use Any, All,
 	// Last, One, or IsEmpty.
 	Len() (int, bool)
-	// Values executes the Seq and stores all elements in memory as an Slice
-	Values() Slice[T]
+	// ToSlice executes the Seq and stores all elements in memory as a Slice
+	ToSlice() Slice[T]
 	// Take executes up to the first N elements of the Seq and returns the rest in a tail Seq
 	Take(int) (Slice[T], Seq[T])
 	// TakeWhile executes the Seq while Predicate returns true,

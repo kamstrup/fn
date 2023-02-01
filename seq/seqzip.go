@@ -81,7 +81,7 @@ func (z zipSeq[X, Y]) Len() (int, bool) {
 	return LenUnknown, false
 }
 
-func (z zipSeq[X, Y]) Values() Slice[Tuple[X, Y]] {
+func (z zipSeq[X, Y]) ToSlice() Slice[Tuple[X, Y]] {
 	if sz, ok := z.Len(); ok {
 		arr := make([]Tuple[X, Y], sz)
 		z.ForEachIndex(func(i int, t Tuple[X, Y]) {
@@ -108,7 +108,7 @@ func (z zipSeq[X, Y]) Take(n int) (Slice[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 	if sz, ok := z.Len(); ok {
 		if sz <= n {
 			// Best case
-			return z.Values(), Empty[Tuple[X, Y]]()
+			return z.ToSlice(), Empty[Tuple[X, Y]]()
 		}
 
 		// We know we have at least n elements in both tx and ty

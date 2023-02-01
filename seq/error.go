@@ -48,7 +48,7 @@ func (e errorSeq[T]) Len() (int, bool) {
 	return 0, true
 }
 
-func (e errorSeq[T]) Values() Slice[T] {
+func (e errorSeq[T]) ToSlice() Slice[T] {
 	return nil
 }
 

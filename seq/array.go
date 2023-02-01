@@ -79,7 +79,7 @@ func (a Slice[T]) Len() (int, bool) {
 	return len(a), true
 }
 
-func (a Slice[T]) Values() Slice[T] {
+func (a Slice[T]) ToSlice() Slice[T] {
 	return a
 }
 

@@ -36,7 +36,7 @@ func (s String) Len() (int, bool) {
 	return len(s), true
 }
 
-func (s String) Values() Slice[byte] {
+func (s String) ToSlice() Slice[byte] {
 	return []byte(s)
 }
 

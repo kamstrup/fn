@@ -99,7 +99,7 @@ func (r Reader) ByteLen() (int, bool) {
 	return seq.LenUnknown, false
 }
 
-func (r Reader) Values() BufferArray {
+func (r Reader) ToSlice() BufferArray {
 	// TODO: if size is well-defined: alloc 1 continuous stride and do 1 read call, and sub-divide into buffers via slicing
 
 	return seq.Reduce(seq.Append[[]byte], nil, r.seq()).Or(nil) // careful: errors silently dropped

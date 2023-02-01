@@ -100,7 +100,7 @@ func (r rangeSeq[N]) Len() (int, bool) {
 	return -sz + remainder, true
 }
 
-func (r rangeSeq[N]) Values() Slice[N] {
+func (r rangeSeq[N]) ToSlice() Slice[N] {
 	sz, _ := r.Len()
 	arr := make([]N, sz)
 	i := 0
@@ -122,7 +122,7 @@ func (r rangeSeq[N]) Values() Slice[N] {
 func (r rangeSeq[N]) Take(n int) (Slice[N], Seq[N]) {
 	sz, _ := r.Len()
 	if n >= sz {
-		return r.Values(), Empty[N]()
+		return r.ToSlice(), Empty[N]()
 	}
 
 	// n < sz

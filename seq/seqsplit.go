@@ -67,7 +67,7 @@ func (s splitSeq[T]) Len() (int, bool) {
 	return LenUnknown, false
 }
 
-func (s splitSeq[T]) Values() Slice[Seq[T]] {
+func (s splitSeq[T]) ToSlice() Slice[Seq[T]] {
 	var (
 		fst  opt.Opt[Seq[T]]
 		tail Seq[Seq[T]]

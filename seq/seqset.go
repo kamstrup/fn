@@ -59,7 +59,7 @@ func (s Set[K]) Len() (int, bool) {
 	return len(s), true
 }
 
-func (s Set[K]) Values() Slice[K] {
+func (s Set[K]) ToSlice() Slice[K] {
 	sz := len(s)
 	if sz == 0 {
 		return Slice[K](nil)

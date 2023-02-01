@@ -61,7 +61,7 @@ func TestExampleUsersById(t *testing.T) {
 	usersWithEmptyNames := seq.SliceOf(users).
 		Where(seq.Not((*User).HasName))
 	idsWithEmptyNames := seq.MappingOf(usersWithEmptyNames, (*User).ID).
-		Values().
+		ToSlice().
 		Sort(seq.OrderDesc[string])
 	fmt.Println("These user IDs do not have a name:", idsWithEmptyNames)
 
@@ -90,7 +90,7 @@ func TestExampleUsersById(t *testing.T) {
 	// Let's get a combined list of Users sorted by name
 	allUsers := seq.ConcatOf(seq.MapOf(usersByIDs), seq.MapOf(newUsers)) // MapOf handles maps as Seqs of Tuples
 	allUsersSorted := seq.MappingOf(allUsers, seq.TupleValue[string, *User]).
-		Values().
+		ToSlice().
 		Sort(func(u1, u2 *User) bool { return u1.name < u2.name })
 
 	fmt.Println("Combined list of users, by name:", allUsersSorted)

@@ -75,7 +75,7 @@ func (c concatSeq[T]) Len() (int, bool) {
 	return sz, true*/
 }
 
-func (c concatSeq[T]) Values() Slice[T] {
+func (c concatSeq[T]) ToSlice() Slice[T] {
 	var buf []T
 	sz, hasLen := c.Len()
 	if hasLen {

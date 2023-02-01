@@ -31,7 +31,7 @@ func (c Chan[T]) Len() (int, bool) {
 	return LenUnknown, false
 }
 
-func (c Chan[T]) Values() Slice[T] {
+func (c Chan[T]) ToSlice() Slice[T] {
 	return Reduce(Append[T], nil, c.Seq()).Or(nil) // careful: errors silently dropped
 }
 

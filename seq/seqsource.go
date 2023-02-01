@@ -39,7 +39,7 @@ func (s sourceSeq[T]) Len() (int, bool) {
 	return LenInfinite, false
 }
 
-func (s sourceSeq[T]) Values() Slice[T] {
+func (s sourceSeq[T]) ToSlice() Slice[T] {
 	panic("cannot create Slice of infinite source")
 }
 

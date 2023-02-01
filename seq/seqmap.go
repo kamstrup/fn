@@ -48,7 +48,7 @@ func (m mappedSeq[S, T]) Len() (int, bool) {
 	return m.seq.Len()
 }
 
-func (m mappedSeq[S, T]) Values() Slice[T] {
+func (m mappedSeq[S, T]) ToSlice() Slice[T] {
 	if sz, ok := m.seq.Len(); ok {
 		arr := make([]T, sz)
 		m.ForEachIndex(func(i int, t T) {
@@ -71,7 +71,7 @@ func (m mappedSeq[S, T]) Take(n int) (Slice[T], Seq[T]) {
 	)
 	// Note: we are not calling m.f on the skipped elements
 	head, tail = m.seq.Take(n)
-	return MappingOf[S, T](head, m.f).Values(), MappingOf(tail, m.f)
+	return MappingOf[S, T](head, m.f).ToSlice(), MappingOf(tail, m.f)
 }
 
 func (m mappedSeq[S, T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {

@@ -46,7 +46,7 @@ func (p prepSeq[T]) Len() (int, bool) {
 	return LenUnknown, false
 }
 
-func (p prepSeq[T]) Values() Slice[T] {
+func (p prepSeq[T]) ToSlice() Slice[T] {
 	var arr []T
 	if sz, ok := p.Len(); ok {
 		arr = make([]T, 0, sz)

@@ -185,7 +185,7 @@ func (ts Suite[S]) IsEmpty() {
 		ts.t.Errorf("Seq is not empty. Length %d", count)
 	}
 
-	if arr := ts.createSeq().Values(); len(arr) != 0 {
+	if arr := ts.createSeq().ToSlice(); len(arr) != 0 {
 		ts.t.Errorf("Seq.Slice is not empty. Length %d", len(arr))
 	}
 
@@ -431,7 +431,7 @@ func (ts Suite[S]) seqIsWhere(t *testing.T, ss []S) {
 
 	t.Run("false/array", func(t *testing.T) {
 		seq := ts.createSeq()
-		wh := seq.Where(func(_ S) bool { return false }).Values()
+		wh := seq.Where(func(_ S) bool { return false }).ToSlice()
 		if l, _ := wh.Len(); l != 0 {
 			t.Errorf("Must create empty array after dropping everything with where=false")
 		}
@@ -466,7 +466,7 @@ func (ts Suite[S]) seqIsWhere(t *testing.T, ss []S) {
 
 	t.Run("true/array", func(t *testing.T) {
 		seq := ts.createSeq()
-		arr := seq.Where(func(_ S) bool { return true }).Values()
+		arr := seq.Where(func(_ S) bool { return true }).ToSlice()
 
 		if len(arr) != len(ss) {
 			t.Errorf("Unexpected number of elements in Seq.Where(true). Expected %d, got %d", len(ss), len(arr))

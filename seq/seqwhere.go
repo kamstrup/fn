@@ -41,7 +41,7 @@ func (ws whereSeq[T]) Len() (int, bool) {
 	return LenUnknown, false
 }
 
-func (ws whereSeq[T]) Values() Slice[T] {
+func (ws whereSeq[T]) ToSlice() Slice[T] {
 	if l, _ := ws.Len(); l == 0 {
 		return Slice[T](nil)
 	}

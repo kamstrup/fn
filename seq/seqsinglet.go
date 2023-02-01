@@ -40,7 +40,7 @@ func (s singletSeq[T]) Len() (int, bool) {
 	return 1, true
 }
 
-func (s singletSeq[T]) Values() Slice[T] {
+func (s singletSeq[T]) ToSlice() Slice[T] {
 	return Slice[T]{s.val}
 }
 

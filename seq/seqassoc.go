@@ -67,7 +67,7 @@ func (a Map[K, V]) Len() (int, bool) {
 	return len(a), true
 }
 
-func (a Map[K, V]) Values() Slice[Tuple[K, V]] {
+func (a Map[K, V]) ToSlice() Slice[Tuple[K, V]] {
 	sz := len(a)
 	if sz == 0 {
 		return Slice[Tuple[K, V]](nil)

@@ -112,7 +112,7 @@ func (s splitSeq[T]) TakeWhile(pred Predicate[Seq[T]]) (Slice[Seq[T]], Seq[Seq[T
 		if pred(val) {
 			arr = append(arr, val)
 		} else {
-			return arr, ConcatOf(SingletOf(val), tail)
+			return arr, PrependOf(val, tail)
 		}
 
 	}

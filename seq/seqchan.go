@@ -60,7 +60,7 @@ func (c Chan[T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
 		if pred(t) {
 			arr = append(arr, t)
 		} else {
-			return arr, ConcatOf(SingletOf(t), c.Seq())
+			return arr, PrependOf(t, c.Seq())
 		}
 	}
 

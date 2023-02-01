@@ -89,7 +89,7 @@ func (s scannerSeq) TakeWhile(pred seq.Predicate[[]byte]) (BufferArray, BufferSe
 
 	// tok did not match pred, so push it back onto the seq
 	if tok != nil {
-		return tokens, seq.ConcatOf(seq.SingletOf(tok), BufferSeq(s))
+		return tokens, seq.PrependOf(tok, BufferSeq(s))
 	}
 
 	return tokens, s

@@ -144,7 +144,7 @@ func (r Reader) TakeWhile(pred seq.Predicate[[]byte]) (BufferArray, BufferSeq) {
 			// DANGER: We "unread" r.buf here. We end up in a state where the singlet and r share r.buf.
 			// This works out as long as the caller does not user r further, since r will not use the buffer
 			// before the singlet is exhausted. We might need to copy the r.buf if this is problematic in practice.
-			tail := seq.ConcatOf[[]byte](seq.SingletOf(r.buf), r)
+			tail := seq.PrependOf[[]byte](r.buf, r)
 			return res, tail
 		}
 	}

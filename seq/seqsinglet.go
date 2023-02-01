@@ -8,6 +8,20 @@ type singletSeq[T any] struct {
 	val T
 }
 
+// OptOf returns a Seq from an opt.Opt.
+// If the opt is empty the seq is empty, if there is some other error an error seq is returned,
+// and if the opt is valid a single element seq is returned.
+func OptOf[T any](op opt.Opt[T]) Seq[T] {
+	if err := op.Error(); err != nil {
+		if err == opt.ErrEmpty {
+			return SeqEmpty[T]()
+		}
+		return ErrorOf[T](err)
+	}
+	return SingletOf(op.Must())
+}
+
+// SingletOf returns a single element seq.
 func SingletOf[T any](t T) Seq[T] {
 	return singletSeq[T]{t}
 }

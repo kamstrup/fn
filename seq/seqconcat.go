@@ -8,7 +8,7 @@ type concatSeq[T any] struct {
 }
 
 // FlattenOf returns a lazy Seq that steps through elements in a collection of seqs as though it was one big seq.
-// See also ConcatOf.
+// See also ConcatOf and PrependOf.
 func FlattenOf[T any](seqs Seq[Seq[T]]) Seq[T] {
 	return concatSeq[T]{
 		head: nil,
@@ -17,19 +17,11 @@ func FlattenOf[T any](seqs Seq[Seq[T]]) Seq[T] {
 }
 
 // ConcatOf wraps a collection of seqs as one contiguous lazy seq.
-// See also FlattenOf.
+// See also FlattenOf and PrependOf.
 func ConcatOf[T any](seqs ...Seq[T]) Seq[T] {
 	return concatSeq[T]{
 		head: nil,
 		tail: SliceOf(seqs),
-	}
-}
-
-// PrependOf returns a seq that starts with t and continues into the provided tail
-func PrependOf[T any](t T, tail Seq[T]) Seq[T] {
-	return concatSeq[T]{
-		head: SingletOf(t),
-		tail: SingletOf(tail),
 	}
 }
 
@@ -152,7 +144,7 @@ func (c concatSeq[T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
 	for fst, tail = c.First(); fst.Ok(); fst, tail = tail.First() {
 		val := fst.Must()
 		if !pred(val) {
-			return arr, ConcatOf(SingletOf(val), tail)
+			return arr, PrependOf(val, tail)
 		}
 		arr = append(arr, val)
 	}

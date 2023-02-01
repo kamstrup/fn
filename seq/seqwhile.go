@@ -84,8 +84,7 @@ func (w whileSeq[T]) TakeWhile(pred Predicate[T]) (Slice[T], Seq[T]) {
 		if pred(val) {
 			arr = append(arr, val)
 		} else {
-			panic("known bug: while.TakeWhile()") // FIXME(mikkel): below fix causes "instantiation cycle" compile error
-			// return arr, PrependOf(val, tail)
+			return arr, PrependOf(val, tail)
 		}
 	}
 

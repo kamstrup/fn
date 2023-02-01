@@ -44,7 +44,7 @@ type Seq[T any] interface {
 	// Take executes up to the first N elements of the Seq and returns the rest in a tail Seq
 	Take(int) (Slice[T], Seq[T])
 	// TakeWhile executes the Seq while Predicate returns true,
-	// then returns those elements in an Slice and the rest in a tail Seq.
+	// then returns those elements in a Slice and the rest in a tail Seq.
 	// This library ships with a few in-built predicates, like fx, IsZero and IsNonZero.
 	TakeWhile(predicate Predicate[T]) (Slice[T], Seq[T])
 	// Skip drops (up to) the first N elements in the Seq, executing them, and returns a tail Seq.

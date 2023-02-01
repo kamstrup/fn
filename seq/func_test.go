@@ -124,7 +124,7 @@ func TestCollectUpdateArray(t *testing.T) {
 		seq.TupleOf(1, "hello"), seq.TupleOf(2, "hej"),
 		seq.TupleOf(1, "world"), seq.TupleOf(2, "verden"))
 
-	res := seq.Reduce(seq.UpdateArray[int, string](func(old, new_ string) string {
+	res := seq.Reduce(seq.UpdateSlice[int, string](func(old, new_ string) string {
 		return strings.TrimSpace(old + " " + new_)
 	}), nil, hellos)
 

@@ -48,9 +48,9 @@ func SliceAs[T any](tt []T) Slice[T] {
 	return tt
 }
 
-// SliceAsArgs return the variable argument list as an Slice.
+// SliceAsArgs return the variable argument list as a Slice.
 // This is sometimes needed instead of SliceOfArgs(), when you
-// need to explicitly use an Slice and not any Seq.
+// need to explicitly use a Slice and not any Seq.
 func SliceAsArgs[T any](tt ...T) Slice[T] {
 	return tt
 }

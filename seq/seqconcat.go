@@ -49,7 +49,7 @@ func (c concatSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 }
 
 func (c concatSeq[T]) Len() (int, bool) {
-	// fx. if c.tail is an Slice we can do a stateless check to see if we can calculate a total length
+	// fx. if c.tail is a Slice we can do a stateless check to see if we can calculate a total length
 	tailArr, tailIsArray := c.tail.(Slice[Seq[T]])
 	if !tailIsArray {
 		return LenUnknown, false

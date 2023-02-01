@@ -146,11 +146,11 @@ func UpdateMap[K comparable, V any](updater FuncUpdate[V]) FuncCollect[map[K]V, 
 	}
 }
 
-// UpdateArray is used to build a new FuncCollect that can update a slice []V in place.
+// UpdateSlice is used to build a new FuncCollect that can update a slice []V in place.
 // It looks at the elements in the index specified by Tuple.X(), ensures that the slice is big enough
 // (growing it if needed), and updates the value at that index with the provided FuncUpdate.
 // Classic update functions could be fnmath.Max, fnmath.Min, or fnmath.Sum.
-func UpdateArray[I constraints.Integer, V any](updater FuncUpdate[V]) FuncCollect[[]V, Tuple[I, V]] {
+func UpdateSlice[I constraints.Integer, V any](updater FuncUpdate[V]) FuncCollect[[]V, Tuple[I, V]] {
 	return func(into []V, tup Tuple[I, V]) []V {
 		idx := int(tup.Key())
 
@@ -273,7 +273,7 @@ func TupleWithKey[K comparable, V any](keySelector FuncMap[V, K]) func(V) Tuple[
 //
 // This library ships with a suite of standard collector functions.
 // These include Append, MakeMap, MakeSet, MakeString, MakeBytes, Count,
-// GroupBy, UpdateMap, UpdateArray, fnmath.Sum, fnmath.Min, fnmath.Max,.
+// GroupBy, UpdateMap, UpdateSlice, fnmath.Sum, fnmath.Min, fnmath.Max,.
 //
 // The second argument, "into", can often be left as nil. It is the initial state for the collector.
 // If you want to pre-allocate or reuse a buffer you can pass it in here. Or if you want to have

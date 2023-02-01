@@ -50,7 +50,7 @@ There are many easier ways to walk a Seq though. For example via `sq.ForEach()`
 
 Generally seqs are immutable. Any exception to this will be clearly documented. 
 
-[Check the interface definition for Seq here](https://github.com/kamstrup/fn/blob/main/sq.go).
+[Check the interface definition for Seq here](https://github.com/kamstrup/fn/blob/main/seq/seq.go).
 There many ways to create seqs from standard Go structures. You can find most of them in 
 the section [Creating Seqs](#creating-seqs).
 
@@ -78,7 +78,6 @@ If you just want to jump in and see some code you can check out
 [the simple examples](https://github.com/kamstrup/fn/blob/main/examples/simple_test.go).
 Otherwise here follows a brief overview.
 
-Fn also bundles a [very simple sub-library called 'slice'](#the-slice-package)
 Fn also bundles a [very simple sub-library called 'slice'](#the-slice-package)
 that you can use to do 1-line functional constructs.
 
@@ -351,7 +350,6 @@ for doing one-shot conversions and mapping elements 1-1.
 
 You can find a few [examples of how to use 'slice'](https://github.com/kamstrup/fn/blob/main/examples/slice_test.go)
 in the "examples" folder.
-.
 
 ## Performance
 If the foundational functional data structures and algorithms is not done carefully,

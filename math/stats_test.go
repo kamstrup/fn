@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/seq"
 )
 
 func TestStats(t *testing.T) {
@@ -58,8 +58,8 @@ func TestStats(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			data := fn.ArrayOf(tc.input)
-			opt := fn.Into(Stats[int]{}, MakeStats[int], data)
+			data := seq.SliceOf(tc.input)
+			opt := seq.Reduce(MakeStats[int], Stats[int]{}, data)
 			if len(tc.input) == 0 {
 				if opt.Ok() {
 					t.Fatalf("Stats opt should be empty when input is empty")

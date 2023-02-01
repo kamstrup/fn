@@ -1,10 +1,10 @@
-package fnio
+package seqio
 
 import (
 	"bytes"
 	"testing"
 
-	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/seq"
 	fntesting "github.com/kamstrup/fn/testing"
 )
 
@@ -13,7 +13,7 @@ hej verden
 hola mundo`
 
 func TestLinesSuite(t *testing.T) {
-	createSeq := func() fn.Seq[[]byte] {
+	createSeq := func() seq.Seq[[]byte] {
 		return LinesOf(bytes.NewReader([]byte(text)))
 	}
 	fntesting.SuiteOf(t, createSeq).Is(
@@ -23,15 +23,15 @@ func TestLinesSuite(t *testing.T) {
 func TestLinesError(t *testing.T) {
 	r := LinesOf(errReader{})
 
-	if err := fn.Error(r); err != nil {
+	if err := seq.Error(r); err != nil {
 		t.Fatal("we should not see an error before we read", err)
 	}
 
 	opt, tail := r.First()
-	if err := fn.Error(opt); err != readError {
+	if err := seq.Error(opt); err != readError {
 		t.Fatal("opt result must be a read error", err)
 	}
-	if err := fn.Error(tail); err != readError {
+	if err := seq.Error(tail); err != readError {
 		t.Fatal("tail result must be a read error", err)
 	}
 }

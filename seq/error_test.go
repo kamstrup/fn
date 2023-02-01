@@ -1,0 +1,36 @@
+package seq_test
+
+import (
+	"errors"
+	"testing"
+
+	"github.com/kamstrup/fn/seq"
+	"github.com/kamstrup/fn/testing"
+)
+
+func TestError(t *testing.T) {
+	err := errors.New("hello")
+
+	errSeq := seq.ErrorOf[any](err)
+	if seq.Error(errSeq) != err {
+		t.Errorf("Error() on errorSeq must return the wrapped error")
+	}
+
+	errSeq.ForEach(func(a any) { t.Error("ForEach should not be called") })
+	errSeq.ForEachIndex(func(i int, a any) { t.Error("ForEachIndex should not be called") })
+
+	opt, cpy := errSeq.First()
+	if cpy != errSeq {
+		t.Errorf("First must return the errorSeq itself again")
+	}
+
+	_, errCpy := opt.Return()
+	if errCpy != err {
+		t.Errorf("First must return an Opt that yield the original error")
+	}
+}
+
+func TestErrorSuite(t *testing.T) {
+	err := errors.New("hello")
+	fntesting.SuiteOf(t, func() seq.Seq[int] { return seq.ErrorOf[int](err) }).IsEmpty()
+}

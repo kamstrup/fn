@@ -1,10 +1,11 @@
-package fnio
+package seqio
 
 import (
 	"bufio"
 	"io"
 
-	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/opt"
+	"github.com/kamstrup/fn/seq"
 )
 
 type scannerSeq struct {
@@ -31,14 +32,14 @@ func LinesOf(r io.Reader) BufferSeq {
 	}
 }
 
-func (s scannerSeq) ForEach(f fn.Func1[[]byte]) BufferSeq {
+func (s scannerSeq) ForEach(f seq.Func1[[]byte]) BufferSeq {
 	for s.scanner.Scan() {
 		f(s.scanner.Bytes())
 	}
 	return s.errOrEmpty()
 }
 
-func (s scannerSeq) ForEachIndex(f fn.Func2[int, []byte]) BufferSeq {
+func (s scannerSeq) ForEachIndex(f seq.Func2[int, []byte]) BufferSeq {
 	for i := 0; s.scanner.Scan(); i++ {
 		f(i, s.scanner.Bytes())
 	}
@@ -46,14 +47,14 @@ func (s scannerSeq) ForEachIndex(f fn.Func2[int, []byte]) BufferSeq {
 }
 
 func (s scannerSeq) Len() (int, bool) {
-	return fn.LenUnknown, false
+	return seq.LenUnknown, false
 }
 
-func (s scannerSeq) Array() BufferArray {
-	tokens := fn.Into(nil, func(tokens [][]byte, tok []byte) [][]byte {
+func (s scannerSeq) ToSlice() BufferArray {
+	tokens := seq.Reduce(func(tokens [][]byte, tok []byte) [][]byte {
 		dupTok := append([]byte{}, tok...) // scanner owns tok, so we copy it
 		return append(tokens, dupTok)
-	}, s.seq()).Or(nil) // careful: errors silently dropped
+	}, nil, s.seq()).Or(nil) // careful: errors silently dropped
 	return tokens
 }
 
@@ -67,7 +68,7 @@ func (s scannerSeq) Take(n int) (BufferArray, BufferSeq) {
 	return tokens, s
 }
 
-func (s scannerSeq) TakeWhile(pred fn.Predicate[[]byte]) (BufferArray, BufferSeq) {
+func (s scannerSeq) TakeWhile(pred seq.Predicate[[]byte]) (BufferArray, BufferSeq) {
 	var (
 		tokens [][]byte
 		tok    []byte
@@ -88,7 +89,7 @@ func (s scannerSeq) TakeWhile(pred fn.Predicate[[]byte]) (BufferArray, BufferSeq
 
 	// tok did not match pred, so push it back onto the seq
 	if tok != nil {
-		return tokens, fn.ConcatOf(fn.SingletOf(tok), BufferSeq(s))
+		return tokens, seq.PrependOf(tok, BufferSeq(s))
 	}
 
 	return tokens, s
@@ -102,39 +103,39 @@ func (s scannerSeq) Skip(n int) BufferSeq {
 	return s
 }
 
-func (s scannerSeq) Where(pred fn.Predicate[[]byte]) BufferSeq {
-	return fn.WhereOf[[]byte](s, pred)
+func (s scannerSeq) Where(pred seq.Predicate[[]byte]) BufferSeq {
+	return seq.WhereOf[[]byte](s, pred)
 }
 
-func (s scannerSeq) While(pred fn.Predicate[[]byte]) BufferSeq {
-	return fn.WhileOf[[]byte](s, pred)
+func (s scannerSeq) While(pred seq.Predicate[[]byte]) BufferSeq {
+	return seq.WhileOf[[]byte](s, pred)
 }
 
-func (s scannerSeq) First() (fn.Opt[[]byte], BufferSeq) {
+func (s scannerSeq) First() (opt.Opt[[]byte], BufferSeq) {
 	if s.scanner.Scan() {
 		tok := append([]byte{}, s.scanner.Bytes()...) // scanner owns Bytes() buffer
-		return fn.OptOf(tok), s
+		return opt.Of(tok), s
 	}
 	if err := s.scanner.Err(); err != nil {
-		return fn.OptErr[[]byte](err), fn.ErrorOf[[]byte](err)
+		return opt.ErrorOf[[]byte](err), seq.ErrorOf[[]byte](err)
 	}
-	return fn.OptEmpty[[]byte](), s
+	return opt.Empty[[]byte](), s
 }
 
-func (s scannerSeq) Map(m fn.FuncMap[[]byte, []byte]) BufferSeq {
-	return fn.MapOf[[]byte, []byte](s, m)
+func (s scannerSeq) Map(m seq.FuncMap[[]byte, []byte]) BufferSeq {
+	return seq.MappingOf[[]byte, []byte](s, m)
 }
 
-// Error implements the contract for the fn.Error function.
+// Error implements the contract for the seq.Error function.
 func (s scannerSeq) Error() error {
 	return s.scanner.Err()
 }
 
 func (s scannerSeq) errOrEmpty() BufferSeq {
 	if err := s.Error(); err != nil {
-		return fn.ErrorOf[[]byte](err)
+		return seq.ErrorOf[[]byte](err)
 	}
-	return fn.SeqEmpty[[]byte]()
+	return seq.Empty[[]byte]()
 }
 
 func (s scannerSeq) seq() BufferSeq {

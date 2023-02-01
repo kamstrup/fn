@@ -5,40 +5,41 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/opt"
+	"github.com/kamstrup/fn/seq"
 )
 
 type TestSeq[S comparable] struct {
-	t   *testing.T
-	seq fn.Seq[S]
+	t  *testing.T
+	sq seq.Seq[S]
 }
 
 type Suite[S any] struct {
 	t         *testing.T
-	createSeq func() fn.Seq[S]
+	createSeq func() seq.Seq[S]
 	equal     func(S, S) bool
 }
 
 type TestOpt[S comparable] struct {
 	t   *testing.T
-	opt fn.Opt[S]
+	opt opt.Opt[S]
 }
 
-func TestOf[S comparable](t *testing.T, seq fn.Seq[S]) TestSeq[S] {
+func TestOf[S comparable](t *testing.T, seq seq.Seq[S]) TestSeq[S] {
 	return TestSeq[S]{
-		t:   t,
-		seq: seq,
+		t:  t,
+		sq: seq,
 	}
 }
 
-func OptOf[S comparable](t *testing.T, opt fn.Opt[S]) TestOpt[S] {
+func OptOf[S comparable](t *testing.T, opt opt.Opt[S]) TestOpt[S] {
 	return TestOpt[S]{
 		t:   t,
 		opt: opt,
 	}
 }
 
-func SuiteOf[S any](t *testing.T, createSeq func() fn.Seq[S]) Suite[S] {
+func SuiteOf[S any](t *testing.T, createSeq func() seq.Seq[S]) Suite[S] {
 	return Suite[S]{
 		t:         t,
 		createSeq: createSeq,
@@ -49,7 +50,7 @@ func SuiteOf[S any](t *testing.T, createSeq func() fn.Seq[S]) Suite[S] {
 func (ts TestSeq[S]) LenIs(n int) {
 	ts.t.Helper()
 
-	if sz, _ := ts.seq.Len(); sz != n {
+	if sz, _ := ts.sq.Len(); sz != n {
 		ts.t.Errorf("Seq len mismatch. Expected %d, found %d", n, sz)
 	}
 }
@@ -57,7 +58,7 @@ func (ts TestSeq[S]) LenIs(n int) {
 func (ts TestSeq[S]) Is(ss ...S) {
 	ts.t.Helper()
 
-	sz, lenOk := ts.seq.Len()
+	sz, lenOk := ts.sq.Len()
 	if lenOk {
 		if sz != len(ss) {
 			ts.t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
@@ -65,7 +66,7 @@ func (ts TestSeq[S]) Is(ss ...S) {
 	}
 
 	count := 0
-	ts.seq.ForEachIndex(func(i int, s S) {
+	ts.sq.ForEachIndex(func(i int, s S) {
 		count++
 		if i >= len(ss) {
 			ts.t.Fatalf("Seq element index out of bounds. Expected max index %d, but got index %d with value %v",
@@ -86,7 +87,7 @@ func (ts TestSeq[S]) IsEmpty() {
 	ts.t.Helper()
 
 	count := 0
-	ts.seq.ForEach(func(s S) {
+	ts.sq.ForEach(func(s S) {
 		count++
 	})
 	if count != 0 {
@@ -184,8 +185,8 @@ func (ts Suite[S]) IsEmpty() {
 		ts.t.Errorf("Seq is not empty. Length %d", count)
 	}
 
-	if arr := ts.createSeq().Array(); len(arr) != 0 {
-		ts.t.Errorf("Seq.Array is not empty. Length %d", len(arr))
+	if arr := ts.createSeq().ToSlice(); len(arr) != 0 {
+		ts.t.Errorf("Seq.Slice is not empty. Length %d", len(arr))
 	}
 
 	// TODO: more checks for emptiness!
@@ -194,9 +195,9 @@ func (ts Suite[S]) IsEmpty() {
 func (ts Suite[S]) seqIsForEach(t *testing.T, ss []S) {
 	t.Helper()
 
-	seq := ts.createSeq()
+	sq := ts.createSeq()
 
-	sz, lenOk := seq.Len()
+	sz, lenOk := sq.Len()
 	if lenOk {
 		if sz != len(ss) {
 			t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
@@ -204,7 +205,7 @@ func (ts Suite[S]) seqIsForEach(t *testing.T, ss []S) {
 	}
 
 	i := 0
-	res := seq.ForEach(func(s S) {
+	res := sq.ForEach(func(s S) {
 		t.Helper()
 
 		if i >= len(ss) {
@@ -223,7 +224,7 @@ func (ts Suite[S]) seqIsForEach(t *testing.T, ss []S) {
 			sz, i)
 	}
 
-	if err := fn.Error(res); err != nil {
+	if err := seq.Error(res); err != nil {
 		t.Errorf("Seq returned error: %s", err)
 	}
 	if sz, lenOk = res.Len(); !lenOk || sz != 0 {
@@ -234,9 +235,9 @@ func (ts Suite[S]) seqIsForEach(t *testing.T, ss []S) {
 func (ts Suite[S]) seqIsForEachIndex(t *testing.T, ss []S) {
 	t.Helper()
 
-	seq := ts.createSeq()
+	sq := ts.createSeq()
 
-	sz, lenOk := seq.Len()
+	sz, lenOk := sq.Len()
 	if lenOk {
 		if sz != len(ss) {
 			t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
@@ -244,7 +245,7 @@ func (ts Suite[S]) seqIsForEachIndex(t *testing.T, ss []S) {
 	}
 
 	count := 0
-	res := seq.ForEachIndex(func(i int, s S) {
+	res := sq.ForEachIndex(func(i int, s S) {
 		t.Helper()
 
 		count++
@@ -262,7 +263,7 @@ func (ts Suite[S]) seqIsForEachIndex(t *testing.T, ss []S) {
 			sz, count)
 	}
 
-	if err := fn.Error(res); err != nil {
+	if err := seq.Error(res); err != nil {
 		t.Errorf("Seq returned error: %s", err)
 	}
 	if sz, lenOk = res.Len(); !lenOk || sz != 0 {
@@ -273,8 +274,8 @@ func (ts Suite[S]) seqIsForEachIndex(t *testing.T, ss []S) {
 func (ts Suite[S]) seqIsTake(t *testing.T, ss []S) {
 	t.Helper()
 
-	seq := ts.createSeq()
-	sz, lenOk := seq.Len()
+	sq := ts.createSeq()
+	sz, lenOk := sq.Len()
 	if lenOk {
 		t.Run("Len", func(t *testing.T) {
 			if sz != len(ss) {
@@ -284,8 +285,8 @@ func (ts Suite[S]) seqIsTake(t *testing.T, ss []S) {
 	}
 
 	t.Run("0", func(t *testing.T) {
-		seq = ts.createSeq()
-		head, tail := seq.Take(0)
+		sq = ts.createSeq()
+		head, tail := sq.Take(0)
 		if len(head) != 0 {
 			t.Errorf("When calling Take(0) 'head' must be the empty array")
 		}
@@ -297,9 +298,9 @@ func (ts Suite[S]) seqIsTake(t *testing.T, ss []S) {
 	// Ensure we can Take(n) for different n, and rebuild the exact ss
 	for _, n := range []int{1, 2, 3, 100} {
 		t.Run(fmt.Sprintf("%d", n), func(t *testing.T) {
-			seq = ts.createSeq()
+			sq = ts.createSeq()
 			count := 0
-			for head, tail := seq.Take(n); len(head) != 0; head, tail = tail.Take(n) {
+			for head, tail := sq.Take(n); len(head) != 0; head, tail = tail.Take(n) {
 				for i := range head {
 					if i+count >= len(ss) {
 						t.Fatalf("Seq index out of bounds. Expected %d items, found %v at index %d",
@@ -318,7 +319,7 @@ func (ts Suite[S]) seqIsTake(t *testing.T, ss []S) {
 				}
 			}
 
-			if sz != fn.LenUnknown && sz != count {
+			if sz != seq.LenUnknown && sz != count {
 				t.Errorf("Number of elements in Take(%d) incorrect. Expected %d, found %d",
 					n, sz, count)
 			}
@@ -368,8 +369,8 @@ func (ts Suite[S]) seqSkip(t *testing.T, ss []S) {
 	sz, lenOk := ts.createSeq().Len()
 
 	t.Run("skip-all", func(t *testing.T) {
-		seq := ts.createSeq()
-		tail := seq.Skip(100_000)
+		sq := ts.createSeq()
+		tail := sq.Skip(100_000)
 		if tailLen, _ := tail.Len(); lenOk && tailLen != 0 {
 			t.Errorf("When calling Skip(100,000) 'tail' must be empty")
 		}
@@ -380,22 +381,22 @@ func (ts Suite[S]) seqSkip(t *testing.T, ss []S) {
 
 	t.Run("one-at-a-time", func(t *testing.T) {
 		i := 0
-		seq := ts.createSeq()
+		sq := ts.createSeq()
 		for ; i < 100_000; i++ {
-			seq = seq.Skip(1)
-			if l, _ := seq.Len(); l == 0 {
+			sq = sq.Skip(1)
+			if l, _ := sq.Len(); l == 0 {
 				break
 			}
 		}
-		if sz != fn.LenUnknown && i == 100_000 {
+		if sz != seq.LenUnknown && i == 100_000 {
 			t.Errorf("Failed to Skip() Seq 1-by-1, never became empty")
 		}
-		if fst, _ := seq.First(); fst.Ok() {
+		if fst, _ := sq.First(); fst.Ok() {
 			t.Errorf("Must not be able to take First() after Skipping everything")
 		}
 	})
 
-	if sz == fn.LenUnknown {
+	if sz == seq.LenUnknown {
 		return // rest of these tests require a Len
 	}
 
@@ -430,7 +431,7 @@ func (ts Suite[S]) seqIsWhere(t *testing.T, ss []S) {
 
 	t.Run("false/array", func(t *testing.T) {
 		seq := ts.createSeq()
-		wh := seq.Where(func(_ S) bool { return false }).Array()
+		wh := seq.Where(func(_ S) bool { return false }).ToSlice()
 		if l, _ := wh.Len(); l != 0 {
 			t.Errorf("Must create empty array after dropping everything with where=false")
 		}
@@ -465,13 +466,13 @@ func (ts Suite[S]) seqIsWhere(t *testing.T, ss []S) {
 
 	t.Run("true/array", func(t *testing.T) {
 		seq := ts.createSeq()
-		arr := seq.Where(func(_ S) bool { return true }).Array()
+		arr := seq.Where(func(_ S) bool { return true }).ToSlice()
 
 		if len(arr) != len(ss) {
 			t.Errorf("Unexpected number of elements in Seq.Where(true). Expected %d, got %d", len(ss), len(arr))
 		}
 		if !reflect.DeepEqual(arr.AsSlice(), ss) {
-			t.Errorf("Array elements mismatch.\nExpected %v,\ngot      %v", ss, arr)
+			t.Errorf("Slice elements mismatch.\nExpected %v,\ngot      %v", ss, arr)
 		}
 	})
 
@@ -482,7 +483,7 @@ func (ts Suite[S]) seqIsWhere(t *testing.T, ss []S) {
 			t.Errorf("Must create empty array after dropping everything with where=false")
 		}
 		if !reflect.DeepEqual(head.AsSlice(), ss) {
-			t.Errorf("Array elements mismatch. Expected %v, got %v", ss, head)
+			t.Errorf("Slice elements mismatch.\nExpected: %v\nGot     : %v", ss, head)
 		}
 		if fst, _ := tail.First(); fst.Ok() {
 			t.Errorf("Tail should be empty. Got %v", fst.Must())
@@ -493,17 +494,17 @@ func (ts Suite[S]) seqIsWhere(t *testing.T, ss []S) {
 func (ts Suite[S]) seqIsFirst(t *testing.T, ss []S) {
 	t.Helper()
 
-	seq := ts.createSeq()
-	sz, lenOk := seq.Len()
+	sq := ts.createSeq()
+	sz, lenOk := sq.Len()
 	if lenOk {
 		if sz != len(ss) {
 			t.Errorf("Seq len mismatch. Expected %d, found %d", len(ss), sz)
 		}
 	}
 
-	var fst fn.Opt[S]
+	var fst opt.Opt[S]
 	idx := 0
-	for fst, seq = seq.First(); fst.Ok(); fst, seq = seq.First() {
+	for fst, sq = sq.First(); fst.Ok(); fst, sq = sq.First() {
 		s := fst.Must()
 		if idx >= len(ss) {
 			t.Fatalf("Seq element index out of bounds. Expected max index %d, but got index %d with value %v",
@@ -515,7 +516,7 @@ func (ts Suite[S]) seqIsFirst(t *testing.T, ss []S) {
 		idx++
 	}
 
-	if sz != fn.LenUnknown && sz != idx {
+	if sz != seq.LenUnknown && sz != idx {
 		t.Errorf("Number of elements in ForEachIndex incorrect. Expected %d, found %d",
 			sz, idx)
 	}
@@ -525,13 +526,13 @@ func (ts Suite[S]) seqIsAll(t *testing.T, ss []S) {
 	t.Helper()
 
 	t.Run("false", func(t *testing.T) {
-		if fn.All(ts.createSeq(), func(_ S) bool { return false }) {
+		if seq.All(ts.createSeq(), func(_ S) bool { return false }) {
 			t.Errorf("All(false) should be false")
 		}
 	})
 
 	t.Run("true", func(t *testing.T) {
-		if !fn.All(ts.createSeq(), func(_ S) bool { return true }) {
+		if !seq.All(ts.createSeq(), func(_ S) bool { return true }) {
 			t.Errorf("All(true) should be true")
 		}
 	})
@@ -541,13 +542,13 @@ func (ts Suite[S]) seqIsAny(t *testing.T, ss []S) {
 	t.Helper()
 
 	t.Run("false", func(t *testing.T) {
-		if fn.Any(ts.createSeq(), func(_ S) bool { return false }) {
+		if seq.Any(ts.createSeq(), func(_ S) bool { return false }) {
 			t.Errorf("Any(false) should be false")
 		}
 	})
 
 	t.Run("true", func(t *testing.T) {
-		if !fn.Any(ts.createSeq(), func(_ S) bool { return true }) {
+		if !seq.Any(ts.createSeq(), func(_ S) bool { return true }) {
 			t.Errorf("Any(true) should be true")
 		}
 	})

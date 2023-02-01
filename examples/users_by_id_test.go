@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kamstrup/fn"
+	"github.com/kamstrup/fn/seq"
 )
 
 type User struct {
@@ -54,22 +54,22 @@ func TestExampleUsersById(t *testing.T) {
 	}
 
 	// Let's check if they all have a valid "name" field
-	everyOneHasName := fn.All(fn.ArrayOf(users), (*User).HasName)
+	everyOneHasName := seq.All(seq.SliceOf(users), (*User).HasName)
 	fmt.Println("Does everyone have a name?", everyOneHasName)
 
 	// Now let's print the IDs of the users without names, sorted reverse alphabetically
-	usersWithEmptyNames := fn.ArrayOf(users).
-		Where(fn.Not((*User).HasName))
-	idsWithEmptyNames := fn.MapOf(usersWithEmptyNames, (*User).ID).
-		Array().
-		Sort(fn.OrderDesc[string])
+	usersWithEmptyNames := seq.SliceOf(users).
+		Where(seq.Not((*User).HasName))
+	idsWithEmptyNames := seq.MappingOf(usersWithEmptyNames, (*User).ID).
+		ToSlice().
+		Sort(seq.OrderDesc[string])
 	fmt.Println("These user IDs do not have a name:", idsWithEmptyNames)
 
 	// Let's create a map[userID]*User:
 	// First we create a Seq of Tuples(userId, User)
-	usersWithIDs := fn.MapOf(fn.ArrayOf(users), fn.TupleWithKey((*User).ID))
-	// Now flush that Seq of tuples into the MakeAssoc collector
-	usersByIDs := fn.Into(nil, fn.MakeAssoc[string, *User], usersWithIDs).Or(nil)
+	usersWithIDs := seq.MappingOf(seq.SliceOf(users), seq.TupleWithKey((*User).ID))
+	// Now flush that Seq of tuples into the MakeMap collector
+	usersByIDs := seq.Reduce(seq.MakeMap[string, *User], nil, usersWithIDs).Or(nil)
 
 	// usersById is now a map[string]*User. Let's look up some users
 	fmt.Println("User with ID(xyz123):", usersByIDs["xyz123"]) // no one, nil
@@ -88,9 +88,9 @@ func TestExampleUsersById(t *testing.T) {
 	}
 
 	// Let's get a combined list of Users sorted by name
-	allUsers := fn.ConcatOf(fn.AssocOf(usersByIDs), fn.AssocOf(newUsers)) // AssocOf handles maps as Seqs of Tuples
-	allUsersSorted := fn.MapOf(allUsers, fn.TupleValue[string, *User]).
-		Array().
+	allUsers := seq.ConcatOf(seq.MapOf(usersByIDs), seq.MapOf(newUsers)) // MapOf handles maps as Seqs of Tuples
+	allUsersSorted := seq.MappingOf(allUsers, seq.TupleValue[string, *User]).
+		ToSlice().
 		Sort(func(u1, u2 *User) bool { return u1.name < u2.name })
 
 	fmt.Println("Combined list of users, by name:", allUsersSorted)

@@ -1,4 +1,4 @@
-package fntry
+package opt
 
 import "fmt"
 

@@ -1,14 +1,33 @@
-package fntry
+package opt
 
 import (
 	"errors"
+	"reflect"
 	"testing"
-
-	fntesting "github.com/kamstrup/fn/testing"
 )
 
 var theError = errors.New("the error")
 var atTheDiscoError = ErrPanic{V: "at the disco"}
+
+func isError[T any](t *testing.T, opt Opt[T], err error) {
+	if opt.Ok() {
+		t.Fatalf("expected error, opt was ok")
+	} else {
+		if opt.Error() != err {
+			t.Fatalf("unexpected error: %v", opt.Error())
+		}
+	}
+}
+
+func is[T any](t *testing.T, opt Opt[T], val T) {
+	if err := opt.Error(); err != nil {
+		t.Fatalf("expacted valid opt, got: %v", err)
+	} else {
+		if !reflect.DeepEqual(val, opt.Must()) {
+			t.Fatalf("bad value: %v", opt.Must())
+		}
+	}
+}
 
 func returnTheError() (int, error) {
 	return 27, theError
@@ -34,28 +53,28 @@ func panicAtTheDiscoIfEven(i int8) (int, error) {
 
 func TestTryError(t *testing.T) {
 	opt := Call(returnTheError)
-	fntesting.OptOf(t, opt).IsError(theError)
+	isError(t, opt, theError)
 
 	opt = CallRecover(panicAtTheDisco)
-	fntesting.OptOf(t, opt).IsError(atTheDiscoError)
+	isError(t, opt, atTheDiscoError)
 
 	opt = Apply(returnTheErrorIfEven, 28)
-	fntesting.OptOf(t, opt).IsError(theError)
+	isError(t, opt, theError)
 
 	opt = ApplyRecover(panicAtTheDiscoIfEven, 28)
-	fntesting.OptOf(t, opt).IsError(atTheDiscoError)
+	isError(t, opt, atTheDiscoError)
 }
 
 func TestTryOk(t *testing.T) {
 	opt := Call(func() (int, error) { return 27, nil })
-	fntesting.OptOf(t, opt).Is(27)
+	is(t, opt, 27)
 
 	opt = CallRecover(func() (int, error) { return 27, nil })
-	fntesting.OptOf(t, opt).Is(27)
+	is(t, opt, 27)
 
 	opt = Apply(returnTheErrorIfEven, 27)
-	fntesting.OptOf(t, opt).Is(27)
+	is(t, opt, 27)
 
 	opt = ApplyRecover(panicAtTheDiscoIfEven, 27)
-	fntesting.OptOf(t, opt).Is(27)
+	is(t, opt, 27)
 }

@@ -1,6 +1,7 @@
 package slice
 
 import (
+	"math/rand"
 	"sort"
 
 	"github.com/kamstrup/fn/constraints"
@@ -45,6 +46,10 @@ func Gen[T any](sz int, generator func(i int) T) []T {
 
 // Copy returns a shallow copy of the given slice.
 func Copy[T any](slice []T) []T {
+	if len(slice) == 0 {
+		return []T{}
+	}
+
 	cpy := make([]T, len(slice))
 	copy(cpy, slice)
 	return cpy
@@ -76,4 +81,41 @@ func SortDesc[T constraints.Ordered](slice []T) []T {
 		return slice[i] > slice[j]
 	})
 	return slice
+}
+
+// Reverse reverses the elements of s in-place and returns s again for easy chaining.
+func Reverse[T any](s []T) []T {
+	end := len(s) / 2
+	for i := 0; i < end; i++ {
+		swapIdx := len(s) - 1 - i
+		s[i], s[swapIdx] = s[swapIdx], s[i]
+	}
+	return s
+}
+
+// Shuffle pseudo-randomizes the elements in the slice in-place.
+// Returns the slice again for easy chaining.
+func Shuffle[T any](s []T) []T {
+	rand.Shuffle(len(s), func(i, j int) {
+		s[i], s[j] = s[j], s[i]
+	})
+	return s
+}
+
+// First returns the first element of s or the zero value of T
+func First[T any](s []T) T {
+	if len(s) == 0 {
+		var zero T
+		return zero
+	}
+	return s[0]
+}
+
+// Last returns the last element of s or the zero value of T
+func Last[T any](s []T) T {
+	if len(s) == 0 {
+		var zero T
+		return zero
+	}
+	return s[len(s)-1]
 }

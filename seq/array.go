@@ -11,7 +11,8 @@ import (
 // You can either create your slices via normal type conversion, Slice[T](mySlice),
 // or more easily (with type inference) via the static constructor SliceAs, and SliceAsArgs.
 //
-// You can use numeric indexing and call len(slice) directly on Slice instances.
+// You can use numeric indexing and call len(slice) directly on Slice instances,
+// and any function expecting a normal slice, []T, can take a Slice[T] as well.
 type Slice[T any] []T
 
 // Empty returns an empty seq

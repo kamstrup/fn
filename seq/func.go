@@ -257,7 +257,7 @@ func Not[T any](pred Predicate[T]) Predicate[T] {
 	}
 }
 
-// TupleWithKey creates a FuncMap to use with MappingOf or Map.
+// TupleWithKey creates a FuncMap to use with MappingOf or Seq.Map.
 // The returned function yields Tuples keyed by the keySelector's return value.
 // Usually used in conjunction with Reduce and MakeMap to build a map[K]V.
 func TupleWithKey[K comparable, V any](keySelector FuncMap[V, K]) func(V) Tuple[K, V] {

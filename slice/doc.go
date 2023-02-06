@@ -12,4 +12,10 @@
 // If you need to do more complex data transformation, like filtering out subsets of elements,
 // handling errors, or any longer chain of transformations, you will be better off by using
 // seq.Seq.
+//
+// # Interoperability with seq.Slice
+//
+// It is important to note that all functions that take a []T argument can be passed a seq.Slice[T]
+// as well. Any seq.Slice from the seq package can be passed as arguments to functions in this package
+// (and anywhere else a slice is used).
 package slice

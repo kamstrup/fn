@@ -1,10 +1,13 @@
 package examples
 
 import (
+	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 
+	"github.com/kamstrup/fn/opt"
 	"github.com/kamstrup/fn/seq"
 )
 
@@ -121,4 +124,32 @@ func TestExampleMapType(t *testing.T) {
 	// Ranging over myMap: three 3
 	// Ranging over myMap: four 4
 	// Map keys with even values: [two four]
+}
+
+func TestExampleMapWithErrors(t *testing.T) {
+	// In this example we use a mapping function that can also return an error.
+	// We try to parse a series of strings as integers and if it fails we silently drop them
+	strInts := seq.SliceOfArgs("1", "two", "3")
+	ints := seq.MappingOf(strInts, opt.Mapper(strconv.Atoi)).
+		Where(opt.Ok[int]).
+		ToSlice()
+
+	fmt.Println("These ints parsed ok:", ints)
+}
+
+func TestExampleSourceWithErrors(t *testing.T) {
+	// In this example we use a mapping function that can also return an error.
+	// We try to parse a series of strings as integers and if it fails we silently drop them
+	numTooBigError := errors.New("num too big!")
+	i := 0
+	ints, tail := seq.SourceOf(opt.Caller(func() (int, error) {
+		i++
+		if i > 3 {
+			return 0, numTooBigError
+		}
+		return i, nil
+	})).TakeWhile(opt.Ok[int])
+
+	fmt.Println("These ints are ok:", ints)
+	fmt.Println("Tail ended up as:", seq.Error(tail))
 }

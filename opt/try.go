@@ -2,18 +2,46 @@ package opt
 
 type FuncSourceErr[T any] func() (T, error)
 
-// Try wraps an error-returning function in a function returning an opt.
-// Try is intended for use with slice.Mapping and seq.MappingOf and similar transformations.
+// Mapper wraps an error-returning function in a function returning an opt.
+// Mapper is intended for use with slice.Mapping and seq.MappingOf and similar transformations.
+// See also Caller.
 //
 // # Example
 //
-//	filenames := seq.SliceOfArgs("file1.txt", "file2.txt")
-//	openFiles := seq.MappingOf(filenames, opt.Try(os.Open)).
-//	       Where(opt.Ok)
-//	fileContents := se.MappingOf(openFiles, io.ReadAll)
-func Try[S, T any](f func(S) (T, error)) func(S) Opt[T] {
+//		strInts := seq.SliceOfArgs("1", "two", "3")
+//		ints := seq.MappingOf(strInts, opt.Mapper(strconv.Atoi)).
+//			Where(opt.Ok[int]).
+//			ToSlice()
+//
+//	 // ints is [opt.Of(1), opt.Of(3)]
+func Mapper[S, T any](f func(S) (T, error)) func(S) Opt[T] {
 	return func(s S) Opt[T] {
 		t, err := f(s)
+		return Returning(t, err)
+	}
+}
+
+// Caller wraps an error-returning function in a function returning an opt.
+// Caller is intended for use with seq.SourceOf and similar situation where
+// you repeatedly call a source function that can error.
+// See also Mapper.
+//
+// # Example
+//
+//	 i := 0
+//		ints, tail := seq.SourceOf(opt.Caller(func() (int, error) {
+//			i++
+//			if i > 3 {
+//				return 0, numTooBigError
+//			}
+//			return i, nil
+//		})).TakeWhile(opt.Ok[int])
+//
+//	 // ints = [opt.Of(1), opt.Of(2), opt.Of(3)]
+//	 // tail wraps numTooBigError
+func Caller[T any](f FuncSourceErr[T]) func() Opt[T] {
+	return func() Opt[T] {
+		t, err := f()
 		return Returning(t, err)
 	}
 }

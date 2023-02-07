@@ -196,11 +196,6 @@ func (a Slice[T]) Shuffle() Seq[T] {
 	return a
 }
 
-// AsSlice is a chainable method for casting the Slice into a []T
-func (a Slice[T]) AsSlice() []T {
-	return a
-}
-
 func (a Slice[T]) Error() error {
 	if len(a) == 0 {
 		return nil

@@ -14,8 +14,8 @@ func TestSet(t *testing.T) {
 	st.LenIs(2)
 
 	exp := []string{"bar", "foo"}
-	res := s.ToSlice().Sort(seq.OrderAsc[string]).AsSlice()
-	if !reflect.DeepEqual(exp, res) {
+	res := s.ToSlice().Sort(seq.OrderAsc[string])
+	if !reflect.DeepEqual(exp, []string(res)) {
 		t.Errorf("Expected %v, got %v", exp, res)
 	}
 }

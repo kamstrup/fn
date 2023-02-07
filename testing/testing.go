@@ -471,7 +471,7 @@ func (ts Suite[S]) seqIsWhere(t *testing.T, ss []S) {
 		if len(arr) != len(ss) {
 			t.Errorf("Unexpected number of elements in Seq.Where(true). Expected %d, got %d", len(ss), len(arr))
 		}
-		if !reflect.DeepEqual(arr.AsSlice(), ss) {
+		if !reflect.DeepEqual([]S(arr), ss) {
 			t.Errorf("Slice elements mismatch.\nExpected %v,\ngot      %v", ss, arr)
 		}
 	})
@@ -482,7 +482,7 @@ func (ts Suite[S]) seqIsWhere(t *testing.T, ss []S) {
 		if len(head) != len(ss) {
 			t.Errorf("Must create empty array after dropping everything with where=false")
 		}
-		if !reflect.DeepEqual(head.AsSlice(), ss) {
+		if !reflect.DeepEqual([]S(head), ss) {
 			t.Errorf("Slice elements mismatch.\nExpected: %v\nGot     : %v", ss, head)
 		}
 		if fst, _ := tail.First(); fst.Ok() {

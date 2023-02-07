@@ -40,7 +40,7 @@ func TestDecoderError(t *testing.T) {
 
 	// We should read the first element
 	elems := createSeq().ToSlice()
-	if !reflect.DeepEqual(elems.AsSlice(), []Payload{{Foo: 27}}) {
+	if !reflect.DeepEqual([]Payload(elems), []Payload{{Foo: 27}}) {
 		t.Fatalf("bad result: %v", elems)
 	}
 
@@ -49,7 +49,7 @@ func TestDecoderError(t *testing.T) {
 	resultSeq := createSeq().ForEach(func(p Payload) {
 		elems = append(elems, p)
 	})
-	if !reflect.DeepEqual(elems.AsSlice(), []Payload{{Foo: 27}}) {
+	if !reflect.DeepEqual([]Payload(elems), []Payload{{Foo: 27}}) {
 		t.Fatalf("bad result: %v", elems)
 	}
 	if err := seq.Error(resultSeq); err != io.ErrUnexpectedEOF {

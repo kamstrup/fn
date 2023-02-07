@@ -6,8 +6,17 @@ import "github.com/kamstrup/fn/opt"
 // into another Seq. The returned Seq has the same Seq.Len() as the input Seq.
 // If you are looking for ways to create a Seq from a go map[K]V please
 // look at MapOf() or SetOf().
+//
 // If the mapping function is some kind of heavy operation or requires IO,
 // consider using the parallelized version of MappingOf called Go.
+//
+// If the mapping operation can result in an error consider wrapping the return
+// type in an opt. This can be done easily with opt.Mapper. For example,
+// parsing strings as ints and discarding any errors could look like:
+//
+//	  strInts := seq.SliceOfArgs("1", "two", "3")
+//		 ints := seq.MappingOf(strInts, opt.Mapper(strconv.Atoi)).
+//			         Where(opt.Ok[int])
 func MappingOf[S, T any](seq Seq[S], fm FuncMap[S, T]) Seq[T] {
 	return mappedSeq[S, T]{
 		f:   fm,

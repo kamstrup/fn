@@ -11,7 +11,7 @@ type Fallible interface {
 }
 
 // Error returns an error if there is an error associated with a Seq or Opt.
-// A sequence has an associated error if it has a method Error() that returns an error.
+// A sequence has an associated error if it implements Fallible and its Error method returns an error.
 func Error(x any) error {
 	if f, ok := x.(Fallible); ok {
 		return f.Error()

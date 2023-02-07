@@ -143,3 +143,7 @@ func (p prepSeq[T]) Map(funcMap FuncMap[T, T]) Seq[T] {
 		seq: p,
 	}
 }
+
+func (p prepSeq[T]) Error() error {
+	return Error(p.head)
+}

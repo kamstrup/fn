@@ -10,6 +10,17 @@ type sourceSeq[T any] struct {
 // The length of a source Seq is always LenInfinite.
 // Beware when using SourceOf since it often produces a stateful Seq, so order of operations
 // may matter.
+//
+// If you need to create a source seq that stops when the source function returns an error
+// you can use opt.Opt like this
+//
+//	seq := seq.SourceOf(func() opt.Opt[int] {
+//	              // ... calc i and err
+//	              return opt.Returning(i, err)
+//	          }).
+//	          While(op.Ok[int])
+//
+// The helper function opt.Caller can sometimes make this a bit easier to read.
 func SourceOf[T any](f FuncSource[T]) Seq[T] {
 	return sourceSeq[T]{f}
 }
@@ -53,8 +64,12 @@ func (s sourceSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 
 func (s sourceSeq[T]) TakeWhile(predicate Predicate[T]) (Slice[T], Seq[T]) {
 	var arr []T
-	for t := s.f(); predicate(t); t = s.f() {
-		arr = append(arr, t)
+	for t := s.f(); ; t = s.f() {
+		if predicate(t) {
+			arr = append(arr, t)
+		} else {
+			return arr, PrependOf[T](t, s)
+		}
 	}
 	return arr, s
 }

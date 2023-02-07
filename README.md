@@ -383,6 +383,27 @@ for k, v := range myMap { ... }
 result := myMap.Where(...).ToSlice()
 ```
 
+### Working with Functions that Return Errors
+It is very common in Go to have function that look like
+`func getInt() (int, error)` or `func calcInt(n int) (int, error)`.
+This can make function chaining clumsy because you cannot pass
+the results directly into another function.
+In Fn this can helped out with opts. Functions that return errors
+can be wrapped as functions returning opts:
+```go
+caller := opt.Caller(getInt) // is a func() Opt[int]
+mapper := opt.Mapper(calcInt) // is a func(int) Opt[int]
+```
+These functions `caller`, and `mapper`, can be plugged directly into `seq.MappingOf()`, `seq.SourceOf()`,
+and many others.
+
+Or if you want to calculate the result immediately
+```go
+optInt1 := opt.Call(getInt)
+optInt2 := opt.Apply(calcInt, 27)
+```
+There are panic-recovering variations of these functions as well.
+
 ## Performance
 If the foundational functional data structures and algorithms is not done carefully,
 execution speed and memory usage will suffer. Fn() is designed to make the best of what
@@ -390,6 +411,7 @@ the Go runtime can provide. Initial benchmarks puts it as a top contender among 
 functional libraries. See benchmarks here https://github.com/mariomac/go-stream-benchmarks/pull/1
 
 ## Experimental Packages
+ * `seqio` provides Seq[[]byte] based on io.Reader, and a Scanner based on bufio.Scanner
  * `seqjson` provides Seq[T] based on json.Decoder
  * `fntesting` contains various utilities to test Seqs
 
@@ -407,8 +429,6 @@ POTENTIAL FUTURE FEATURES (unordered)
 * RunesOf(string) Seq[rune]
 * MakeChan collector func for Reduce()?
 * MultiChan() Seq that selects on multiple chan T?
-* seq.GoErr(seq, numTasks, FuncMapErr) -- or some version of seq.Go() with cancellation and error handling. 
-* Tuple[S,T] as Seq[any]? (we have to do "any" bc the types S!=T)
 * MergeSort[T any](FuncLess[T], seqs ... Seq[T]) Seq[T] -- lazy merge sorting of pre-sorted Seqs
 * Compound FuncCollect, CollectorOf[S,T any](funcs ... FuncCollect[S,T]) FuncCollect[S,[]T]
 * Seq[Arithmetic] producing random numbers (in fnmath)?

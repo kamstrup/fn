@@ -50,7 +50,7 @@ func (s scannerSeq) Len() (int, bool) {
 	return seq.LenUnknown, false
 }
 
-func (s scannerSeq) ToSlice() BufferArray {
+func (s scannerSeq) ToSlice() BufferSlice {
 	tokens := seq.Reduce(func(tokens [][]byte, tok []byte) [][]byte {
 		dupTok := append([]byte{}, tok...) // scanner owns tok, so we copy it
 		return append(tokens, dupTok)
@@ -58,7 +58,7 @@ func (s scannerSeq) ToSlice() BufferArray {
 	return tokens
 }
 
-func (s scannerSeq) Take(n int) (BufferArray, BufferSeq) {
+func (s scannerSeq) Take(n int) (BufferSlice, BufferSeq) {
 	var tokens [][]byte
 	for i := 0; i < n && s.scanner.Scan(); i++ {
 		tok := append([]byte{}, s.scanner.Bytes()...) // scanner owns the Bytes() buffer
@@ -68,7 +68,7 @@ func (s scannerSeq) Take(n int) (BufferArray, BufferSeq) {
 	return tokens, s
 }
 
-func (s scannerSeq) TakeWhile(pred seq.Predicate[[]byte]) (BufferArray, BufferSeq) {
+func (s scannerSeq) TakeWhile(pred seq.Predicate[[]byte]) (BufferSlice, BufferSeq) {
 	var (
 		tokens [][]byte
 		tok    []byte

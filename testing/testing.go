@@ -330,8 +330,8 @@ func (ts Suite[S]) seqIsTake(t *testing.T, ss []S) {
 func (ts Suite[S]) seqIsTakeWhile(t *testing.T, ss []S) {
 	t.Helper()
 
-	seq := ts.createSeq()
-	sz, lenOk := seq.Len()
+	sq := ts.createSeq()
+	sz, lenOk := sq.Len()
 	if lenOk {
 		t.Run("Len", func(t *testing.T) {
 			if sz != len(ss) {
@@ -341,8 +341,8 @@ func (ts Suite[S]) seqIsTakeWhile(t *testing.T, ss []S) {
 	}
 
 	t.Run("skip-all", func(t *testing.T) {
-		seq = ts.createSeq()
-		head, tail := seq.TakeWhile(func(s S) bool { return false })
+		sq = ts.createSeq()
+		head, tail := sq.TakeWhile(func(s S) bool { return false })
 		if len(head) != 0 {
 			t.Errorf("When calling TakeWhile(false) 'head' must be the empty array")
 		}
@@ -352,11 +352,34 @@ func (ts Suite[S]) seqIsTakeWhile(t *testing.T, ss []S) {
 	})
 
 	t.Run("all", func(t *testing.T) {
-		seq = ts.createSeq()
-		head, tail := seq.TakeWhile(func(s S) bool { return true })
+		sq = ts.createSeq()
+		head, tail := sq.TakeWhile(func(s S) bool { return true })
 		if lenOk && len(head) != sz {
 			t.Errorf("When calling TakeWhile(true) 'head' must be the entire array. len(head)=%d", len(head))
 		}
+		if remaining, _ := tail.First(); remaining.Ok() {
+			t.Errorf("When calling TakeWhile(true) 'tail' must be empty. Found %v", remaining.Must())
+		}
+	})
+
+	t.Run("one-by-one", func(t *testing.T) {
+		tail := ts.createSeq()
+		var head seq.Slice[S]
+		for i := range ss {
+			numTakes := 0
+			head, tail = tail.TakeWhile(func(s S) bool {
+				numTakes++
+				return numTakes == 1
+			})
+			if len(head) != 1 {
+				t.Errorf("Should see exactly 1 element, found: %d", len(head))
+			}
+			if !reflect.DeepEqual(head[0], ss[i]) {
+				t.Errorf("When calling TakeWhile(), found unexpected element at index %d:\nFound:    %v\nExpected: %v", i, head[0], ss[i])
+			}
+		}
+
+		// tail should now be empty
 		if remaining, _ := tail.First(); remaining.Ok() {
 			t.Errorf("When calling TakeWhile(true) 'tail' must be empty. Found %v", remaining.Must())
 		}

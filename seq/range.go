@@ -158,7 +158,7 @@ func (r rangeSeq[N]) TakeWhile(pred Predicate[N]) (Slice[N], Seq[N]) {
 			if pred(val) {
 				arr = append(arr, val)
 			} else {
-				return arr, RangeStepOf(r.from+N(i)*r.step, r.to, r.step)
+				return arr, RangeStepOf(r.from-N(i)*r.step, r.to, r.step)
 			}
 		}
 	}

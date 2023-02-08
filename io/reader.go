@@ -10,7 +10,7 @@ import (
 )
 
 type BufferSeq = seq.Seq[[]byte]
-type BufferArray = seq.Slice[[]byte]
+type BufferSlice = seq.Slice[[]byte]
 
 type Reader struct {
 	r   io.Reader
@@ -41,8 +41,9 @@ func (r Reader) ForEach(f seq.Func1[[]byte]) BufferSeq {
 			return seq.ErrorOf[[]byte](err)
 		}
 
-		f(r.buf[:n]) // might or might not steal r.buf, we have to be defensive!
-		r.buf = make([]byte, len(r.buf))
+		// might or might not steal r.buf, we have to be defensive!
+		cpy := append([]byte{}, r.buf[:n]...)
+		f(cpy)
 	}
 
 	return seq.Empty[[]byte]()
@@ -58,8 +59,10 @@ func (r Reader) ForEachIndex(f seq.Func2[int, []byte]) BufferSeq {
 		} else if err != nil {
 			return seq.ErrorOf[[]byte](err)
 		}
-		f(i, r.buf[:n]) // might or might not steal r.buf, we have to be defensive!
-		r.buf = make([]byte, len(r.buf))
+
+		// might or might not steal r.buf, we have to be defensive!
+		cpy := append([]byte{}, r.buf[:n]...)
+		f(i, cpy)
 		i++
 	}
 
@@ -99,13 +102,13 @@ func (r Reader) ByteLen() (int, bool) {
 	return seq.LenUnknown, false
 }
 
-func (r Reader) ToSlice() BufferArray {
+func (r Reader) ToSlice() BufferSlice {
 	// TODO: if size is well-defined: alloc 1 continuous stride and do 1 read call, and sub-divide into buffers via slicing
 
 	return seq.Reduce(seq.Append[[]byte], nil, r.seq()).Or(nil) // careful: errors silently dropped
 }
 
-func (r Reader) Take(n int) (BufferArray, BufferSeq) {
+func (r Reader) Take(n int) (BufferSlice, BufferSeq) {
 	var (
 		res  [][]byte
 		tail = r
@@ -119,14 +122,14 @@ func (r Reader) Take(n int) (BufferArray, BufferSeq) {
 			return res, seq.ErrorOf[[]byte](err)
 		}
 
-		res = append(res, r.buf[:numRead])
-		r.buf = make([]byte, len(r.buf))
+		cpy := append([]byte{}, r.buf[:numRead]...)
+		res = append(res, cpy)
 	}
 
 	return res, tail
 }
 
-func (r Reader) TakeWhile(pred seq.Predicate[[]byte]) (BufferArray, BufferSeq) {
+func (r Reader) TakeWhile(pred seq.Predicate[[]byte]) (BufferSlice, BufferSeq) {
 	var res [][]byte // we can't pre-alloc -- we really don't know what size buffer we need, could be 0!
 
 	for {
@@ -137,14 +140,11 @@ func (r Reader) TakeWhile(pred seq.Predicate[[]byte]) (BufferArray, BufferSeq) {
 			return res, seq.ErrorOf[[]byte](err)
 		}
 
-		if pred(r.buf[:numRead]) {
-			res = append(res, r.buf[:numRead])
-			r.buf = make([]byte, len(r.buf))
+		cpy := append([]byte{}, r.buf[:numRead]...)
+		if pred(cpy) {
+			res = append(res, cpy)
 		} else {
-			// DANGER: We "unread" r.buf here. We end up in a state where the singlet and r share r.buf.
-			// This works out as long as the caller does not user r further, since r will not use the buffer
-			// before the singlet is exhausted. We might need to copy the r.buf if this is problematic in practice.
-			tail := seq.PrependOf[[]byte](r.buf, r)
+			tail := seq.PrependOf[[]byte](cpy, r)
 			return res, tail
 		}
 	}

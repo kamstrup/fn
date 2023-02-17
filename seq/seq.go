@@ -34,6 +34,8 @@ type Seq[T any] interface {
 	// If the boolean return value is false, the length is not well-defined and is either
 	// LenUnknown or LenInfinite.
 	//
+	// Len must always be O(1) and must not execute the seq.
+	//
 	// You rarely want to check the length of a Seq. It is mostly intended for cases where
 	// we can pre-allocate suitable size buffers to hold results. If you are looking to check
 	// if a Seq contains a given element, or satisfies some property, you can use Any, All,

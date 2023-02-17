@@ -85,6 +85,10 @@ func (c concatSeq[T]) ToSlice() Slice[T] {
 	return buf
 }
 
+func (c concatSeq[T]) Limit(n int) Seq[T] {
+	return LimitOf[T](c, n)
+}
+
 func (c concatSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	if n <= 0 {
 		return []T{}, c

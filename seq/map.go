@@ -83,6 +83,10 @@ func (a Map[K, V]) ToSlice() Slice[Tuple[K, V]] {
 	return arr
 }
 
+func (a Map[K, V]) Limit(n int) Seq[Tuple[K, V]] {
+	return LimitOf[Tuple[K, V]](a, n)
+}
+
 func (a Map[K, V]) Take(n int) (Slice[Tuple[K, V]], Seq[Tuple[K, V]]) {
 	// Taking the "first n elements" from a map[K]V does *almost* never make sense,
 	// since maps in Go a deliberately not ordered consistently.

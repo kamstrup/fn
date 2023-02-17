@@ -75,6 +75,10 @@ func (s Set[K]) ToSlice() Slice[K] {
 	return arr
 }
 
+func (s Set[T]) Limit(n int) Seq[T] {
+	return LimitOf[T](s, n)
+}
+
 func (s Set[K]) Take(n int) (Slice[K], Seq[K]) {
 	// Taking the "first n elements" from a map[K]V does *almost* never make sense,
 	// since maps in Go a deliberately not ordered consistently.

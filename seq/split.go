@@ -79,6 +79,10 @@ func (s splitSeq[T]) ToSlice() Slice[Seq[T]] {
 	return arr
 }
 
+func (s splitSeq[T]) Limit(n int) Seq[Seq[T]] {
+	return LimitOf[Seq[T]](s, n)
+}
+
 func (s splitSeq[T]) Take(n int) (Slice[Seq[T]], Seq[Seq[T]]) {
 	if n == 0 {
 		return []Seq[T]{}, s

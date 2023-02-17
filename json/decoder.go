@@ -53,6 +53,10 @@ func (d decoderSeq[T]) ToSlice() seq.Slice[T] {
 	return arr
 }
 
+func (d decoderSeq[T]) Limit(n int) seq.Seq[T] {
+	return seq.LimitOf[T](d, n)
+}
+
 func (d decoderSeq[T]) Take(n int) (seq.Slice[T], seq.Seq[T]) {
 	var (
 		arr = make([]T, 0, n)

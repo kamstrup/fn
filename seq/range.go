@@ -119,6 +119,32 @@ func (r rangeSeq[N]) ToSlice() Slice[N] {
 	return arr
 }
 
+func (r rangeSeq[N]) Limit(n int) Seq[N] {
+	end := int(r.from) + int(r.step)*n
+
+	// are we ascending?
+	if r.to > r.from {
+		if end < int(r.to) {
+			return rangeSeq[N]{
+				from: r.from,
+				to:   N(end),
+				step: r.step,
+			}
+		}
+		return r
+	}
+
+	// we are descending
+	if end > int(r.to) {
+		return rangeSeq[N]{
+			from: r.from,
+			to:   N(end),
+			step: r.step,
+		}
+	}
+	return r
+}
+
 func (r rangeSeq[N]) Take(n int) (Slice[N], Seq[N]) {
 	sz, _ := r.Len()
 	if n >= sz {

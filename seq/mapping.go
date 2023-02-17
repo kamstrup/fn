@@ -73,6 +73,10 @@ func (m mappedSeq[S, T]) ToSlice() Slice[T] {
 	}
 }
 
+func (m mappedSeq[S, T]) Limit(n int) Seq[T] {
+	return LimitOf[T](m, n)
+}
+
 func (m mappedSeq[S, T]) Take(n int) (Slice[T], Seq[T]) {
 	var (
 		head Slice[S]

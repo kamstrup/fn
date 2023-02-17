@@ -108,6 +108,10 @@ func (r Reader) ToSlice() BufferSlice {
 	return seq.Reduce(seq.Append[[]byte], nil, r.seq()).Or(nil) // careful: errors silently dropped
 }
 
+func (r Reader) Limit(n int) BufferSeq {
+	return seq.LimitOf[[]byte](r, n)
+}
+
 func (r Reader) Take(n int) (BufferSlice, BufferSeq) {
 	var (
 		res  [][]byte

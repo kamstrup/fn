@@ -84,6 +84,13 @@ func (a Slice[T]) ToSlice() Slice[T] {
 	return a
 }
 
+func (a Slice[T]) Limit(n int) Seq[T] {
+	if len(a) <= n {
+		return a
+	}
+	return a[:n]
+}
+
 func (a Slice[T]) Take(n int) (Slice[T], Seq[T]) {
 	if len(a) <= n {
 		return a, Empty[T]()

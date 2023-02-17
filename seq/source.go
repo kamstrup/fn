@@ -54,6 +54,10 @@ func (s sourceSeq[T]) ToSlice() Slice[T] {
 	panic("cannot create Slice of infinite source")
 }
 
+func (s sourceSeq[T]) Limit(n int) Seq[T] {
+	return LimitOf[T](s, n)
+}
+
 func (s sourceSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	arr := make([]T, n)
 	for i := 0; i < n; i++ {

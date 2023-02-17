@@ -97,6 +97,10 @@ func (z zipSeq[X, Y]) ToSlice() Slice[Tuple[X, Y]] {
 	return arr
 }
 
+func (z zipSeq[X, Y]) Limit(n int) Seq[Tuple[X, Y]] {
+	return LimitOf[Tuple[X, Y]](z, n)
+}
+
 func (z zipSeq[X, Y]) Take(n int) (Slice[Tuple[X, Y]], Seq[Tuple[X, Y]]) {
 	var (
 		arr []Tuple[X, Y]

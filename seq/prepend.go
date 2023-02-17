@@ -58,6 +58,10 @@ func (p prepSeq[T]) ToSlice() Slice[T] {
 	return arr
 }
 
+func (p prepSeq[T]) Limit(n int) Seq[T] {
+	return LimitOf[T](p, n)
+}
+
 func (p prepSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	if n == 0 {
 		return Slice[T]{}, p

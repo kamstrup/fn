@@ -44,7 +44,12 @@ type Seq[T any] interface {
 	// ToSlice executes the Seq and stores all elements in memory as a Slice.
 	// Recall that all functions and operations that works on a normal slice []T, also work directly on a Slice[T].
 	ToSlice() Slice[T]
-	// Take executes up to the first N elements of the Seq and returns the rest in a tail Seq
+	// Limit returns a lazy Seq with maximally n elements.
+	// The Take method is related, but Take is different in that it executes the first n elements and returns the tail.
+	// Limit is lazy, and can as such not return a tail.
+	Limit(n int) Seq[T]
+	// Take executes up to the first N elements of the Seq and returns the rest in a tail Seq.
+	// The Limit method is related, but different because Limit is lazy and does not return a tail.
 	Take(int) (Slice[T], Seq[T])
 	// TakeWhile executes the Seq while Predicate returns true,
 	// then returns those elements in a Slice and the rest in a tail Seq.

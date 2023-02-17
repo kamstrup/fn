@@ -75,6 +75,13 @@ func (l limitSeq[T]) ToSlice() Slice[T] {
 	return arr
 }
 
+func (l limitSeq[T]) Limit(n int) Seq[T] {
+	if n < l.limit {
+		return LimitOf[T](l, n)
+	}
+	return l
+}
+
 func (l limitSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	if n > l.limit {
 		n = l.limit

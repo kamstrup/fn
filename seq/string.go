@@ -40,6 +40,13 @@ func (s String) ToSlice() Slice[byte] {
 	return []byte(s)
 }
 
+func (s String) Limit(n int) Seq[byte] {
+	if len(s) <= n {
+		return s
+	}
+	return s[:n]
+}
+
 func (s String) Take(n int) (Slice[byte], Seq[byte]) {
 	if len(s) <= n {
 		return []byte(s), Empty[byte]()

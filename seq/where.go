@@ -54,6 +54,10 @@ func (ws whereSeq[T]) ToSlice() Slice[T] {
 	return arr
 }
 
+func (ws whereSeq[T]) Limit(n int) Seq[T] {
+	return LimitOf[T](ws, n)
+}
+
 func (ws whereSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	if l, _ := ws.Len(); l == 0 || n == 0 {
 		return Slice[T](nil), Empty[T]()

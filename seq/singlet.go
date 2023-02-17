@@ -44,6 +44,10 @@ func (s singletSeq[T]) ToSlice() Slice[T] {
 	return Slice[T]{s.val}
 }
 
+func (s singletSeq[T]) Limit(n int) Seq[T] {
+	return LimitOf[T](s, n)
+}
+
 func (s singletSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	if n == 0 {
 		return Slice[T]{}, s

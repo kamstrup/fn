@@ -52,6 +52,10 @@ func (e errorSeq[T]) ToSlice() Slice[T] {
 	return nil
 }
 
+func (e errorSeq[T]) Limit(n int) Seq[T] {
+	return e
+}
+
 func (e errorSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	if n < 0 {
 		panic("must take >= 0 elements")
@@ -83,8 +87,5 @@ func (e errorSeq[T]) First() (opt.Opt[T], Seq[T]) {
 }
 
 func (e errorSeq[T]) Map(shaper FuncMap[T, T]) Seq[T] {
-	return mappedSeq[T, T]{
-		f:   shaper,
-		seq: e,
-	}
+	return e
 }

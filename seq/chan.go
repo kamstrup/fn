@@ -35,6 +35,10 @@ func (c Chan[T]) ToSlice() Slice[T] {
 	return Reduce(Append[T], nil, c.Seq()).Or(nil) // careful: errors silently dropped
 }
 
+func (c Chan[T]) Limit(n int) Seq[T] {
+	return LimitOf[T](c, n)
+}
+
 func (c Chan[T]) Take(n int) (Slice[T], Seq[T]) {
 	if n == 0 {
 		return []T{}, c

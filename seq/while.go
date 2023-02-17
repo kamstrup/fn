@@ -51,6 +51,10 @@ func (w whileSeq[T]) ToSlice() Slice[T] {
 	return head
 }
 
+func (w whileSeq[T]) Limit(n int) Seq[T] {
+	return LimitOf[T](w, n)
+}
+
 func (w whileSeq[T]) Take(n int) (Slice[T], Seq[T]) {
 	if n == 0 {
 		return []T{}, w

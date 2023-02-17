@@ -420,7 +420,6 @@ TODO
 ```
 API CHANGES:
 * Do we need to change seq.Go() to enable better error handling?
-* Add Seq.Limit(n) method on Seq interface?
 
 POTENTIAL FUTURE FEATURES (unordered)
 * Something for context.Context? Support cancel() cb and Done() chans? fncontext package...

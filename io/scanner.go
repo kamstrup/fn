@@ -58,6 +58,10 @@ func (s scannerSeq) ToSlice() BufferSlice {
 	return tokens
 }
 
+func (s scannerSeq) Limit(n int) BufferSeq {
+	return seq.LimitOf[[]byte](s, n)
+}
+
 func (s scannerSeq) Take(n int) (BufferSlice, BufferSeq) {
 	var tokens [][]byte
 	for i := 0; i < n && s.scanner.Scan(); i++ {

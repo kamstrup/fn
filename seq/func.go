@@ -95,6 +95,16 @@ func MakeSet[K comparable](into map[K]struct{}, k K) map[K]struct{} {
 	return into
 }
 
+// MakeChan is a FuncCollect that puts elements into a channel.
+// Unlike other MakeX functions MakeChan does not work with a nil channel.
+func MakeChan[T any](into chan T, t T) chan T {
+	if into == nil {
+		panic("unable to collect into nil channel")
+	}
+	into <- t
+	return into
+}
+
 // GroupBy is a FuncCollect that can take a Seq of Tuple values and group them by Tuple.Key in a map.
 // All values of Tuple.Value are appended to a slice under each key.
 // This function works with nil or a pre-built map[K][]V as initial value.

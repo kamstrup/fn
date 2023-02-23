@@ -139,6 +139,17 @@ func TestCollectUpdateArray(t *testing.T) {
 	}
 }
 
+func TestCollectChan(t *testing.T) {
+	orig := seq.SliceAsArgs(1, 2, 3)
+	ch := seq.Reduce(seq.MakeChan[int], make(chan int, len(orig)), orig.Seq()).Must()
+	close(ch)
+	chSlice := seq.ChanOf(ch).ToSlice()
+
+	if !reflect.DeepEqual(chSlice, orig) {
+		t.Fatalf("bad result: %v", chSlice)
+	}
+}
+
 func TestCollectError(t *testing.T) {
 	theError := errors.New("the error")
 	errSeq := seq.ErrorOf[int](theError)

@@ -1,6 +1,7 @@
 package slice
 
 import (
+	"math/rand"
 	"reflect"
 	"testing"
 )
@@ -24,7 +25,21 @@ func TestMapIndex(t *testing.T) {
 }
 
 func TestGen(t *testing.T) {
-	results := Gen(3, func(idx int) int {
+	results := Gen(3, rand.Float64)
+	if len(results) != 3 {
+		t.Fatalf("bad results: %v", results)
+	}
+	for i, f := range results {
+		// rand.Float64() can technically become 0, but exceptionally rare.
+		// We'd rather test that we have non-default values in the results.
+		if f <= 0 || f > 1 {
+			t.Fatalf("bad results (index %d): %v", i, results)
+		}
+	}
+}
+
+func TestGenIndex(t *testing.T) {
+	results := GenIndex(3, func(idx int) int {
 		return idx
 	})
 	if !reflect.DeepEqual(results, []int{0, 1, 2}) {

@@ -35,8 +35,22 @@ func MappingIndex[S, T any](slice []S, f func(i int, s S) T) []T {
 }
 
 // Gen builds a new slice of a given size.
+// The generator function is called sz times.
+//
+// Example:
+//
+//	tenRandomFloats := slice.Gen(10, rand.Float64)
+func Gen[T any](sz int, generator func() T) []T {
+	result := make([]T, sz)
+	for i := range result {
+		result[i] = generator()
+	}
+	return result
+}
+
+// GenIndex builds a new slice of a given size.
 // The generator function is called for each index in the new slice.
-func Gen[T any](sz int, generator func(i int) T) []T {
+func GenIndex[T any](sz int, generator func(i int) T) []T {
 	result := make([]T, sz)
 	for i := range result {
 		result[i] = generator(i)

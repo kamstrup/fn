@@ -119,3 +119,43 @@ func Last[T any](s []T) T {
 	}
 	return s[len(s)-1]
 }
+
+// Delete removes all slice entries where the predicate returns true.
+// The input slice is changed in-place.
+func Delete[T any](s []T, shouldDelete func(T) bool) []T {
+	// One pass deletion.
+	// We put entries to keep to the left, and entries to delete to the right,
+	// while preserving the ordering of the kept entries.
+	highestKeepIdx := 0
+	for idx := range s {
+		if !shouldDelete(s[idx]) {
+			if idx != highestKeepIdx {
+				s[highestKeepIdx], s[idx] = s[idx], s[highestKeepIdx]
+			}
+			highestKeepIdx++
+		}
+	}
+
+	// trim the columns
+	return s[:highestKeepIdx]
+}
+
+// Trim removes any zero-value entries from the beginning and end of a given slice.
+// The input slice is unchanged and a sub-slice is returned.
+func Trim[T comparable](s []T) []T {
+	if s == nil {
+		return nil
+	}
+
+	var (
+		zero       T
+		start, end int
+	)
+	for start = 0; start < len(s) && s[start] == zero; start++ {
+	}
+
+	for end = len(s); end > start && s[end-1] == zero; end-- {
+	}
+
+	return s[start:end]
+}

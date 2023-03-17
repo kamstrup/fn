@@ -299,13 +299,17 @@ op.OnErr(func (error) T { ... }) // Returns the opt value T, or invokes a callba
 
 // And the static function:
 opt.Map(opt, func(val S) T) Opt[T]  // Converts the opt from type S to T
+
+// For async results
+opt.Promise(...) Future[T]
 ```
 
 **Opt Misconceptions and Pitfalls**: Opts should be passed by value, on the stack.
-If you use pointers, `*Opt` or `&opt`, something is wrong. They have a bit of memory overhead
+If you use pointers, `*Opt` or `&Opt`, something is wrong. They have a bit of memory overhead
 and should not be stored in arrays or slices. You *can* use them in seqs because they are
 lazily created 1 by 1 and kept short-lived on the stack.
-An Opt is not a "promise" or "future" - they capture an existing result. 
+An Opt is not a "promise" or "future" - they capture an existing result. If you need async
+operations please look at `opt.Promise()`.
 
 
 ### Parallel Execution
@@ -419,7 +423,7 @@ TODO
 ---
 ```
 API CHANGES:
-* Do we need to change seq.Go() to enable better error handling?
+* Feels weird that ForEach and ForEachIndex returns an empty seq. Maybe just error, or an Opt?
 
 POTENTIAL FUTURE FEATURES (unordered)
 * Something for context.Context? Support cancel() cb and Done() chans? fncontext package...
@@ -432,7 +436,6 @@ POTENTIAL FUTURE FEATURES (unordered)
 * Compound FuncCollect, CollectorOf[S,T any](funcs ... FuncCollect[S,T]) FuncCollect[S,[]T]
 * Seq[Arithmetic] producing random numbers (in fnmath)?
 * Seq for *sql.Rows, with some type safe mechanism for reading rows
-* Promises or Futures that work nicely with Seq and Opt?
 * Some kind of "push seq", or is that just Chan? Some libraries only provide "callback based iteration" for data structures.
 
 POTENTIAL FUTURE OPTIMIZATIONS

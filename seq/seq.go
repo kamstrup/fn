@@ -41,7 +41,7 @@ type Seq[T any] interface {
 	// if a Seq contains a given element, or satisfies some property, you can use Any, All,
 	// Last, One, or IsEmpty.
 	Len() (int, bool)
-	// ToSlice executes the Seq and stores all elements in memory as a Slice.
+	// ToSlice executes the Seq and stores all elements in memory as a new Slice.
 	// Recall that all functions and operations that works on a normal slice []T, also work directly on a Slice[T].
 	ToSlice() Slice[T]
 	// Limit returns a lazy Seq with maximally n elements.

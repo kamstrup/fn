@@ -81,7 +81,7 @@ func (a Slice[T]) Len() (int, bool) {
 }
 
 func (a Slice[T]) ToSlice() Slice[T] {
-	return a
+	return a.Copy() // must return a new instance
 }
 
 func (a Slice[T]) Limit(n int) Seq[T] {
@@ -201,6 +201,17 @@ func (a Slice[T]) Shuffle() Seq[T] {
 		a[i], a[j] = a[j], a[i]
 	})
 	return a
+}
+
+// Copy returns a copy of this slice
+func (a Slice[T]) Copy() Slice[T] {
+	if len(a) == 0 {
+		return []T{}
+	}
+
+	cpy := make([]T, len(a))
+	copy(cpy, a)
+	return cpy
 }
 
 func (a Slice[T]) Error() error {

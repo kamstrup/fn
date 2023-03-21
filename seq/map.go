@@ -40,6 +40,16 @@ func MapAs[K comparable, V any](m map[K]V) Map[K, V] {
 	return m
 }
 
+// Keys returns a seq over the keys in the map.
+func (a Map[K, V]) Keys() Seq[K] {
+	return MappingOf(a.Seq(), TupleKey[K, V])
+}
+
+// Values returns a seq over the values in the map.
+func (a Map[K, V]) Values() Seq[V] {
+	return MappingOf(a.Seq(), TupleValue[K, V])
+}
+
 // Seq returns the Map cast as a Seq.
 func (a Map[K, V]) Seq() Seq[Tuple[K, V]] {
 	return a

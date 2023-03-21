@@ -69,3 +69,19 @@ func TestSeqAssocTake(t *testing.T) {
 func TestSeqAssocTakeWhile(t *testing.T) {
 	t.Skip("TODO")
 }
+
+func TestMapKeys(t *testing.T) {
+	keys := seq.MapAs(map[string]int{"one": 1, "two": 2}).
+		Keys().
+		ToSlice().
+		Sort(seq.OrderAsc[string])
+	fntesting.TestOf(t, keys.Seq()).Is("one", "two")
+}
+
+func TestMapValues(t *testing.T) {
+	vals := seq.MapAs(map[string]int{"one": 1, "two": 2}).
+		Values().
+		ToSlice().
+		Sort(seq.OrderAsc[int])
+	fntesting.TestOf(t, vals.Seq()).Is(1, 2)
+}

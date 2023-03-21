@@ -428,7 +428,6 @@ API CHANGES:
 POTENTIAL FUTURE FEATURES (unordered)
 * Something for context.Context? Support cancel() cb and Done() chans? fncontext package...
 * seqio.DirOf(dirName), seqio.DirTreeOf(dirName) (recursive)
-* Special seqs for Map.Keys() and Map.Values()
 * RunesOf(string) Seq[rune]
 * MakeChan collector func for Reduce()?
 * MultiChan() Seq that selects on multiple chan T?

@@ -2,10 +2,10 @@ package seq
 
 import "github.com/kamstrup/fn/opt"
 
-type Chan[T any] <-chan T
+type Chan[T any] chan T
 
 // ChanOf returns a Seq that reads a channel until it is closed.
-func ChanOf[T any](ch <-chan T) Seq[T] {
+func ChanOf[T any](ch chan T) Seq[T] {
 	return Chan[T](ch)
 }
 

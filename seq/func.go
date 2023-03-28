@@ -51,7 +51,7 @@ func Count[T any](into int, _ T) int {
 
 // Append is a FuncCollect for use with Reduce, that uses the standard Go append() function.
 // This function works with nil or a pre-built slice as initial value.
-func Append[T any](into []T, t T) []T {
+func Append[T any](into Slice[T], t T) Slice[T] {
 	return append(into, t)
 }
 
@@ -77,7 +77,7 @@ func MakeBytes(into *bytes.Buffer, b []byte) *bytes.Buffer {
 
 // MakeMap is a FuncCollect that can take a Seq of Tuple elements and store them in a standard go map.
 // This function works with nil or a pre-built map[K]V as initial value.
-func MakeMap[K comparable, V any](into map[K]V, t Tuple[K, V]) map[K]V {
+func MakeMap[K comparable, V any](into Map[K, V], t Tuple[K, V]) Map[K, V] {
 	if into == nil {
 		into = make(map[K]V)
 	}
@@ -87,7 +87,7 @@ func MakeMap[K comparable, V any](into map[K]V, t Tuple[K, V]) map[K]V {
 
 // MakeSet is a FuncCollect that can take a Seq of comparable values and store them in a standard Go set (map[]struct{}).
 // This function works with nil or a pre-built map[K]struct{} as initial value.
-func MakeSet[K comparable](into map[K]struct{}, k K) map[K]struct{} {
+func MakeSet[K comparable](into Set[K], k K) Set[K] {
 	if into == nil {
 		into = make(map[K]struct{})
 	}
@@ -97,7 +97,7 @@ func MakeSet[K comparable](into map[K]struct{}, k K) map[K]struct{} {
 
 // MakeChan is a FuncCollect that puts elements into a channel.
 // Unlike other MakeX functions MakeChan does not work with a nil channel.
-func MakeChan[T any](into chan T, t T) chan T {
+func MakeChan[T any](into Chan[T], t T) Chan[T] {
 	if into == nil {
 		panic("unable to collect into nil channel")
 	}
@@ -122,9 +122,9 @@ func MakeChan[T any](into chan T, t T) chan T {
 //	  "alan":   {1, 5},
 //	  "scotty": {3},
 //	}
-func GroupBy[K comparable, V any](into map[K][]V, tup Tuple[K, V]) map[K][]V {
+func GroupBy[K comparable, V any](into Map[K, Slice[V]], tup Tuple[K, V]) Map[K, Slice[V]] {
 	if into == nil {
-		into = make(map[K][]V)
+		into = make(Map[K, Slice[V]])
 	}
 	into[tup.Key()] = append(into[tup.Key()], tup.Value())
 	return into
@@ -144,8 +144,8 @@ func GroupBy[K comparable, V any](into map[K][]V, tup Tuple[K, V]) map[K][]V {
 // Prints:
 //
 //	map[alan:2 bob:3 scotty:1]
-func UpdateMap[K comparable, V any](updater FuncUpdate[V]) FuncCollect[map[K]V, Tuple[K, V]] {
-	return func(into map[K]V, tup Tuple[K, V]) map[K]V {
+func UpdateMap[K comparable, V any](updater FuncUpdate[V]) FuncCollect[Map[K, V], Tuple[K, V]] {
+	return func(into Map[K, V], tup Tuple[K, V]) Map[K, V] {
 		if into == nil {
 			into = make(map[K]V)
 		}
@@ -160,8 +160,8 @@ func UpdateMap[K comparable, V any](updater FuncUpdate[V]) FuncCollect[map[K]V, 
 // It looks at the elements in the index specified by Tuple.X(), ensures that the slice is big enough
 // (growing it if needed), and updates the value at that index with the provided FuncUpdate.
 // Classic update functions could be fnmath.Max, fnmath.Min, or fnmath.Sum.
-func UpdateSlice[I constraints.Integer, V any](updater FuncUpdate[V]) FuncCollect[[]V, Tuple[I, V]] {
-	return func(into []V, tup Tuple[I, V]) []V {
+func UpdateSlice[I constraints.Integer, V any](updater FuncUpdate[V]) FuncCollect[Slice[V], Tuple[I, V]] {
+	return func(into Slice[V], tup Tuple[I, V]) Slice[V] {
 		idx := int(tup.Key())
 
 		// Ensure target slice has required size (len(into) >= idx+1)

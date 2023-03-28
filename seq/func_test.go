@@ -38,7 +38,7 @@ func TestCollectCount(t *testing.T) {
 func TestCollectAppend(t *testing.T) {
 	arr := seq.SliceOfArgs[int](1, 2, 3)
 	cpy := seq.Reduce(seq.Append[int], nil, arr)
-	exp := []int{1, 2, 3}
+	exp := seq.SliceOfArgs(1, 2, 3)
 	if !reflect.DeepEqual(cpy.Must(), exp) {
 		t.Errorf("expected %v, got %v", exp, cpy)
 	}
@@ -60,9 +60,9 @@ func TestCollectAssoc(t *testing.T) {
 		return strconv.FormatInt(int64(i), 10)
 	}))
 	res := seq.Reduce(seq.MakeMap[string, int], nil, arr)
-	exp := map[string]int{
+	exp := seq.MapAs(map[string]int{
 		"1": 1, "3": 3,
-	}
+	})
 	if !reflect.DeepEqual(res.Must(), exp) {
 		t.Errorf("expected %v, got %v", exp, res)
 	}
@@ -71,9 +71,9 @@ func TestCollectAssoc(t *testing.T) {
 func TestCollectSet(t *testing.T) {
 	nums := seq.SliceOfArgs(1, 2, 2, 3, 1)
 	res := seq.Reduce(seq.MakeSet[int], nil, nums)
-	exp := map[int]struct{}{
+	exp := seq.SetAs(map[int]struct{}{
 		1: {}, 2: {}, 3: {},
-	}
+	})
 	if !reflect.DeepEqual(res.Must(), exp) {
 		t.Errorf("expected %v, got %v", exp, res)
 	}
@@ -92,11 +92,11 @@ func TestCollectGroupBy(t *testing.T) {
 	names := seq.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 	tups := seq.ZipOf[string, int](names, seq.RangeFrom(0))
 	res := seq.Reduce(seq.GroupBy[string, int], nil, tups)
-	exp := map[string][]int{
-		"bob":    {0, 2, 4},
-		"alan":   {1, 5},
-		"scotty": {3},
-	}
+	exp := seq.MapAs(seq.Map[string, seq.Slice[int]]{
+		"bob":    seq.SliceAsArgs(0, 2, 4),
+		"alan":   seq.SliceAsArgs(1, 5),
+		"scotty": seq.SliceAsArgs(3),
+	})
 
 	if !reflect.DeepEqual(exp, res.Must()) {
 		t.Errorf("expected %v, got %v", exp, res)
@@ -107,11 +107,11 @@ func TestCollectUpdateAssoc(t *testing.T) {
 	names := seq.SliceOfArgs("bob", "alan", "bob", "scotty", "bob", "alan")
 	tups := seq.ZipOf[string, int](names, seq.Constant(1))
 	res := seq.Reduce(seq.UpdateMap[string, int](fnmath.Sum[int]), nil, tups)
-	exp := map[string]int{
+	exp := seq.MapAs(map[string]int{
 		"bob":    3,
 		"alan":   2,
 		"scotty": 1,
-	}
+	})
 
 	if !reflect.DeepEqual(exp, res.Must()) {
 		t.Errorf("expected %v, got %v", exp, res)
@@ -128,11 +128,7 @@ func TestCollectUpdateArray(t *testing.T) {
 		return strings.TrimSpace(old + " " + new_)
 	}), nil, hellos)
 
-	exp := []string{
-		"",
-		"hello world",
-		"hej verden",
-	}
+	exp := seq.SliceOfArgs("", "hello world", "hej verden")
 
 	if !reflect.DeepEqual(exp, res.Must()) {
 		t.Errorf("expected %v, got %v", exp, res.Must())

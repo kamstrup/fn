@@ -7,7 +7,7 @@ import (
 	"github.com/kamstrup/fn/testing"
 )
 
-func chanWithVals[T any](tt ...T) <-chan T {
+func chanWithVals[T any](tt ...T) chan T {
 	ch := make(chan T)
 	go func() {
 		for _, t := range tt {

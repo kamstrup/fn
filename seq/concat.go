@@ -80,7 +80,7 @@ func (c concatSeq[T]) ToSlice() Slice[T] {
 		buf = make([]T, 0, sz)
 	}
 
-	buf = Reduce(Append[T], buf, c.seq()).Or(nil) // careful: errors silently dropped
+	buf = Reduce(MakeSlice[T], buf, c.seq()).Or(nil) // careful: errors silently dropped
 	return buf
 }
 

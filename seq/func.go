@@ -49,9 +49,9 @@ func Count[T any](into int, _ T) int {
 	return into + 1
 }
 
-// Append is a FuncCollect for use with Reduce, that uses the standard Go append() function.
+// MakeSlice is a FuncCollect for use with Reduce, that uses the standard Go append() function.
 // This function works with nil or a pre-built slice as initial value.
-func Append[T any](into Slice[T], t T) Slice[T] {
+func MakeSlice[T any](into Slice[T], t T) Slice[T] {
 	return append(into, t)
 }
 
@@ -282,7 +282,7 @@ func TupleWithKey[K comparable, V any](keySelector FuncMap[V, K]) func(V) Tuple[
 // In other languages and libraries this function is also known as "fold".
 //
 // This library ships with a suite of standard collector functions.
-// These include Append, MakeMap, MakeSet, MakeString, MakeBytes, Count,
+// These include MakeSlice, MakeMap, MakeSet, MakeString, MakeBytes, Count,
 // GroupBy, UpdateMap, UpdateSlice, fnmath.Sum, fnmath.Min, fnmath.Max,.
 //
 // The second argument, "into", can often be left as nil. It is the initial state for the collector.

@@ -37,13 +37,13 @@ func TestCollectCount(t *testing.T) {
 
 func TestCollectAppend(t *testing.T) {
 	arr := seq.SliceOfArgs[int](1, 2, 3)
-	cpy := seq.Reduce(seq.Append[int], nil, arr)
+	cpy := seq.Reduce(seq.MakeSlice[int], nil, arr)
 	exp := seq.SliceOfArgs(1, 2, 3)
 	if !reflect.DeepEqual(cpy.Must(), exp) {
 		t.Errorf("expected %v, got %v", exp, cpy)
 	}
 
-	ints := seq.Reduce(seq.Append[int], []int{27}, seq.Empty[int]())
+	ints := seq.Reduce(seq.MakeSlice[int], []int{27}, seq.Empty[int]())
 	if !ints.Empty() || ints.Ok() {
 		t.Errorf("expected empty min: %v", ints)
 	}

@@ -32,7 +32,7 @@ func (c Chan[T]) Len() (int, bool) {
 }
 
 func (c Chan[T]) ToSlice() Slice[T] {
-	return Reduce(Append[T], nil, c.Seq()).Or(nil) // careful: errors silently dropped
+	return Reduce(MakeSlice[T], nil, c.Seq()).Or(nil) // careful: errors silently dropped
 }
 
 func (c Chan[T]) Limit(n int) Seq[T] {

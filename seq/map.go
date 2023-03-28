@@ -212,3 +212,12 @@ func (a Map[K, V]) Map(shaper FuncMap[Tuple[K, V], Tuple[K, V]]) Seq[Tuple[K, V]
 		seq: a,
 	}
 }
+
+func (a Map[K, V]) Contains(k K) bool {
+	_, ok := a[k]
+	return ok
+}
+
+func (a Map[K, V]) Get(k K) V {
+	return a[k]
+}

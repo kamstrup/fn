@@ -193,3 +193,8 @@ func (s Set[K]) Map(shaper FuncMap[K, K]) Seq[K] {
 		seq: s,
 	}
 }
+
+func (s Set[K]) Contains(k K) bool {
+	_, ok := s[k]
+	return ok
+}

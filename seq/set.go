@@ -25,9 +25,26 @@ func SetOf[K comparable](s map[K]struct{}) Seq[K] {
 	return Set[K](s)
 }
 
+// SetOfArgs returns a variable argument list as a Seq.
+// If you need to do set operations on the return value you can use SetAsArgs.
+func SetOfArgs[K comparable](ks ...K) Seq[K] {
+	return SetAsArgs(ks...)
+}
+
 // SetAs returns a Set. You can cast the set to a Seq by calling Set.Seq().
 // The Go compiler can not do the type inference required to use a Set as a Seq.
 func SetAs[K comparable](s map[K]struct{}) Set[K] {
+	return s
+}
+
+// SetAsArgs returns a variable argument list as a Set.
+// You can cast the set to a Seq by calling Set.Seq().
+// The Go compiler can not do the type inference required to use a Set as a Seq.
+func SetAsArgs[K comparable](ks ...K) Set[K] {
+	s := Set[K]{}
+	for _, k := range ks {
+		s[k] = struct{}{}
+	}
 	return s
 }
 
@@ -194,7 +211,26 @@ func (s Set[K]) Map(shaper FuncMap[K, K]) Seq[K] {
 	}
 }
 
+// Contains return true iff the element k is in the set
 func (s Set[K]) Contains(k K) bool {
 	_, ok := s[k]
 	return ok
+}
+
+// Union returns a lazy seq enumerating the elements in the union of 2 sets
+func (s Set[K]) Union(other Set[K]) Seq[K] {
+	// return seq with the smallest number of lookups
+	if len(s) >= len(other) {
+		return ConcatOf[K](s, other.Where(Not(s.Contains)))
+	}
+	return ConcatOf[K](other, s.Where(Not(other.Contains)))
+}
+
+// Intersect returns a lazy seq enumerating the elements in the intersection of 2 sets
+func (s Set[K]) Intersect(other Set[K]) Seq[K] {
+	// return seq with the smallest number of lookups
+	if len(s) <= len(other) {
+		return s.Where(other.Contains)
+	}
+	return other.Where(s.Contains)
 }

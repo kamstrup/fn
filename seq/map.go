@@ -218,6 +218,9 @@ func (a Map[K, V]) Contains(k K) bool {
 	return ok
 }
 
-func (a Map[K, V]) Get(k K) V {
-	return a[k]
+func (a Map[K, V]) Get(k K) opt.Opt[V] {
+	if v, ok := a[k]; ok {
+		return opt.Of(v)
+	}
+	return opt.Empty[V]()
 }

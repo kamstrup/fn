@@ -52,29 +52,23 @@ func panicAtTheDiscoIfEven(i int8) (int, error) {
 }
 
 func TestTryError(t *testing.T) {
-	opt := Call(returnTheError)
+	opt := Returning(returnTheError())
 	isError(t, opt, theError)
 
-	opt = CallRecover(panicAtTheDisco)
+	opt = Recovering(panicAtTheDisco)
 	isError(t, opt, atTheDiscoError)
 
-	opt = Apply(returnTheErrorIfEven, 28)
-	isError(t, opt, theError)
-
-	opt = ApplyRecover(panicAtTheDiscoIfEven, 28)
+	opt = RecoveringMapper(panicAtTheDiscoIfEven)(28)
 	isError(t, opt, atTheDiscoError)
 }
 
 func TestTryOk(t *testing.T) {
-	opt := Call(func() (int, error) { return 27, nil })
+	opt := Returning(27, nil)
 	is(t, opt, 27)
 
-	opt = CallRecover(func() (int, error) { return 27, nil })
+	opt = Recovering(func() (int, error) { return 27, nil })
 	is(t, opt, 27)
 
-	opt = Apply(returnTheErrorIfEven, 27)
-	is(t, opt, 27)
-
-	opt = ApplyRecover(panicAtTheDiscoIfEven, 27)
+	opt = RecoveringMapper(panicAtTheDiscoIfEven)(27)
 	is(t, opt, 27)
 }

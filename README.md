@@ -424,6 +424,7 @@ TODO
 ```
 API CHANGES:
 * Feels weird that ForEach and ForEachIndex returns an empty seq. Maybe just error, or an Opt?
+* Rename seq.MakeXXX into seq.IntoXXX ??
 
 POTENTIAL FUTURE FEATURES (unordered)
 * Something for context.Context? Support cancel() cb and Done() chans? fncontext package...

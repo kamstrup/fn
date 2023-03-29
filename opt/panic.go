@@ -2,7 +2,7 @@ package opt
 
 import "fmt"
 
-// ErrPanic wraps a panic value when CallRecover or ApplyRecover recovers from a panic.
+// ErrPanic wraps a panic value when Recovering or RecoveringMapper recovers from a panic.
 type ErrPanic struct {
 	V any
 }

@@ -47,6 +47,10 @@ func Caller[T any](f FuncSourceErr[T]) func() Opt[T] {
 }
 
 // Returning creates an option from a value and an error.
+//
+// Example:
+//
+//	fileOpt := opt.Returning(os.Open("/tmp/README.txt"))
 func Returning[T any](t T, err error) Opt[T] {
 	if err != nil {
 		return ErrorOf[T](err)
@@ -54,38 +58,27 @@ func Returning[T any](t T, err error) Opt[T] {
 	return Of(t)
 }
 
-// Call a function returning an option with the result
-func Call[T any](f FuncSourceErr[T]) Opt[T] {
-	t, err := f()
-	return Returning(t, err)
-}
-
-// CallRecover a function returning an opt with the result.
+// Recovering a function returning an opt with the result.
 // If the function panics it is recovered and returned as ErrPanic.
-func CallRecover[T any](f FuncSourceErr[T]) (op Opt[T]) {
+func Recovering[T any](f FuncSourceErr[T]) (op Opt[T]) {
 	defer func() {
 		if r := recover(); r != nil {
 			op = ErrorOf[T](ErrPanic{V: r})
 		}
 	}()
 
-	return Call(f)
+	return Returning(f())
 }
 
-// Apply calls a function with an argument and returns the result wrapped in an opt.
-func Apply[S any, T any](f func(S) (T, error), s S) Opt[T] {
-	t, err := f(s)
-	return Returning(t, err)
-}
+// RecoveringMapper is like Mapper but recovers panics produced by f.
+func RecoveringMapper[S any, T any](f func(S) (T, error)) func(S) Opt[T] {
+	return func(s S) (op Opt[T]) {
+		defer func() {
+			if r := recover(); r != nil {
+				op = ErrorOf[T](ErrPanic{V: r})
+			}
+		}()
 
-// ApplyRecover calls a function with an argument and returns the result wrapped in an opt.
-// If the function panics it is recovered and returned as ErrPanic.
-func ApplyRecover[S any, T any](f func(S) (T, error), s S) (op Opt[T]) {
-	defer func() {
-		if r := recover(); r != nil {
-			op = ErrorOf[T](ErrPanic{V: r})
-		}
-	}()
-
-	return Apply(f, s)
+		return Returning(f(s))
+	}
 }

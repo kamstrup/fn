@@ -12,7 +12,7 @@ that makes it even more fun to write Go code.
 
 ## Philosophy
  * Be pragmatic. Fn() is not idealistic, academic, or purely functional.
-   The aim is blend cleanly in to existing Go programs, not to invent
+   The aim is blend cleanly into existing Go programs, not to invent
    a new paradigm for Go. While most of Fn() is built on immutable functional
    data structures, we live in the mutable world of Go. We try to blend in
    smoothly instead of ice skating uphill.

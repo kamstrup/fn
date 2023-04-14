@@ -13,6 +13,23 @@ import (
 //
 // You can use numeric indexing and call len(slice) directly on Slice instances,
 // and any function expecting a normal slice, []T, can take a Slice[T] as well.
+//
+// # Examples:
+//
+//	// Slices can be created as literals
+//	mySlice := seq.Slice[string]{"one", "two"}
+//
+//	// They can be allocated with make()
+//	emptySliceWithCap10 := make(seq.Slice[string], 0, 10)
+//
+//	// You can call len()
+//	fmt.Println("Length of mySlice:", len(mySlice))
+//
+//	// You can iterate with an idiomatic for-loop
+//	for i, v := range mySlice { fmt.Println("Index:", i, "Value:", v) }
+//
+//	// You can access elements by index
+//	twoString := mySlice[1]
 type Slice[T any] []T
 
 // Empty returns an empty seq

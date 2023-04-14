@@ -75,7 +75,7 @@ func TestExampleUserSerial(t *testing.T) {
 }
 
 func TestExampleParallelDownloader(t *testing.T) {
-	// In this example simulate a massive parallel download
+	// In this example we simulate a massive parallel download
 	// of a bunch of files named numerically 0.txt ... 1027.txt.
 	// Keeping 100 items in-flight all the time
 	fetchItem := func(num int) int {
@@ -94,14 +94,15 @@ func TestExampleParallelDownloader(t *testing.T) {
 }
 
 func TestExampleMapType(t *testing.T) {
-	// In this example we show how a seq.Map from seq.MapAs() can be used
+	// In this example we show how a seq.Map can be created as a literal an used
 	// as a normal Go map (same is true for ChanAs, SliceAs, SetAs etc)
 	// and also as a Seq
-	myMap := seq.MapAs(make(map[string]int))
-	myMap["one"] = 1
-	myMap["two"] = 2
-	myMap["three"] = 3
-	myMap["four"] = 4
+	myMap := seq.Map[string, int]{
+		"one":   1,
+		"two":   2,
+		"three": 3,
+		"four":  4,
+	}
 
 	fmt.Println("Number of elements in myMap:", len(myMap)) // prints 2
 

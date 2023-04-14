@@ -3,12 +3,30 @@ package seq
 import "github.com/kamstrup/fn/opt"
 
 // Set represents a collection of unique elements, represented as a standard map of empty structs.
-// Sets can be used directly as go maps if you instantiate them via SetAs().
+// Sets can be used directly as go maps if you instantiate them via SetAs() or as a seq.Set literal.
 // This means that you can use indexing with K, call len(set), and mutate a Set.
 //
 // Important: Set, as all go maps, do not have an intrinsic sort order. Methods
 // returning a subset of the elements will return a random sample. Methods with
 // this caveat include Seq.Take, Seq.TakeWhile, Seq.Skip, and Seq.First.
+//
+// # Examples:
+//
+//	// Sets can be created as literals
+//	mySet := seq.Set[string]{"one": {}, "two": {}}
+//
+//	// They can be created with make()
+//	emptySetWithCap10 := make(seq.Set[string], 10)
+//
+//	// You can call len()
+//	fmt.Println("Length of mySet:", len(mySet))
+//
+//	// You can iterate with an idiomatic for-loop
+//	for k := range mySet { fmt.Println("Key:", k) }
+//
+//	// You can check for element presence
+//	_, hasTwo := mySet["two"]
+//	hasTwoAlt := mySet.Contains("two")
 type Set[K comparable] map[K]struct{}
 
 // SetOf returns a Seq representation of standard Go set.

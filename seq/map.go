@@ -4,12 +4,29 @@ import "github.com/kamstrup/fn/opt"
 
 // Map is a type wrapper for Go maps exposing them as a Seq of Tuple[K,V].
 //
-// A Map can be used directly as a go map if you instantiate them via MapAs().
+// A Map can be used directly as a go map if you instantiate them via MapAs() or as a seq.Map literal.
 // That means you can index by K and call len() and cap() on it.
 //
 // Important: Map, as all go maps, do not have an intrinsic sort order. Methods
 // returning a subset of the elements will return a random sample. Methods with
 // this caveat include Seq.Take, Seq.TakeWhile, Seq.Skip, and Seq.First.
+//
+// # Examples:
+//
+//	// Maps can be created as literals
+//	myMap := seq.Map[string]int{"one": 1, "two: 2}
+//
+//	// They can be created with make()
+//	emptyMapWithCap10 := make(seq.Map[string,int], 10)
+//
+//	// You can call len()
+//	fmt.Println("Length of myMap:", len(myMap))
+//
+//	// You can iterate with an idiomatic for-loop
+//	for k, v := range myMap { fmt.Println("Key:", k, "Value:", v) }
+//
+//	// You can access elements
+//	twoInt := myMap["two"]
 type Map[K comparable, V any] map[K]V
 
 // MapOf returns a map cast as a Seq implemented by Map.

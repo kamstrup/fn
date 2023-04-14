@@ -283,11 +283,11 @@ func TupleWithKey[K comparable, V any](keySelector FuncMap[V, K]) func(V) Tuple[
 //
 // This library ships with a suite of standard collector functions.
 // These include MakeSlice, MakeMap, MakeSet, MakeString, MakeBytes, Count,
-// GroupBy, UpdateMap, UpdateSlice, fnmath.Sum, fnmath.Min, fnmath.Max,.
+// GroupBy, UpdateMap, UpdateSlice, fnmath.Sum, fnmath.Min, fnmath.Max.
 //
 // The second argument, "into", can often be left as nil. It is the initial state for the collector.
-// If you want to pre-allocate or reuse a buffer you can pass it in here. Or if you want to have
-// a certain prefix on a string you can pass in a strings.Builder where you have added the prefix.
+// If you want to pre-allocate or reuse a buffer you can pass it in here. Or if you want to use MakeString
+// with a certain prefix you can pass in a strings.Builder where you have added the prefix.
 //
 // If the seq produces and error the returned Opt will capture it, similarly if the seq is empty
 // the returned opt.Opt will be empty.

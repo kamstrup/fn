@@ -2,6 +2,22 @@ package opt
 
 type FuncSourceErr[T any] func() (T, error)
 
+// Of creates a new opt wrapping a value.
+func Of[T any](t T) Opt[T] {
+	return Opt[T]{val: t}
+}
+
+// ErrorOf creates a new opt wrapping an error.
+func ErrorOf[T any](err error) Opt[T] {
+	return Opt[T]{err: err}
+}
+
+// Empty creates a new empty opt.
+// An empty opt stores the special error ErrEmpty and will respond true to Opt.Empty() and false to Opt.Ok.
+func Empty[T any]() Opt[T] {
+	return Opt[T]{err: ErrEmpty}
+}
+
 // Mapper wraps an error-returning function in a function returning an opt.
 // Mapper is intended for use with slice.Mapping and seq.MappingOf and similar transformations.
 // See also Caller.

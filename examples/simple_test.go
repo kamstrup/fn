@@ -154,3 +154,31 @@ func TestExampleSourceWithErrors(t *testing.T) {
 	fmt.Println("These ints are ok:", ints)
 	fmt.Println("Tail ended up as:", seq.Error(tail))
 }
+
+func TestExampleTeams(t *testing.T) {
+	blueTeam := seq.SliceOfArgs("Alan", "Betty")
+	redTeam := seq.SliceOfArgs("Maria", "Bob")
+
+	// Let's create a set of names for the people on the blue and red teams
+	allTeamMembers := seq.ConcatOf(blueTeam, redTeam)
+	nameSet := seq.Reduce(seq.MakeSet[string], nil, allTeamMembers).Or(nil)
+
+	// We need 2 members for the green team, that are not already on the blue or red team
+	greenTeam := seq.SliceOfArgs("Betty", "Maurice", "Bob", "Charles", "Inga").
+		Where(seq.Not(nameSet.Contains)).
+		Limit(2).
+		ToSlice()
+
+	if len(greenTeam) != 2 {
+		panic("not enough team members for the green team")
+	}
+
+	// Members on the green team are assigned player numbers starting from 10
+	greenTeamNumbers := seq.ZipOf[int, string](seq.RangeFrom(10), greenTeam)
+	greenTeamNumbers.ForEach(func(member seq.Tuple[int, string]) {
+		fmt.Println("Name:", member.Value(), "Number:", member.Key())
+	})
+	// Prints:
+	// Name: Maurice Number: 10
+	// Name: Charles Number: 11
+}

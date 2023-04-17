@@ -1,7 +1,7 @@
 Working with Sets
 ====
 One of the most important things to realize about sets in Fn is that `seq.Set`
-is just a type wrapper for `map[T]struct{}`. This means that standard Go builtins
+is just a type wrapper for `map[T]struct{}`. This means that standard Go builtins and syntax
 work on it:
 
  * `make(seq.Set[string], 10)`

@@ -37,7 +37,7 @@ func printGreenTeam() {
         ToSlice()
     
     if len(greenTeam) != 2 {
-    panic("not enough team members for the green team")
+        panic("not enough team members for the green team")
     }
     
     // Members on the green team are assigned player numbers starting from 10

@@ -15,10 +15,9 @@ type sourceSeq[T any] struct {
 // you can use opt.Opt like this
 //
 //	seq := seq.SourceOf(func() opt.Opt[int] {
-//	              // ... calc i and err
-//	              return opt.Returning(i, err)
-//	          }).
-//	          While(opt.Ok[int])
+//	    // ... calc i and err
+//	    return opt.Returning(i, err)
+//	}).While(opt.Ok[int])
 //
 // The helper function opt.Caller can sometimes make this a bit easier to read.
 func SourceOf[T any](f FuncSource[T]) Seq[T] {

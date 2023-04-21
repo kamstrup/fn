@@ -9,6 +9,8 @@ type limitSeq[T any] struct {
 	limit int
 }
 
+// LimitOf returns a lazy seq with the first limit elements.
+// Normally you would call the Limit(n) method on a seq, but there are cases where this function is the only option.
 func LimitOf[T any](seq Seq[T], limit int) Seq[T] {
 	if limit <= 0 {
 		return Empty[T]()

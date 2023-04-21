@@ -6,6 +6,7 @@ type errorSeq[T any] struct {
 	error
 }
 
+// Fallible is an interface implemented by opt.Opt and seq types that can capture a runtime error.
 type Fallible interface {
 	Error() error
 }

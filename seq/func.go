@@ -321,11 +321,11 @@ func Do[T any](seq Seq[T]) Seq[T] {
 //
 // To check if a seq contains a zero element:
 //
-//		sq := seq.SliceOfArgs(-1, 0, 1, 2)
-//		seq.Any(sq, seq.IsZero[int]) // returns true
+//	sq := seq.SliceOfArgs(-1, 0, 1, 2)
+//	seq.Any(sq, seq.IsZero[int]) // returns true
 //
-//	 sq = SliceOf[int](nil)
-//	 seq.Any(sq, seq.IsZero[int]) // returns false since sq is empty
+//	sq = SliceOf[int](nil)
+//	seq.Any(sq, seq.IsZero[int]) // returns false since sq is empty
 func Any[T any](seq Seq[T], pred Predicate[T]) bool {
 	fst, _ := seq.Where(pred).First()
 	return fst.Ok()
@@ -336,11 +336,11 @@ func Any[T any](seq Seq[T], pred Predicate[T]) bool {
 //
 // To check if all elements in a seq are non-zero:
 //
-//	 sq := seq.SliceOfArgs(1, 2, 3)
-//		seq.All(sq, seq.IsNonZero[int]) // returns true
+//	sq := seq.SliceOfArgs(1, 2, 3)
+//	seq.All(sq, seq.IsNonZero[int]) // returns true
 //
-//	 sq = seq.SliceOf[int](nil)
-//		seq.All(sq, seq.IsNonZero[int]) // returns true since sq is empty
+//	sq = seq.SliceOf[int](nil)
+//	seq.All(sq, seq.IsNonZero[int]) // returns true since sq is empty
 func All[T any](seq Seq[T], pred Predicate[T]) bool {
 	fstMismatch, _ := seq.Where(Not(pred)).First()
 	return fstMismatch.Empty()

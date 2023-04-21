@@ -2,8 +2,12 @@ package seq
 
 import "github.com/kamstrup/fn/opt"
 
+// String is a type wrapper for standard go strings.
+// Any builtin or go syntax that applies to a string also applies to String.
+// You may fx. call len() and do for-range loops on seq.String.
 type String string
 
+// StringOf returns the string interpreted as a seq of bytes.
 func StringOf(s string) Seq[byte] {
 	return String(s)
 }

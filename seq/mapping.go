@@ -14,9 +14,9 @@ import "github.com/kamstrup/fn/opt"
 // type in an opt. This can be done easily with opt.Mapper. For example,
 // parsing strings as ints and discarding any errors could look like:
 //
-//	  strInts := seq.SliceOfArgs("1", "two", "3")
-//		 ints := seq.MappingOf(strInts, opt.Mapper(strconv.Atoi)).
-//			         Where(opt.Ok[int])
+//	strInts := seq.SliceOfArgs("1", "two", "3")
+//	ints := seq.MappingOf(strInts, opt.Mapper(strconv.Atoi)).
+//	  Where(opt.Ok[int])
 func MappingOf[S, T any](seq Seq[S], fm FuncMap[S, T]) Seq[T] {
 	return mappedSeq[S, T]{
 		f:   fm,

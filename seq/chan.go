@@ -2,6 +2,9 @@ package seq
 
 import "github.com/kamstrup/fn/opt"
 
+// Chan is type wrapper for standard Go channels.
+// This means that standard Go builtins and syntax applies to seq.Chan as well.
+// You can fx. call len() and cap() on them, make() them, and use select- and for-range expressions.
 type Chan[T any] chan T
 
 // ChanOf returns a Seq that reads a channel until it is closed.

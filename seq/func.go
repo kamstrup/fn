@@ -9,23 +9,13 @@ import (
 	"github.com/kamstrup/fn/opt"
 )
 
-type Func0 func()
-
-type Func0Err func() error
-
 type Func1[T any] func(T)
 
-type Func1Err[T any] func(T) error
-
 type Func2[S, T any] func(S, T)
-
-type Func2Err[S, T any] func(S, T) error
 
 // FuncMap is a function mapping type S to type T.
 // Used with fx. MappingOf(), Map(), and TupleWithKey().
 type FuncMap[S, T any] func(S) T
-
-type FuncMapErr[S, T any] func(S) (T, error)
 
 // FuncCollect is used to aggregate data and return the updated aggregation.
 // Think of it as a generic form of the standard append() function in go.
@@ -38,8 +28,6 @@ type FuncSource[T any] func() T
 type FuncLess[T any] func(T, T) bool
 
 type Predicate[T any] func(T) bool
-
-type PredicateErr[T any] func(T) (bool, error)
 
 // FuncUpdate is used to update an existing 'old' value compared to a 'new_' value, and returning the updated result.
 type FuncUpdate[T any] func(old, new_ T) T

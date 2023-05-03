@@ -69,7 +69,8 @@ func TestWhereError(t *testing.T) {
 	theError := errors.New("the error")
 	wh := seq.ErrorOf[int](theError).Where(seq.IsNonZero[int])
 
-	if err := seq.Error(wh); err != theError {
+	fst, _ := wh.First()
+	if err := fst.Error(); err != theError {
 		t.Fatalf("Expected 'the error', found: %s", err)
 	}
 }

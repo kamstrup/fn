@@ -27,8 +27,9 @@ func TestWhileSuite(t *testing.T) {
 func TestWhileError(t *testing.T) {
 	theError := errors.New("the error")
 	wh := seq.ErrorOf[int](theError).While(seq.IsNonZero[int])
+	fst, _ := wh.First()
 
-	if err := seq.Error(wh); err != theError {
+	if err := fst.Error(); err != theError {
 		t.Fatalf("Expected 'the error', found: %s", err)
 	}
 }

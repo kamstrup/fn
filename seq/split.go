@@ -36,7 +36,7 @@ func SplitOf[T any](seq Seq[T], splitter FuncSplit[T]) Seq[Seq[T]] {
 	}
 }
 
-func (s splitSeq[T]) ForEach(f Func1[Seq[T]]) Seq[Seq[T]] {
+func (s splitSeq[T]) ForEach(f Func1[Seq[T]]) opt.Opt[Seq[T]] {
 	var (
 		fst  opt.Opt[Seq[T]]
 		tail Seq[Seq[T]]
@@ -44,10 +44,10 @@ func (s splitSeq[T]) ForEach(f Func1[Seq[T]]) Seq[Seq[T]] {
 	for fst, tail = s.First(); fst.Ok(); fst, tail = tail.First() {
 		f(fst.Must())
 	}
-	return tail
+	return zeroIfEmpty(fst)
 }
 
-func (s splitSeq[T]) ForEachIndex(f Func2[int, Seq[T]]) Seq[Seq[T]] {
+func (s splitSeq[T]) ForEachIndex(f Func2[int, Seq[T]]) opt.Opt[Seq[T]] {
 	var (
 		fst  opt.Opt[Seq[T]]
 		tail Seq[Seq[T]]
@@ -57,7 +57,7 @@ func (s splitSeq[T]) ForEachIndex(f Func2[int, Seq[T]]) Seq[Seq[T]] {
 		f(i, fst.Must())
 		i++
 	}
-	return tail
+	return zeroIfEmpty(fst)
 }
 
 func (s splitSeq[T]) Len() (int, bool) {
@@ -158,13 +158,10 @@ func (s splitSeq[T]) First() (opt.Opt[Seq[T]], Seq[Seq[T]]) {
 	for {
 		fst, tail = tail.First()
 		val, err := fst.Return()
-		if err != nil {
-			if len(arr) > 0 {
-				return opt.Of(SliceOf(arr)), ErrorOf[Seq[T]](err)
-			} else {
-				return opt.Empty[Seq[T]](), ErrorOf[Seq[T]](err)
-			}
-
+		if err == opt.ErrEmpty {
+			return opt.Of(SliceOf(arr)), Empty[Seq[T]]()
+		} else if err != nil {
+			return opt.ErrorOf[Seq[T]](err), ErrorOf[Seq[T]](err)
 		}
 		switch s.split(val) {
 		case SplitKeep:
@@ -187,6 +184,9 @@ func (s splitSeq[T]) Map(m FuncMap[Seq[T], Seq[T]]) Seq[Seq[T]] {
 	}
 }
 
-func (s splitSeq[T]) Error() error {
-	return Error(s.seq)
+func zeroIfEmpty[T any](o opt.Opt[T]) opt.Opt[T] {
+	if o.Error() == opt.ErrEmpty {
+		return opt.Zero[T]()
+	}
+	return o
 }

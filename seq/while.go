@@ -16,7 +16,7 @@ func WhileOf[T any](seq Seq[T], pred Predicate[T]) Seq[T] {
 	}
 }
 
-func (w whileSeq[T]) ForEach(f Func1[T]) Seq[T] {
+func (w whileSeq[T]) ForEach(f Func1[T]) opt.Opt[T] {
 	var (
 		fst  opt.Opt[T]
 		tail Seq[T]
@@ -25,10 +25,10 @@ func (w whileSeq[T]) ForEach(f Func1[T]) Seq[T] {
 		f(fst.Must())
 	}
 
-	return tail
+	return zeroIfEmpty(fst)
 }
 
-func (w whileSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
+func (w whileSeq[T]) ForEachIndex(f Func2[int, T]) opt.Opt[T] {
 	var (
 		fst  opt.Opt[T]
 		tail Seq[T]
@@ -39,7 +39,7 @@ func (w whileSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 		i++
 	}
 
-	return tail
+	return zeroIfEmpty(fst)
 }
 
 func (w whileSeq[T]) Len() (int, bool) {
@@ -128,7 +128,7 @@ func (w whileSeq[T]) First() (opt.Opt[T], Seq[T]) {
 		return fst, tail
 	}
 	if !w.pred(val) {
-		return opt.Empty[T](), errOrEmpty(tail)
+		return opt.Empty[T](), Empty[T]()
 	}
 	return fst, whileSeq[T]{
 		seq:  tail,
@@ -141,8 +141,4 @@ func (w whileSeq[K]) Map(shaper FuncMap[K, K]) Seq[K] {
 		f:   shaper,
 		seq: w,
 	}
-}
-
-func (w whileSeq[K]) Error() error {
-	return Error(w.seq)
 }

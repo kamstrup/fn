@@ -72,22 +72,22 @@ func (s Set[K]) Seq() Seq[K] {
 	return s
 }
 
-func (s Set[K]) ForEach(f Func1[K]) Seq[K] {
+func (s Set[K]) ForEach(f Func1[K]) opt.Opt[K] {
 	for k := range s {
 		f(k)
 	}
 
-	return Empty[K]()
+	return opt.Zero[K]()
 }
 
-func (s Set[K]) ForEachIndex(f Func2[int, K]) Seq[K] {
+func (s Set[K]) ForEachIndex(f Func2[int, K]) opt.Opt[K] {
 	idx := 0
 	for k := range s {
 		f(idx, k)
 		idx++
 	}
 
-	return Empty[K]()
+	return opt.Zero[K]()
 }
 
 func (s Set[K]) Len() (int, bool) {

@@ -72,22 +72,22 @@ func (a Map[K, V]) Seq() Seq[Tuple[K, V]] {
 	return a
 }
 
-func (a Map[K, V]) ForEach(f Func1[Tuple[K, V]]) Seq[Tuple[K, V]] {
+func (a Map[K, V]) ForEach(f Func1[Tuple[K, V]]) opt.Opt[Tuple[K, V]] {
 	for k, v := range a {
 		f(Tuple[K, V]{k, v})
 	}
 
-	return Empty[Tuple[K, V]]()
+	return opt.Zero[Tuple[K, V]]()
 }
 
-func (a Map[K, V]) ForEachIndex(f Func2[int, Tuple[K, V]]) Seq[Tuple[K, V]] {
+func (a Map[K, V]) ForEachIndex(f Func2[int, Tuple[K, V]]) opt.Opt[Tuple[K, V]] {
 	idx := 0
 	for k, v := range a {
 		f(idx, Tuple[K, V]{k, v})
 		idx++
 	}
 
-	return Empty[Tuple[K, V]]()
+	return opt.Zero[Tuple[K, V]]()
 }
 
 func (a Map[K, V]) Len() (int, bool) {

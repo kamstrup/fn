@@ -26,14 +26,14 @@ func SingletOf[T any](t T) Seq[T] {
 	return singletSeq[T]{t}
 }
 
-func (s singletSeq[T]) ForEach(f Func1[T]) Seq[T] {
+func (s singletSeq[T]) ForEach(f Func1[T]) opt.Opt[T] {
 	f(s.val)
-	return Empty[T]()
+	return opt.Zero[T]()
 }
 
-func (s singletSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
+func (s singletSeq[T]) ForEachIndex(f Func2[int, T]) opt.Opt[T] {
 	f(0, s.val)
-	return Empty[T]()
+	return opt.Zero[T]()
 }
 
 func (s singletSeq[T]) Len() (int, bool) {
@@ -89,8 +89,4 @@ func (s singletSeq[T]) First() (opt.Opt[T], Seq[T]) {
 
 func (s singletSeq[T]) Map(f FuncMap[T, T]) Seq[T] {
 	return MappingOf[T, T](s, f)
-}
-
-func (s singletSeq[T]) Error() error {
-	return Error(s.val)
 }

@@ -23,15 +23,13 @@ func TestLinesSuite(t *testing.T) {
 func TestLinesError(t *testing.T) {
 	r := LinesOf(errReader{})
 
-	if err := seq.Error(r); err != nil {
-		t.Fatal("we should not see an error before we read", err)
-	}
-
-	opt, tail := r.First()
-	if err := seq.Error(opt); err != readError {
+	fst, tail := r.First()
+	if err := fst.Error(); err != readError {
 		t.Fatal("opt result must be a read error", err)
 	}
-	if err := seq.Error(tail); err != readError {
+
+	fst, _ = tail.First()
+	if err := fst.Error(); err != readError {
 		t.Fatal("tail result must be a read error", err)
 	}
 }

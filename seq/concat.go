@@ -25,21 +25,27 @@ func ConcatOf[T any](seqs ...Seq[T]) Seq[T] {
 	}
 }
 
-func (c concatSeq[T]) ForEach(f Func1[T]) Seq[T] {
-	var res Seq[T]
+func (c concatSeq[T]) ForEach(f Func1[T]) opt.Opt[T] {
+	var res opt.Opt[T]
 	if c.head != nil {
 		res = c.ForEach(f)
 	}
+	if res.Empty() {
+		return res
+	}
+
 	if c.tail != nil {
 		c.tail.ForEach(func(seq Seq[T]) {
-			res = seq.ForEach(f)
+			if res.Ok() {
+				res = seq.ForEach(f)
+			}
 		})
 	}
 
 	return res
 }
 
-func (c concatSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
+func (c concatSeq[T]) ForEachIndex(f Func2[int, T]) opt.Opt[T] {
 	i := 0
 	return c.ForEach(func(t T) {
 		f(i, t)
@@ -188,13 +194,17 @@ func (c concatSeq[T]) First() (opt.Opt[T], Seq[T]) {
 	// First see if we have enough in c.head
 	if c.head != nil {
 		fst, headTail = c.head.First()
-		if fst.Ok() {
+		if err := fst.Error(); err == opt.ErrEmpty {
+			c.head = nil // head depleted
+		} else if err != nil {
+			return fst, ErrorOf[T](err)
+		} else {
+			// we got a value from head
 			return fst, concatSeq[T]{
 				head: headTail,
 				tail: c.tail,
 			}
 		}
-		c.head = nil // head depleted
 	}
 
 	for {
@@ -213,15 +223,18 @@ func (c concatSeq[T]) First() (opt.Opt[T], Seq[T]) {
 		// We have a new head
 		c.head = headVal
 		fst, headTail = c.head.First()
-		if fst.Ok() {
+		if err := fst.Error(); err == opt.ErrEmpty {
+			// New head was empty, go again
+			c.head = nil
+		} else if err != nil {
+			return fst, ErrorOf[T](err)
+		} else {
 			return fst, concatSeq[T]{
 				head: headTail,
 				tail: c.tail,
 			}
 		}
 
-		// New head was empty, go again
-		c.head = nil
 	}
 }
 
@@ -230,13 +243,6 @@ func (c concatSeq[T]) Map(shaper FuncMap[T, T]) Seq[T] {
 		f:   shaper,
 		seq: c,
 	}
-}
-
-func (c concatSeq[T]) Error() error {
-	if c.head != nil {
-		return Error(c.head)
-	}
-	return Error(c.tail)
 }
 
 // seq is just a cast helper, to make the Go compiler happy

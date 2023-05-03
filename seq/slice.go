@@ -77,20 +77,20 @@ func (a Slice[T]) Seq() Seq[T] {
 	return a
 }
 
-func (a Slice[T]) ForEach(f Func1[T]) Seq[T] {
+func (a Slice[T]) ForEach(f Func1[T]) opt.Opt[T] {
 	for _, v := range a {
 		f(v)
 	}
 
-	return Empty[T]()
+	return opt.Zero[T]()
 }
 
-func (a Slice[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
+func (a Slice[T]) ForEachIndex(f Func2[int, T]) opt.Opt[T] {
 	for i, v := range a {
 		f(i, v)
 	}
 
-	return Empty[T]()
+	return opt.Zero[T]()
 }
 
 func (a Slice[T]) Len() (int, bool) {
@@ -229,12 +229,4 @@ func (a Slice[T]) Copy() Slice[T] {
 	cpy := make([]T, len(a))
 	copy(cpy, a)
 	return cpy
-}
-
-func (a Slice[T]) Error() error {
-	if len(a) == 0 {
-		return nil
-	}
-
-	return Error(a[0])
 }

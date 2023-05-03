@@ -50,7 +50,7 @@ func RangeFrom[N constraints.Integer](n N) Seq[N] {
 	return RangeOf(n, N(maxLen(n)))
 }
 
-func (r rangeSeq[N]) ForEach(f Func1[N]) Seq[N] {
+func (r rangeSeq[N]) ForEach(f Func1[N]) opt.Opt[N] {
 	if r.to >= r.from {
 		for i := r.from; i < r.to; i += r.step {
 			f(i)
@@ -61,10 +61,10 @@ func (r rangeSeq[N]) ForEach(f Func1[N]) Seq[N] {
 		}
 	}
 
-	return Empty[N]()
+	return opt.Zero[N]()
 }
 
-func (r rangeSeq[N]) ForEachIndex(f Func2[int, N]) Seq[N] {
+func (r rangeSeq[N]) ForEachIndex(f Func2[int, N]) opt.Opt[N] {
 	i := 0
 	if r.to >= r.from {
 		for j := r.from; j < r.to; j += r.step {
@@ -78,7 +78,7 @@ func (r rangeSeq[N]) ForEachIndex(f Func2[int, N]) Seq[N] {
 		}
 	}
 
-	return Empty[N]()
+	return opt.Zero[N]()
 }
 
 func (r rangeSeq[N]) Len() (int, bool) {

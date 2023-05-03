@@ -87,7 +87,7 @@ func TestExampleParallelDownloader(t *testing.T) {
 	tasks := seq.Go(ids, 100, fetchItem)
 	result := seq.Do(tasks)
 
-	if err := seq.Error(result); err != nil {
+	if err := result.Error(); err != nil {
 		t.Fatal(err) // Not going to happen in this test, but might in real apps
 	}
 	fmt.Println("All done")
@@ -152,7 +152,7 @@ func TestExampleSourceWithErrors(t *testing.T) {
 	})).TakeWhile(opt.Ok[int])
 
 	fmt.Println("These ints are ok:", ints)
-	fmt.Println("Tail ended up as:", seq.Error(tail))
+	fmt.Println("Tail ended up as:", tail)
 }
 
 func TestExampleTeams(t *testing.T) {

@@ -1,7 +1,6 @@
 package seq_test
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/kamstrup/fn/seq"
@@ -76,13 +75,4 @@ func TestArraySuite(t *testing.T) {
 		return seq.SliceOfArgs(1, 2, 3, 4)
 	}
 	fntesting.SuiteOf(t, createArr).Is(1, 2, 3, 4)
-}
-
-func TestArrayError(t *testing.T) {
-	theError := errors.New("the error")
-	arr := seq.SliceOfArgs(seq.ErrorOf[int](theError))
-
-	if err := seq.Error(arr); err != theError {
-		t.Fatalf("Expected 'the error', found: %s", err)
-	}
 }

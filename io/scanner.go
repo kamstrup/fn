@@ -32,18 +32,18 @@ func LinesOf(r io.Reader) BufferSeq {
 	}
 }
 
-func (s scannerSeq) ForEach(f seq.Func1[[]byte]) BufferSeq {
+func (s scannerSeq) ForEach(f seq.Func1[[]byte]) BufferOpt {
 	for s.scanner.Scan() {
 		f(s.scanner.Bytes())
 	}
-	return s.errOrEmpty()
+	return s.errOrZero()
 }
 
-func (s scannerSeq) ForEachIndex(f seq.Func2[int, []byte]) BufferSeq {
+func (s scannerSeq) ForEachIndex(f seq.Func2[int, []byte]) BufferOpt {
 	for i := 0; s.scanner.Scan(); i++ {
 		f(i, s.scanner.Bytes())
 	}
-	return s.errOrEmpty()
+	return s.errOrZero()
 }
 
 func (s scannerSeq) Len() (int, bool) {
@@ -135,11 +135,11 @@ func (s scannerSeq) Error() error {
 	return s.scanner.Err()
 }
 
-func (s scannerSeq) errOrEmpty() BufferSeq {
+func (s scannerSeq) errOrZero() BufferOpt {
 	if err := s.Error(); err != nil {
-		return seq.ErrorOf[[]byte](err)
+		return opt.ErrorOf[[]byte](err)
 	}
-	return seq.Empty[[]byte]()
+	return opt.Zero[[]byte]()
 }
 
 func (s scannerSeq) seq() BufferSeq {

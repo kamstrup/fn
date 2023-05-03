@@ -12,22 +12,22 @@ func ChanOf[T any](ch chan T) Seq[T] {
 	return Chan[T](ch)
 }
 
-func (c Chan[T]) ForEach(f Func1[T]) Seq[T] {
+func (c Chan[T]) ForEach(f Func1[T]) opt.Opt[T] {
 	for t := range c {
 		f(t)
 	}
 
-	return Empty[T]()
+	return opt.Zero[T]()
 }
 
-func (c Chan[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
+func (c Chan[T]) ForEachIndex(f Func2[int, T]) opt.Opt[T] {
 	i := 0
 	for t := range c {
 		f(i, t)
 		i++
 	}
 
-	return Empty[T]()
+	return opt.Zero[T]()
 }
 
 func (c Chan[T]) Len() (int, bool) {

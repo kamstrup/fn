@@ -29,28 +29,28 @@ type mappedSeq[S, T any] struct {
 	seq Seq[S]
 }
 
-func (m mappedSeq[S, T]) ForEach(f Func1[T]) Seq[T] {
+func (m mappedSeq[S, T]) ForEach(f Func1[T]) opt.Opt[T] {
 	res := m.seq.ForEach(func(s S) {
 		t := m.f(s)
 		f(t)
 	})
 
-	if err := Error(res); err != nil {
-		return ErrorOf[T](err)
+	if err := res.Error(); err != nil {
+		return opt.ErrorOf[T](err)
 	}
-	return Empty[T]()
+	return opt.Zero[T]()
 }
 
-func (m mappedSeq[S, T]) ForEachIndex(f Func2[int, T]) Seq[T] {
+func (m mappedSeq[S, T]) ForEachIndex(f Func2[int, T]) opt.Opt[T] {
 	res := m.seq.ForEachIndex(func(i int, s S) {
 		t := m.f(s)
 		f(i, t)
 	})
 
-	if err := Error(res); err != nil {
-		return ErrorOf[T](err)
+	if err := res.Error(); err != nil {
+		return opt.ErrorOf[T](err)
 	}
-	return Empty[T]()
+	return opt.Zero[T]()
 }
 
 func (m mappedSeq[S, T]) Len() (int, bool) {
@@ -130,8 +130,4 @@ func (m mappedSeq[S, T]) Map(shaper FuncMap[T, T]) Seq[T] {
 		f:   shaper,
 		seq: m,
 	}
-}
-
-func (m mappedSeq[S, T]) Error() error {
-	return Error(m.seq)
 }

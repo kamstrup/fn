@@ -11,6 +11,7 @@ import (
 
 type BufferSeq = seq.Seq[[]byte]
 type BufferSlice = seq.Slice[[]byte]
+type BufferOpt = opt.Opt[[]byte]
 
 type Reader struct {
 	r   io.Reader
@@ -32,13 +33,13 @@ func ReaderOf(r io.Reader, buf []byte) BufferSeq {
 	}
 }
 
-func (r Reader) ForEach(f seq.Func1[[]byte]) BufferSeq {
+func (r Reader) ForEach(f seq.Func1[[]byte]) BufferOpt {
 	for {
 		n, err := r.r.Read(r.buf)
 		if err == io.EOF && n == 0 {
 			break
 		} else if err != nil {
-			return seq.ErrorOf[[]byte](err)
+			return opt.ErrorOf[[]byte](err)
 		}
 
 		// might or might not steal r.buf, we have to be defensive!
@@ -46,18 +47,18 @@ func (r Reader) ForEach(f seq.Func1[[]byte]) BufferSeq {
 		f(cpy)
 	}
 
-	return seq.Empty[[]byte]()
+	return BufferOpt{}
 }
 
 // ForEachIndex on a Reader sequence passes the stream offset, not the iteration index to f.
-func (r Reader) ForEachIndex(f seq.Func2[int, []byte]) BufferSeq {
+func (r Reader) ForEachIndex(f seq.Func2[int, []byte]) BufferOpt {
 	i := 0
 	for {
 		n, err := r.r.Read(r.buf)
 		if err == io.EOF && n == 0 {
 			break
 		} else if err != nil {
-			return seq.ErrorOf[[]byte](err)
+			return opt.ErrorOf[[]byte](err)
 		}
 
 		// might or might not steal r.buf, we have to be defensive!
@@ -66,7 +67,7 @@ func (r Reader) ForEachIndex(f seq.Func2[int, []byte]) BufferSeq {
 		i++
 	}
 
-	return seq.Empty[[]byte]()
+	return BufferOpt{}
 }
 
 // Len on a Reader is unknown, unless the underlying io.Reader is an *os.File

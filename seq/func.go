@@ -286,7 +286,7 @@ func Reduce[T, E any](collector FuncCollect[T, E], into T, seq Seq[E]) opt.Opt[T
 		empty = false
 	})
 
-	if err := Error(tail); err != nil {
+	if err := tail.Error(); err != nil {
 		return opt.ErrorOf[T](err)
 	} else if empty {
 		return opt.Empty[T]()
@@ -297,9 +297,9 @@ func Reduce[T, E any](collector FuncCollect[T, E], into T, seq Seq[E]) opt.Opt[T
 
 // Do executes a Seq. The main use case is when you are primarily interested in triggering side effects.
 // For parallel execution of Seqs please look at Go.
-// In all normal applications the returned Seq will be empty. If ht e Seq is doing IO or other things
-// with possibilities of runtime failures you may need to check it for errors with the Error function.
-func Do[T any](seq Seq[T]) Seq[T] {
+// In all normal applications the returned Seq will be empty. If the Seq is doing IO or other things
+// with possibilities of runtime failures you may need to check the returned opt for errors.
+func Do[T any](seq Seq[T]) opt.Opt[T] {
 	return seq.ForEach(func(_ T) {})
 }
 
@@ -345,7 +345,7 @@ func Last[T any](seq Seq[T]) opt.Opt[T] {
 	if i > 0 {
 		return opt.Of(last)
 	}
-	if err := Error(tail); err != nil {
+	if err := tail.Error(); err != nil {
 		return opt.ErrorOf[T](err)
 	}
 	return opt.Empty[T]()

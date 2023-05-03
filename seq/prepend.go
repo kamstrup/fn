@@ -21,12 +21,12 @@ func PrependOf[T any](t T, tail Seq[T]) Seq[T] {
 	}
 }
 
-func (p prepSeq[T]) ForEach(f Func1[T]) Seq[T] {
+func (p prepSeq[T]) ForEach(f Func1[T]) opt.Opt[T] {
 	f(p.head)
 	return p.tail.ForEach(f)
 }
 
-func (p prepSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
+func (p prepSeq[T]) ForEachIndex(f Func2[int, T]) opt.Opt[T] {
 	f(0, p.head)
 	i := 1
 	return p.tail.ForEach(func(t T) {
@@ -146,8 +146,4 @@ func (p prepSeq[T]) Map(funcMap FuncMap[T, T]) Seq[T] {
 		f:   funcMap,
 		seq: p,
 	}
-}
-
-func (p prepSeq[T]) Error() error {
-	return Error(p.head)
 }

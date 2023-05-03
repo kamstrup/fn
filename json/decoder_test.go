@@ -46,13 +46,13 @@ func TestDecoderError(t *testing.T) {
 
 	// We should read the first element, and then ForEach returns an error
 	elems = []Payload{}
-	resultSeq := createSeq().ForEach(func(p Payload) {
+	result := createSeq().ForEach(func(p Payload) {
 		elems = append(elems, p)
 	})
 	if !reflect.DeepEqual([]Payload(elems), []Payload{{Foo: 27}}) {
 		t.Fatalf("bad result: %v", elems)
 	}
-	if err := seq.Error(resultSeq); err != io.ErrUnexpectedEOF {
+	if err := result.Error(); err != io.ErrUnexpectedEOF {
 		t.Fatalf("expected EOF error, got: %v", err)
 	}
 }

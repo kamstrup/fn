@@ -6,24 +6,8 @@ type errorSeq[T any] struct {
 	error
 }
 
-// Fallible is an interface implemented by opt.Opt and seq types that can capture a runtime error.
-type Fallible interface {
-	Error() error
-}
-
-// Error returns an error if there is an error associated with a Seq or Opt.
-// A sequence has an associated error if it implements Fallible and its Error method returns an error.
-func Error(x any) error {
-	if f, ok := x.(Fallible); ok {
-		return f.Error()
-	}
-
-	return nil
-}
-
 // ErrorOf creates an "error sequence".
 // An error sequence is empty and always returns itself. Calling Seq.First() returns an error Opt.
-// Calling Error() on an error sequence returns the wrapped error.
 // If the error argument is nil or opt.ErrEmpty a non-error empty seq is returned.
 func ErrorOf[T any](err error) Seq[T] {
 	if err == opt.ErrEmpty || err == nil {
@@ -37,12 +21,12 @@ func (e errorSeq[T]) Error() error {
 	return e.error
 }
 
-func (e errorSeq[T]) ForEach(f Func1[T]) Seq[T] {
-	return e
+func (e errorSeq[T]) ForEach(f Func1[T]) opt.Opt[T] {
+	return opt.ErrorOf[T](e.error)
 }
 
-func (e errorSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
-	return e
+func (e errorSeq[T]) ForEachIndex(f Func2[int, T]) opt.Opt[T] {
+	return opt.ErrorOf[T](e.error)
 }
 
 func (e errorSeq[T]) Len() (int, bool) {

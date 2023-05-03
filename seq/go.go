@@ -33,7 +33,7 @@ func Go[S, T any](seq Seq[S], numJobs int, task FuncMap[S, T]) Seq[T] {
 	// which is tricky because we only have the tail *after* the input chan is drained.
 	tailPromise := opt.Promise(func(resolve func(opt.Opt[T])) {
 		// Start pumping work into chS and indicate completion with close()
-		seqTail := seq.ForEach(func(s S) {
+		res := seq.ForEach(func(s S) {
 			chS <- s
 		})
 
@@ -45,7 +45,7 @@ func Go[S, T any](seq Seq[S], numJobs int, task FuncMap[S, T]) Seq[T] {
 		wg.Wait()
 		close(chT)
 
-		if err := Error(seqTail); err != nil {
+		if err := res.Error(); err != nil {
 			resolve(opt.ErrorOf[T](err))
 		} else {
 			resolve(opt.Empty[T]())

@@ -18,8 +18,14 @@ func TestConcatError(t *testing.T) {
 	theError := errors.New("the error")
 	cc := seq.ConcatOf(seq.ErrorOf[int](theError))
 
-	if err := seq.Error(cc); err != theError {
+	fst, tail := cc.First()
+	if err := fst.Error(); err != theError {
 		t.Fatalf("Expected 'the error', found: %s", err)
+	}
+
+	fst, _ = tail.First()
+	if err := fst.Error(); err != theError {
+		t.Fatalf("Expected 'the error' from tail, found: %s", err)
 	}
 }
 

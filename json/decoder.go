@@ -17,28 +17,28 @@ func DecoderOf[T any](dec *json.Decoder) seq.Seq[T] {
 	}
 }
 
-func (d decoderSeq[T]) ForEach(f seq.Func1[T]) seq.Seq[T] {
+func (d decoderSeq[T]) ForEach(f seq.Func1[T]) opt.Opt[T] {
 	for d.dec.More() {
 		var t T
 		if err := d.dec.Decode(&t); err != nil {
-			return seq.ErrorOf[T](err)
+			return opt.ErrorOf[T](err)
 		}
 		f(t)
 	}
-	return seq.Empty[T]()
+	return opt.Zero[T]()
 }
 
-func (d decoderSeq[T]) ForEachIndex(f seq.Func2[int, T]) seq.Seq[T] {
+func (d decoderSeq[T]) ForEachIndex(f seq.Func2[int, T]) opt.Opt[T] {
 	i := 0
 	for d.dec.More() {
 		var t T
 		if err := d.dec.Decode(&t); err != nil {
-			return seq.ErrorOf[T](err)
+			return opt.ErrorOf[T](err)
 		}
 		f(i, t)
 		i++
 	}
-	return seq.Empty[T]()
+	return opt.Zero[T]()
 }
 
 func (d decoderSeq[T]) Len() (int, bool) {

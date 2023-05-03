@@ -14,7 +14,7 @@ func compareSplits(t *testing.T, seq seq.Seq[seq.Seq[byte]], words ...string) {
 
 	arr := seq.ToSlice()
 	if len(arr) != len(words) {
-		t.Errorf("expected length %d, got %d", len(words), len(words))
+		t.Fatalf("expected length %d, got %d", len(arr), len(words))
 	}
 
 	for i, w := range words {
@@ -68,7 +68,8 @@ func TestSplitError(t *testing.T) {
 		return seq.SplitKeep
 	})
 
-	if err := seq.Error(split); err != theError {
+	fst, _ := split.First()
+	if err := fst.Error(); err != theError {
 		t.Fatalf("Expected 'the error', found: %s", err)
 	}
 }

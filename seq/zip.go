@@ -17,7 +17,7 @@ func ZipOf[X comparable, Y any](sx Seq[X], sy Seq[Y]) Seq[Tuple[X, Y]] {
 	}
 }
 
-func (z zipSeq[X, Y]) ForEach(f Func1[Tuple[X, Y]]) Seq[Tuple[X, Y]] {
+func (z zipSeq[X, Y]) ForEach(f Func1[Tuple[X, Y]]) opt.Opt[Tuple[X, Y]] {
 	var (
 		fx opt.Opt[X]
 		fy opt.Opt[Y]
@@ -31,14 +31,14 @@ func (z zipSeq[X, Y]) ForEach(f Func1[Tuple[X, Y]]) Seq[Tuple[X, Y]] {
 			f(Tuple[X, Y]{fx.Must(), fy.Must()})
 		} else {
 			// we are done, at least one Seq drained
-			return zipErrorTail(fx, fy)
+			return zipErrorHead(fx, fy)
 		}
 	}
 
-	return Empty[Tuple[X, Y]]()
+	return opt.Zero[Tuple[X, Y]]()
 }
 
-func (z zipSeq[X, Y]) ForEachIndex(f Func2[int, Tuple[X, Y]]) Seq[Tuple[X, Y]] {
+func (z zipSeq[X, Y]) ForEachIndex(f Func2[int, Tuple[X, Y]]) opt.Opt[Tuple[X, Y]] {
 	var (
 		fx opt.Opt[X]
 		fy opt.Opt[Y]
@@ -51,12 +51,12 @@ func (z zipSeq[X, Y]) ForEachIndex(f Func2[int, Tuple[X, Y]]) Seq[Tuple[X, Y]] {
 		if fx.Ok() && fy.Ok() {
 			f(i, Tuple[X, Y]{fx.Must(), fy.Must()})
 		} else {
-			return zipErrorTail(fx, fy) // we are done, at least one Seq drained
+			return zipErrorHead(fx, fy) // we are done, at least one Seq drained
 		}
 
 	}
 
-	return Empty[Tuple[X, Y]]()
+	return opt.Zero[Tuple[X, Y]]()
 }
 
 func (z zipSeq[X, Y]) Len() (int, bool) {
@@ -208,11 +208,13 @@ func (z zipSeq[X, Y]) Map(shaper FuncMap[Tuple[X, Y], Tuple[X, Y]]) Seq[Tuple[X,
 	}
 }
 
-func (z zipSeq[X, Y]) Error() error {
-	if errX := Error(z.sx); errX != nil {
-		return errX
+func zipErrorHead[X comparable, Y any](fx opt.Opt[X], fy opt.Opt[Y]) opt.Opt[Tuple[X, Y]] {
+	if errX := fx.Error(); errX != nil && errX != opt.ErrEmpty {
+		return opt.ErrorOf[Tuple[X, Y]](errX)
+	} else if errY := fy.Error(); errY != nil && errY != opt.ErrEmpty {
+		return opt.ErrorOf[Tuple[X, Y]](errY)
 	}
-	return Error(z.sy)
+	return opt.Zero[Tuple[X, Y]]()
 }
 
 func zipErrorTail[X comparable, Y any](fx opt.Opt[X], fy opt.Opt[Y]) Seq[Tuple[X, Y]] {

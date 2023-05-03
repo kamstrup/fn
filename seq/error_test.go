@@ -9,15 +9,17 @@ import (
 )
 
 func TestError(t *testing.T) {
-	err := errors.New("hello")
+	theError := errors.New("hello")
 
-	errSeq := seq.ErrorOf[any](err)
-	if seq.Error(errSeq) != err {
-		t.Errorf("Error() on errorSeq must return the wrapped error")
+	errSeq := seq.ErrorOf[any](theError)
+
+	if err := errSeq.ForEach(func(a any) { t.Error("ForEach should not be called") }).Error(); err != theError {
+		t.Error("ForEach must return theError")
 	}
 
-	errSeq.ForEach(func(a any) { t.Error("ForEach should not be called") })
-	errSeq.ForEachIndex(func(i int, a any) { t.Error("ForEachIndex should not be called") })
+	if err := errSeq.ForEachIndex(func(i int, a any) { t.Error("ForEachIndex should not be called") }).Error(); err != theError {
+		t.Error("ForEachIndex must return theError")
+	}
 
 	opt, cpy := errSeq.First()
 	if cpy != errSeq {
@@ -25,7 +27,7 @@ func TestError(t *testing.T) {
 	}
 
 	_, errCpy := opt.Return()
-	if errCpy != err {
+	if errCpy != theError {
 		t.Errorf("First must return an Opt that yield the original error")
 	}
 }

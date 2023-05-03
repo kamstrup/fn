@@ -32,7 +32,7 @@ func TestGoErrorTail(t *testing.T) {
 		arr[i] = s
 	})
 
-	err := seq.Error(res)
+	err := res.Error()
 	if err != theError {
 		t.Fatalf("expected %q, got: %q", theError, err)
 	}
@@ -74,7 +74,7 @@ func TestGoErrorOpt(t *testing.T) {
 		t.Fatalf("bad result: %v", arr)
 	}
 
-	if seq.Error(goTail) != theError {
+	if goTail.Error() != theError {
 		t.Fatalf("tail from Go.ForEach does not have correct error: %v", goTail)
 	}
 }

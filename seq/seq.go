@@ -23,13 +23,13 @@ const LenInfinite = -2
 // they are stateful and/or eager.
 type Seq[T any] interface {
 	// ForEach executes the Seq and calls f on each element.
-	// Returns an empty Seq. If the Seq has capabilities for errors,
-	// the returned Seq should be checked with Error().
-	ForEach(f Func1[T]) Seq[T]
+	// If the Seq has capabilities for errors,
+	// the returned opt should be checked for errors.
+	ForEach(f Func1[T]) opt.Opt[T]
 	// ForEachIndex executes the Seq and calls f on each index and element.
-	// Returns an empty Seq. If the Seq has capabilities for errors,
-	// the returned Seq should be checked with Error().
-	ForEachIndex(f Func2[int, T]) Seq[T]
+	// Returns an empty opt, in most cases. If the seq has capabilities for errors,
+	// the returned opt should be checked for errors.
+	ForEachIndex(f Func2[int, T]) opt.Opt[T]
 	// Len returns the number of elements in the Seq if it is well-defined.
 	// If the boolean return value is false, the length is not well-defined and is either
 	// LenUnknown or LenInfinite.
@@ -71,11 +71,4 @@ type Seq[T any] interface {
 	// If you need to change the type of the elements you must use the function fn.MappingOf(),
 	// since Go does not support type parameters on methods.
 	Map(funcMap FuncMap[T, T]) Seq[T]
-}
-
-func errOrEmpty[T any](seq Seq[T]) Seq[T] {
-	if err := Error(seq); err != nil {
-		return ErrorOf[T](err)
-	}
-	return Empty[T]()
 }

@@ -11,7 +11,7 @@ func ValuesOf[T any](opts Seq[opt.Opt[T]]) Seq[T] {
 	return valuesSeq[T]{seq: opts}
 }
 
-func (v valuesSeq[T]) ForEach(f Func1[T]) Seq[T] {
+func (v valuesSeq[T]) ForEach(f Func1[T]) opt.Opt[T] {
 	var (
 		val     T
 		loopErr error
@@ -25,15 +25,15 @@ func (v valuesSeq[T]) ForEach(f Func1[T]) Seq[T] {
 		} // else: skip remaining items
 	})
 
-	if resErr := Error(res); resErr != nil {
-		return ErrorOf[T](resErr)
-	} else if loopErr != nil {
-		return ErrorOf[T](loopErr)
+	if resErr := res.Error(); resErr != nil {
+		return opt.ErrorOf[T](resErr)
+	} else if loopErr != nil && loopErr != opt.ErrEmpty {
+		return opt.ErrorOf[T](loopErr)
 	}
-	return Empty[T]()
+	return opt.Zero[T]()
 }
 
-func (v valuesSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
+func (v valuesSeq[T]) ForEachIndex(f Func2[int, T]) opt.Opt[T] {
 	i := 0
 	return v.ForEach(func(t T) {
 		f(i, t)

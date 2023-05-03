@@ -1,6 +1,10 @@
 package seq
 
-import "github.com/kamstrup/fn/opt"
+import (
+	"strings"
+
+	"github.com/kamstrup/fn/opt"
+)
 
 // String is a type wrapper for standard go strings.
 // Any builtin or go syntax that applies to a string also applies to String.
@@ -16,24 +20,24 @@ func StringAs(s string) String {
 	return String(s)
 }
 
-func (s String) ForEach(f Func1[byte]) Seq[byte] {
+func (s String) ForEach(f Func1[byte]) opt.Opt[byte] {
 	// a for-range loop on a string iterates codepoints, and not bytes,
 	// so we do a handrolled for-loop to go byte by byte
 	for i := 0; i < len(s); i++ {
 		f(s[i])
 	}
 
-	return Empty[byte]()
+	return opt.Zero[byte]()
 }
 
-func (s String) ForEachIndex(f Func2[int, byte]) Seq[byte] {
+func (s String) ForEachIndex(f Func2[int, byte]) opt.Opt[byte] {
 	// a for-range loop on a string iterates codepoints, and not bytes,
 	// so we do a handrolled for-loop to go byte by byte
 	for i := 0; i < len(s); i++ {
 		f(i, s[i])
 	}
 
-	return Empty[byte]()
+	return opt.Zero[byte]()
 }
 
 func (s String) Len() (int, bool) {
@@ -100,4 +104,16 @@ func (s String) Map(shaper FuncMap[byte, byte]) Seq[byte] {
 		f:   shaper,
 		seq: s,
 	}
+}
+
+func (s String) HasSuffix(sfx string) bool {
+	return strings.HasSuffix(string(s), sfx)
+}
+
+func (s String) HasPrefix(pfx string) bool {
+	return strings.HasPrefix(string(s), pfx)
+}
+
+func (s String) Contains(sub string) bool {
+	return strings.Contains(string(s), sub)
 }

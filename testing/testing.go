@@ -224,11 +224,8 @@ func (ts Suite[S]) seqIsForEach(t *testing.T, ss []S) {
 			sz, i)
 	}
 
-	if err := seq.Error(res); err != nil {
-		t.Errorf("Seq returned error: %s", err)
-	}
-	if sz, lenOk = res.Len(); !lenOk || sz != 0 {
-		t.Errorf("Seq returned non-empty from ForEach")
+	if err := res.Error(); err != nil {
+		t.Errorf("Seq.ForEach returned error: %s", err)
 	}
 }
 
@@ -263,11 +260,8 @@ func (ts Suite[S]) seqIsForEachIndex(t *testing.T, ss []S) {
 			sz, count)
 	}
 
-	if err := seq.Error(res); err != nil {
-		t.Errorf("Seq returned error: %s", err)
-	}
-	if sz, lenOk = res.Len(); !lenOk || sz != 0 {
-		t.Errorf("Seq returned non-empty from ForEachIndex")
+	if err := res.Error(); err != nil {
+		t.Errorf("Seq.ForEachIndex returned error: %s", err)
 	}
 }
 

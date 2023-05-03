@@ -16,7 +16,7 @@ func WhereOf[T any](seq Seq[T], pred Predicate[T]) Seq[T] {
 	}
 }
 
-func (ws whereSeq[T]) ForEach(f Func1[T]) Seq[T] {
+func (ws whereSeq[T]) ForEach(f Func1[T]) opt.Opt[T] {
 	return ws.seq.ForEach(func(t T) {
 		if ws.pred(t) {
 			f(t)
@@ -24,7 +24,7 @@ func (ws whereSeq[T]) ForEach(f Func1[T]) Seq[T] {
 	})
 }
 
-func (ws whereSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
+func (ws whereSeq[T]) ForEachIndex(f Func2[int, T]) opt.Opt[T] {
 	i := 0
 	return ws.seq.ForEachIndex(func(_ int, t T) {
 		if ws.pred(t) {
@@ -152,8 +152,4 @@ func (ws whereSeq[K]) Map(shaper FuncMap[K, K]) Seq[K] {
 		f:   shaper,
 		seq: ws,
 	}
-}
-
-func (ws whereSeq[K]) Error() error {
-	return Error(ws.seq)
 }

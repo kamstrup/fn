@@ -31,14 +31,14 @@ func Constant[T any](t T) Seq[T] {
 	})
 }
 
-func (s sourceSeq[T]) ForEach(f Func1[T]) Seq[T] {
+func (s sourceSeq[T]) ForEach(f Func1[T]) opt.Opt[T] {
 	for { // loop infinitely, only a panic or Exit() will stop this
 		t := s.f()
 		f(t)
 	}
 }
 
-func (s sourceSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
+func (s sourceSeq[T]) ForEachIndex(f Func2[int, T]) opt.Opt[T] {
 	for i := 0; ; i++ {
 		t := s.f()
 		f(i, t)

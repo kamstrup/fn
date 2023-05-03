@@ -24,7 +24,7 @@ func LimitOf[T any](seq Seq[T], limit int) Seq[T] {
 	}
 }
 
-func (l limitSeq[T]) ForEach(f Func1[T]) Seq[T] {
+func (l limitSeq[T]) ForEach(f Func1[T]) opt.Opt[T] {
 	var (
 		i    = 0
 		head opt.Opt[T]
@@ -37,10 +37,10 @@ func (l limitSeq[T]) ForEach(f Func1[T]) Seq[T] {
 		i++
 	}
 
-	return tail
+	return opt.Zero[T]()
 }
 
-func (l limitSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
+func (l limitSeq[T]) ForEachIndex(f Func2[int, T]) opt.Opt[T] {
 	var (
 		i    = 0
 		head opt.Opt[T]
@@ -53,7 +53,7 @@ func (l limitSeq[T]) ForEachIndex(f Func2[int, T]) Seq[T] {
 		i++
 	}
 
-	return tail
+	return opt.Zero[T]()
 }
 
 func (l limitSeq[T]) Len() (int, bool) {

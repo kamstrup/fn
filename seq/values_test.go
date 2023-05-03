@@ -23,27 +23,33 @@ func TestValuesError(t *testing.T) {
 	optInts := seq.SliceOfArgs(opt.Of(1), opt.Of(2), opt.Of(3), opt.ErrorOf[int](theError))
 	vals := seq.ValuesOf(optInts)
 
-	tail := vals.ForEach(func(_ int) {})
-	if theError != seq.Error(tail) {
-		t.Fatalf("expected error tail: %v", tail)
+	res := vals.ForEach(func(_ int) {})
+	if theError != res.Error() {
+		t.Fatalf("expected error tail: %v", res)
 	}
 
-	tail = vals.ForEachIndex(func(idx, n int) {
+	res = vals.ForEachIndex(func(idx, n int) {
 		if idx+1 != n {
 			t.Fatalf("invalid number at index %d: %d", idx, n)
 		}
 	})
-	if theError != seq.Error(tail) {
-		t.Fatalf("expected error tail: %v", tail)
+	if theError != res.Error() {
+		t.Fatalf("expected error tail: %v", res)
 	}
 
-	_, tail = vals.Take(17)
-	if theError != seq.Error(tail) {
+	elems, tail := vals.Take(17)
+	if len(elems) != 3 {
+		t.Errorf("expected exactly 3 elements, found %v", elems)
+	}
+
+	fst, _ := tail.First()
+	if theError != fst.Error() {
 		t.Fatalf("expected error tail: %v", tail)
 	}
 
 	tail = vals.Skip(17)
-	if theError != seq.Error(tail) {
+	fst, _ = tail.First()
+	if theError != fst.Error() {
 		t.Fatalf("expected error tail: %v", tail)
 	}
 }

@@ -14,8 +14,15 @@ func ErrorOf[T any](err error) Opt[T] {
 
 // Empty creates a new empty opt.
 // An empty opt stores the special error ErrEmpty and will respond true to Opt.Empty() and false to Opt.Ok.
+// An empty opt is not the same as a zero value. Empty opts should be thought of as a general nil, or missing value.
 func Empty[T any]() Opt[T] {
 	return Opt[T]{err: ErrEmpty}
+}
+
+// Zero creates an opt with the zero value for the type. This is *not* the same as an empty opt!
+// A zero opt response true to Opt.Ok and does not have any error associated with it.
+func Zero[T any]() Opt[T] {
+	return Opt[T]{}
 }
 
 // Mapper wraps an error-returning function in a function returning an opt.

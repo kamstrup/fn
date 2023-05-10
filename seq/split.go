@@ -159,7 +159,11 @@ func (s splitSeq[T]) First() (opt.Opt[Seq[T]], Seq[Seq[T]]) {
 		fst, tail = tail.First()
 		val, err := fst.Return()
 		if err == opt.ErrEmpty {
-			return opt.Of(SliceOf(arr)), Empty[Seq[T]]()
+			if len(arr) > 0 {
+				return opt.Of(SliceOf(arr)), Empty[Seq[T]]()
+			} else {
+				return opt.Empty[Seq[T]](), Empty[Seq[T]]()
+			}
 		} else if err != nil {
 			return opt.ErrorOf[Seq[T]](err), ErrorOf[Seq[T]](err)
 		}

@@ -42,3 +42,13 @@ func (t Tuple[X, Y]) Y() Y {
 func (t Tuple[X, Y]) Value() Y {
 	return t.y
 }
+
+func (t Tuple[X, Y]) Equals(o Tuple[X, Y]) bool {
+	// Weird && construction to avoid potential interface{} alloc.
+	// Tuple.Y is not comparable so we have to bend it a bit
+	if t.x == o.x {
+		var ty, oy any = t.y, o.y
+		return ty == oy
+	}
+	return false
+}

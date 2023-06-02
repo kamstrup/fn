@@ -44,7 +44,9 @@ func downloadFile(name string) error {
 }
 
 func downloadAllFiles() error {
-	firstErr, _ := seq.MappingOf(filesToDownload.Seq(), downloadFile).First(1)
-    return firstErr.Or(nil)	
+	firstErr, _ := seq.MappingOf(filesToDownload.Seq(), downloadFile).
+		Where(seq.IsNonZero[error]).
+		First()
+	return firstErr.Or(nil)	
 }
 ```

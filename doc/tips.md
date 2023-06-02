@@ -96,7 +96,7 @@ in some slice:
 ```.go
 recordID := 1234
 recSeq := seq.SliceOf(records).
-    Take(10).
+    Limit(10).
     Where(func(rec *Record) bool { return rec.ID == recordID})
 
 theOneRecord, err := seq.One(recSeq).Return()

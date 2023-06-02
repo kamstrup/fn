@@ -4,12 +4,8 @@ When operating on in-memory structures like slices, maps, channels and so forth 
 normally not relevant. But if you do IO or some other operation that can error on runtime Fn provides
 a few ways to handle it.
 
-The `seq.Error(seq)` function returns an `error` if there is an error associated with a Seq or Opt.
-When you execute a Seq the "empty" tail Seq from `ForEach()` and other operations will capture any
-errors.
-
-Alternatively you can wrap results in `Opt[T]` which can also capture an error.
-Any error encountered via `sq.First()` or `seq.Reduce()` are reported via opts.
+Operations that can produce errors are wrapped in `Opt[T]`.
+Any error encountered via `sq.ForEach()`, `sq.ForEachIndex()`, `sq.First()` or `seq.Reduce()` are reported via opts.
 
 #### Warning
 When calling `Seq.ToSlice()` all error are ignored. ToSlice is intended for in-memory operations.
@@ -33,4 +29,22 @@ Or if you want to calculate the result immediately
 ```go
 optInt1 := opt.Returning(getInt())
 optInt2 := opt.Recovering(calcInt(27)) // to recover panics
+```
+
+### Aborting a Loop On First Error
+You will normally abort a loop as soon as it encounters an internal error.
+If you do not care for returning a result from the loop you can simply map
+the inner operation directly to a Go `error` and check the result with `myLoop.First()`, like so
+```go
+
+var filesToDownload = seq.Slice[string]{"file1.txt", "file2.txt", "file3.txt"}
+
+func downloadFile(name string) error {
+	// store downloaded file directly in current working dir
+}
+
+func downloadAllFiles() error {
+	firstErr, _ := seq.MappingOf(filesToDownload.Seq(), downloadFile).First(1)
+    return firstErr.Or(nil)	
+}
 ```

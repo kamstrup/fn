@@ -35,6 +35,7 @@ Apart from being usable as a standard Go map, and a seq of tuples, maps have a f
 * `Map.Values()` returns a `seq.Seq[V]`
 * `Map.Contains(k)` returns a bool
 * `Map.Get(k)` returns an `Opt[V]`
+* `Map.Copy()` returns a copy of the map
 
 Examples
 ----

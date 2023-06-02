@@ -35,3 +35,4 @@ Apart from being usable as a standard Go map, and a seq, sets have a few extra m
  * Set.Union() returns a lazy union of 2 sets
  * Set.Intersect() returns a lazy intersection of 2 sets.
  * Set.Contains(k)
+ * Set.Copy() returns a copy of the set

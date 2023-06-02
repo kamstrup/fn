@@ -8,6 +8,7 @@ on standard Go slices can be done on a `seq.Slice`. Eg
 * `len(mySlice)`
 * for-range loops
 * Indexing, like `one := mySlice[0]`
+* Slicing `subSlice := mySlice[0:1]`
 
 Limitations and Caveats
 ----

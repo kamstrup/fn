@@ -252,3 +252,12 @@ func (s Set[K]) Intersect(other Set[K]) Seq[K] {
 	}
 	return other.Where(s.Contains)
 }
+
+// Copy returns a copy of this set
+func (s Set[K]) Copy() Set[K] {
+	dup := make(Set[K], len(s))
+	for k := range s {
+		dup[k] = struct{}{}
+	}
+	return dup
+}

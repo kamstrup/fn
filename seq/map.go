@@ -241,3 +241,12 @@ func (a Map[K, V]) Get(k K) opt.Opt[V] {
 	}
 	return opt.Empty[V]()
 }
+
+// Copy returns a copy of this map
+func (a Map[K, V]) Copy() Map[K, V] {
+	dup := make(Map[K, V], len(a))
+	for k, v := range a {
+		dup[k] = v
+	}
+	return dup
+}
